@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRX Claimer</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        button { margin: 10px; padding: 10px 20px; cursor: pointer; }
+        .connected, .claimable { background-color: #4CAF50; color: white; }
+        #claimStatus, #donationStatus { margin-top: 20px; }
+        input[type="text"] { margin: 10px; padding: 5px; }
+    </style>
+</head>
+<body>
+    <h1>TRX Claimer</h1>
+    <button id="connectWallet">Connect Wallet</button>
+    <button id="claimTRX" disabled>Claim TRX</button>
+    <div id="claimAmount">Current Claimable Amount: 0 TRX</div>
+    <div id="claimStatus"></div>
+    <div><a>Contract owner pays energy fees. Only bandwidth cost will be taken from user</a></div><br>
+    <a href="https://t.me/claimfreetrxnow">Join our Telegram group</a>
+    <div>
+        <h2>Supported Projects</h2>
+        <a>Coming Soon!</a>
+    </div>
+
+    <h2>Donations</h2>
+    <input type="text" id="donationAmount" placeholder="Amount in TRX">
+    <button id="donateTRX">Donate TRX</button>
+    <div id="totalDonated">Total Donated: 0 TRX</div>
+    <div id="totalClaimed">Total Claimed: 0 TRX</div>
+    <div id="donationStatus"></div>
+
+    <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
+    <script>
+        const contractAddress = 'TRubGnGF6rmWM6S3v8vk34QiQaYKRYFeNw';
+        let tronWeb;
+        let contract;
+
+        const connectWallet = async () => {
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                tronWeb = window.tronWeb;
+                contract = await tronWeb.contract().at(contractAddress);
+                document.getElementById('connectWallet').classList.add('connected');
+                document.getElementById('connectWallet').textContent = 'Connected';
+                updateClaimableAmount();
+                updateDonationStats();
+                setInterval(updateClaimableAmount, 10000); // Poll every 10 seconds
+            } else {
+                alert("Please install TronLink.");
+            }
+        };
+
+        const claimTRX = async () => {
+            try {
+                const result = await contract.claimTRX().send({
+                    shouldPollResponse: true
+                });
+                document.getElementById('claimStatus').innerText = 'Success! TRX claimed.';
+                updateClaimableAmount();
+                updateDonationStats();
+            } catch (error) {
+                document.getElementById('claimStatus').innerText = 'Error: ' + error.message;
+            }
+        };
+
+        const updateClaimableAmount = async () => {
+            const amountInSuns = await contract.getClaimableAmount().call();
+            const amountInTRX = tronWeb.fromSun(amountInSuns);
+            document.getElementById('claimAmount').innerText = `Current Claimable Amount: ${amountInTRX} TRX`;
+            document.getElementById('claimTRX').disabled = amountInSuns <= 0;
+            document.getElementById('claimTRX').classList.toggle('claimable', amountInSuns > 0);
+        };
+
+        const donateTRX = async () => {
+            const amountToDonate = tronWeb.toSun(document.getElementById('donationAmount').value);
+            try {
+                const result = await contract.donate().send({
+                    callValue: amountToDonate,
+                    shouldPollResponse: true
+                });
+                document.getElementById('donationStatus').innerText = 'Thank you for your donation!';
+                updateDonationStats();
+            } catch (error) {
+                document.getElementById('donationStatus').innerText = 'Error: ' + error.message;
+            }
+        };
+
+        const updateDonationStats = async () => {
+            const totalDonatedInSuns = await contract.getTotalDonated().call();
+            const totalClaimedInSuns = await contract.getTotalClaimed().call();
+            const totalDonatedInTRX = tronWeb.fromSun(totalDonatedInSuns);
+            const totalClaimedInTRX = tronWeb.fromSun(totalClaimedInSuns);
+            document.getElementById('totalDonated').innerText = `Total Donated: ${totalDonatedInTRX} TRX`;
+            document.getElementById('totalClaimed').innerText = `Total Claimed: ${totalClaimedInTRX} TRX`;
+        };
+
+        document.getElementById('connectWallet').addEventListener('click', connectWallet);
+        document.getElementById('claimTRX').addEventListener('click', claimTRX);
+        document.getElementById('donateTRX').addEventListener('click', donateTRX);
+    </script>
+</body>
+</html>
