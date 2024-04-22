@@ -7,7 +7,7 @@
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
         button { margin: 10px; padding: 10px 20px; cursor: pointer; }
-        .connected, .claimable { background-color: #4CAF50; color: white; }
+        .connected, .claimable .greenButton { background-color: #4CAF50; color: white; }
         #claimStatus, #donationStatus { margin-top: 20px; }
         input[type="text"] { margin: 10px; padding: 5px; }
     </style>
@@ -47,9 +47,13 @@
                 contract = await tronWeb.contract().at(contractAddress);
                 document.getElementById('connectWallet').classList.add('connected');
                 document.getElementById('connectWallet').textContent = 'Connected';
+                document.getElementById('donateTRX').classList.add('greenButton'); // Make Donate TRX button green
                 updateClaimableAmount();
                 updateDonationStats();
                 setInterval(updateClaimableAmount, 10000); // Poll every 10 seconds
+                setInterval(updatetotalClaimed, 10000); // Poll every 10 seconds for claimable amount
+        setInterval(updateDonationStats, 10000); // Poll every 10 seconds for total donated and claimed
+                
             } else {
                 alert("Please install TronLink.");
             }
