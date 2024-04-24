@@ -9,12 +9,15 @@
         button { margin: 10px; padding: 10px 20px; cursor: pointer; }
         .connected, .claimable, .greenButton { background-color: #4CAF50; color: white; }
         input, textarea { margin-top: 5px; width: 20%; padding: 10px; }
+        #latestDonationMessage { font-family: 'Courier New', Courier, monospace; font-size: 18px; color: darkblue; } /* Style for latest donation message */
     </style>
 </head>
 <body>
     <h1>TRX Claimer</h1>
     <button id="connectWallet">Connect Wallet</button>
     <button id="claimTRX" disabled>Claim TRX</button>
+    <input type="text" id="whitelistTGUsername" placeholder="Enter TG Username">
+    <button id="addWhitelist">Add to Whitelist</button>
     <div id="claimAmount">Current Claimable Amount: 0 TRX</div>
     <div id="claimStatus"></div>
     <div><a>Contract owner pays energy fees. Only bandwidth cost will be taken from user</a></div><br>
@@ -23,6 +26,7 @@
         <h2>Supported Projects</h2>
         <a>Coming Soon!</a>
     </div>
+    <div id="latestDonationMessage">Latest Donation Message: None</div>
     <h2>Donations</h2>
     <input type="number" id="donationAmount" placeholder="Amount in TRX">
     <textarea id="donationMessage" placeholder="Leave a message with your donation..."></textarea>
@@ -30,11 +34,10 @@
     <div id="donationStatus"></div>
     <div id="totalDonated">Total Donated: 0 TRX</div>
     <div id="totalClaimed">Total Claimed: 0 TRX</div>
-    <div id="latestDonationMessage">Latest Donation Message: None</div>
 
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
-        const contractAddress = 'TYed9LGPU5Xe77hH73ZbiM4DRwKtZhf2wT';
+        const contractAddress = 'TYqFo7bKugRoF1ajsntETGrcrwMWokjNbn';
         let tronWeb;
         let contract;
 
@@ -94,12 +97,25 @@
             }
         };
 
+        const addWhitelist = async () => {
+            const tgUsername = document.getElementById('whitelistTGUsername').value;
+            try {
+                const result = await contract.addToWhitelist(tgUsername, tronWeb.defaultAddress.base58).send({
+                    shouldPollResponse: true
+                });
+                alert('Whitelisted successfully!');
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        };
+
         // Setup to periodically update the donation stats and latest message
         setInterval(updateDonationStats, 10000); // Poll every 10 seconds
 
         document.getElementById('connectWallet').addEventListener('click', connectWallet);
         document.getElementById('claimTRX').addEventListener('click', claimTRX);
         document.getElementById('donateTRX').addEventListener('click', donateTRX);
+        document.getElementById('addWhitelist').addEventListener('click', addWhitelist);
     </script>
 </body>
 </html>
