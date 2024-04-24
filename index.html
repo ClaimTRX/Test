@@ -7,40 +7,27 @@
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
         button { margin: 10px; padding: 10px 20px; cursor: pointer; }
-        .connected, .greenButton { background-color: #4CAF50; color: white; }
-        .claimable { background-color: #4CAF50; color: white; }
+        .connected, .claimable { background-color: #4CAF50; color: white; }
         #claimStatus, #donationStatus { margin-top: 20px; }
     </style>
 </head>
 <body>
     <h1>TRX Claimer</h1>
     <button id="connectWallet">Connect Wallet</button>
-    <input type="text" id="tgUsername" placeholder="Enter your TG Username">
     <button id="claimTRX" disabled>Claim TRX</button>
     <div id="claimAmount">Current Claimable Amount: 0 TRX</div>
     <div id="claimStatus"></div>
     <div><a>Contract owner pays energy fees. Only bandwidth cost will be taken from user</a></div><br>
     <a href="https://t.me/claimfreetrxnow">Join our Telegram group</a>
-    <div>
-        <h2>Whitelist Management</h2>
-        <input type="text" id="whitelistUsername" placeholder="TG Username">
-        <input type="text" id="whitelistAddress" placeholder="Wallet Address">
-        <button id="addToWhitelist">Add to Whitelist</button>
-        <button id="removeFromWhitelist">Remove from Whitelist</button>
-    </div>
-    <br>
     <h2>Donations</h2>
     <input type="text" id="donationAmount" placeholder="Amount in TRX">
-    <input type="text" id="donationMessage" placeholder="Message with your donation">
-    <button id="donateTRX" class="greenButton">Donate TRX</button><br>
-    <div id="totalDonated">Total Donated: 0 TRX</div><br>
+    <button id="donateTRX">Donate TRX</button><br>
+    <div id="totalDonated">Total Donated: 0 TRX</div>
     <div id="totalClaimed">Total Claimed: 0 TRX</div>
     <div id="donationStatus"></div>
-    <div id="latestDonationMessage"></div>
-
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
-        const contractAddress = 'TEn1K1aURTosykt5kXA8fWbDQdASCqPNCX';
+        const contractAddress = 'TT8cgKH9QTV9pQvm9uBW8P3z1teX8Ne3bb'; // Replace with your contract's address
         let tronWeb;
         let contract;
 
@@ -51,52 +38,45 @@
                 document.getElementById('connectWallet').classList.add('connected');
                 document.getElementById('connectWallet').textContent = 'Connected';
                 document.getElementById('donateTRX').classList.add('greenButton');
-                updateDonationStats();
-                setInterval(updateDonationStats, 10000); // Poll every 10 seconds
+                updateStats();
+                setInterval(updateStats, 10000); // Poll every 10 seconds
             } else {
                 alert("Please install TronLink.");
             }
         };
 
         const claimTRX = async () => {
-            const tgUsername = document.getElementById('tgUsername').value;
             try {
-                const result = await contract.claimTRX(tgUsername).send({
+                const result = await contract.claimTRX().send({
                     shouldPollResponse: true
                 });
                 document.getElementById('claimStatus').innerText = 'Success! TRX claimed.';
-                updateDonationStats();
+                updateStats();
             } catch (error) {
                 document.getElementById('claimStatus').innerText = 'Error: ' + error.message;
             }
         };
 
-        const updateDonationStats = async () => {
-            const amountInSuns = await contract.getClaimableAmount().call();
-            const totalDonatedInSuns = await contract.getTotalDonated().call();
-            const totalClaimedInSuns = await contract.getTotalClaimed().call();
-            const amountInTRX = tronWeb.fromSun(amountInSuns);
-            const totalDonatedInTRX = tronWeb.fromSun(totalDonatedInSuns);
-            const totalClaimedInTRX = tronWeb.fromSun(totalClaimedInSuns);
-            document.getElementById('claimAmount').innerText = `Current Claimable Amount: ${amountInTRX} TRX`;
-            document.getElementById('totalDonated').innerText = `Total Donated: ${totalDonatedInTRX} TRX`;
-            document.getElementById('totalClaimed').innerText = `Total Claimed: ${totalClaimedInTRX} TRX`;
-            document.getElementById('claimTRX').disabled = amountInSuns <= 0;
-            document.getElementById('claimTRX').classList.toggle('claimable', amountInSuns > 0);
+        const updateStats = async () => {
+            const claimableAmount = await contract.getClaimableAmount().call();
+            const totalDonated = await contract.getTotalDonated().call();
+            const totalClaimed = await contract.getTotalClaimed().call();
+            document.getElementById('claimAmount').innerText = `Current Claimable Amount: ${tronWeb.fromSun(claimableAmount)} TRX`;
+            document.getElementById('totalDonated').innerText = `Total Donated: ${tronWeb.fromSun(totalDonated)} TRX`;
+            document.getElementById('totalClaimed').innerText = `Total Claimed: ${tronWeb.fromSun(totalClaimed)} TRX`;
+            document.getElementById('claimTRX').disabled = claimableAmount <= 0;
+            document.getElementById('claimTRX').classList.toggle('claimable', claimableAmount > 0);
         };
 
         const donateTRX = async () => {
             const amountToDonate = tronWeb.toSun(document.getElementById('donationAmount').value);
-            const message = document.getElementById('donationMessage').value;
             try {
-                const result = await contract.donate(message).send({
+                const result = await contract.donate().send({
                     callValue: amountToDonate,
                     shouldPollResponse: true
                 });
                 document.getElementById('donationStatus').innerText = 'Thank you for your donation!';
-                updateDonationStats();
-                const latestMessage = await contract.latestDonationMessage().call();
-                document.getElementById('latestDonationMessage').innerText = `Latest Donation Message: ${latestMessage}`;
+                updateStats();
             } catch (error) {
                 document.getElementById('donationStatus').innerText = 'Error: ' + error.message;
             }
