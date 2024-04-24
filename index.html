@@ -7,7 +7,7 @@
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
         button { margin: 10px; padding: 10px 20px; cursor: pointer; }
-        .connected { background-color: #4CAF50; color: white; }
+        .connected, .greenButton { background-color: #4CAF50; color: white; }
         .claimable { background-color: #4CAF50; color: white; }
         #claimStatus, #donationStatus { margin-top: 20px; }
     </style>
@@ -22,14 +22,17 @@
     <div><a>Contract owner pays energy fees. Only bandwidth cost will be taken from user</a></div><br>
     <a href="https://t.me/claimfreetrxnow">Join our Telegram group</a>
     <div>
-        <h2>Supported Projects</h2>
-        <a>Coming Soon!</a>
+        <h2>Whitelist Management</h2>
+        <input type="text" id="whitelistUsername" placeholder="TG Username">
+        <input type="text" id="whitelistAddress" placeholder="Wallet Address">
+        <button id="addToWhitelist">Add to Whitelist</button>
+        <button id="removeFromWhitelist">Remove from Whitelist</button>
     </div>
-    <br><br><br><br>
+    <br>
     <h2>Donations</h2>
     <input type="text" id="donationAmount" placeholder="Amount in TRX">
     <input type="text" id="donationMessage" placeholder="Message with your donation">
-    <button id="donateTRX">Donate TRX</button><br>
+    <button id="donateTRX" class="greenButton">Donate TRX</button><br>
     <div id="totalDonated">Total Donated: 0 TRX</div><br>
     <div id="totalClaimed">Total Claimed: 0 TRX</div>
     <div id="donationStatus"></div>
@@ -47,10 +50,9 @@
                 contract = await tronWeb.contract().at(contractAddress);
                 document.getElementById('connectWallet').classList.add('connected');
                 document.getElementById('connectWallet').textContent = 'Connected';
+                document.getElementById('donateTRX').classList.add('greenButton');
                 updateDonationStats();
-                setInterval(updateDonationStats, 10000); // Poll every 10 seconds for total donated and claimed
-                const latestMessage = await contract.latestDonationMessage().call();
-                document.getElementById('latestDonationMessage').innerText = `Latest Donation Message: ${latestMessage}`;
+                setInterval(updateDonationStats, 10000); // Poll every 10 seconds
             } else {
                 alert("Please install TronLink.");
             }
@@ -93,6 +95,8 @@
                 });
                 document.getElementById('donationStatus').innerText = 'Thank you for your donation!';
                 updateDonationStats();
+                const latestMessage = await contract.latestDonationMessage().call();
+                document.getElementById('latestDonationMessage').innerText = `Latest Donation Message: ${latestMessage}`;
             } catch (error) {
                 document.getElementById('donationStatus').innerText = 'Error: ' + error.message;
             }
