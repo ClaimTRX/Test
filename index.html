@@ -9,36 +9,35 @@
         button { margin: 10px; padding: 10px 20px; cursor: pointer; }
         .connected { background-color: #4CAF50; color: white; }
         .claimable { background-color: #4CAF50; color: white; }
-        #claimStatus { margin-top: 20px; }
+        #claimStatus, #donationStatus { margin-top: 20px; }
     </style>
 </head>
 <body>
-     <h1>TRX Claimer</h1>
-        <button id="connectWallet">Connect Wallet</button>
-        <button id="claimTRX" disabled>Claim TRX</button>
-        <div id="claimAmount">Current Claimable Amount: 0 TRX</div>
-        <div id="claimStatus"></div>
-        <div><a>Contract owner pays energy fees. Only bandwidth cost will be taken from user</a></div><br>
-        <a href="https://t.me/claimfreetrxnow">Join our Telegram group</a>
-        <div>
-            <h2>Supported Projects</h2>
-            <a>Coming Soon!</a>
-        </div>
-        <br>
-        <br>
-        <br>
-        <br>
-        <h2>Donations</h2>
-        <input type="text" id="donationAmount" placeholder="Amount in TRX">
-        <button id="donateTRX">Donate TRX</button><br>
-        <div id="totalDonated">Total Donated: 0 TRX</div><br>
-        <div id="totalClaimed">Total Claimed: 0 TRX</div>
-        <div id="donationStatus"></div>
+    <h1>TRX Claimer</h1>
+    <button id="connectWallet">Connect Wallet</button>
+    <input type="text" id="tgUsername" placeholder="Enter your TG Username">
+    <button id="claimTRX" disabled>Claim TRX</button>
+    <div id="claimAmount">Current Claimable Amount: 0 TRX</div>
+    <div id="claimStatus"></div>
+    <div><a>Contract owner pays energy fees. Only bandwidth cost will be taken from user</a></div><br>
+    <a href="https://t.me/claimfreetrxnow">Join our Telegram group</a>
+    <div>
+        <h2>Supported Projects</h2>
+        <a>Coming Soon!</a>
     </div>
+    <br><br><br><br>
+    <h2>Donations</h2>
+    <input type="text" id="donationAmount" placeholder="Amount in TRX">
+    <input type="text" id="donationMessage" placeholder="Message with your donation">
+    <button id="donateTRX">Donate TRX</button><br>
+    <div id="totalDonated">Total Donated: 0 TRX</div><br>
+    <div id="totalClaimed">Total Claimed: 0 TRX</div>
+    <div id="donationStatus"></div>
+    <div id="latestDonationMessage"></div>
 
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
-        const contractAddress = 'TEn1K1aURTosykt5kXA8fWbDQdASCqPNCX';
+        const contractAddress = 'TFXgJiJL1Qj1ZCoYxtrqExMWJMDk4CpMBN';
         let tronWeb;
         let contract;
 
@@ -48,17 +47,19 @@
                 contract = await tronWeb.contract().at(contractAddress);
                 document.getElementById('connectWallet').classList.add('connected');
                 document.getElementById('connectWallet').textContent = 'Connected';
-                document.getElementById('donateTRX').classList.add('greenButton'); // Make Donate TRX button green
                 updateDonationStats();
                 setInterval(updateDonationStats, 10000); // Poll every 10 seconds for total donated and claimed
+                const latestMessage = await contract.latestDonationMessage().call();
+                document.getElementById('latestDonationMessage').innerText = `Latest Donation Message: ${latestMessage}`;
             } else {
                 alert("Please install TronLink.");
             }
         };
 
         const claimTRX = async () => {
+            const tgUsername = document.getElementById('tgUsername').value;
             try {
-                const result = await contract.claimTRX().send({
+                const result = await contract.claimTRX(tgUsername).send({
                     shouldPollResponse: true
                 });
                 document.getElementById('claimStatus').innerText = 'Success! TRX claimed.';
@@ -84,8 +85,9 @@
 
         const donateTRX = async () => {
             const amountToDonate = tronWeb.toSun(document.getElementById('donationAmount').value);
+            const message = document.getElementById('donationMessage').value;
             try {
-                const result = await contract.donate().send({
+                const result = await contract.donate(message).send({
                     callValue: amountToDonate,
                     shouldPollResponse: true
                 });
