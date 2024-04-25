@@ -29,7 +29,7 @@
 
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
-        const contractAddress = 'TNiw8PUWSxcQPiQwn6JsDbBMBkQKds5kUG';
+        const contractAddress = 'TC3wB4An4Yho7ZvqSpJ8pYn94ndP2m9SFw';
         let tronWeb;
         let contract;
 
@@ -42,9 +42,26 @@
                 document.getElementById('donateTRX').classList.remove('disabled');
                 document.getElementById('donateTRX').disabled = false;
                 updateDonationStats();
-                setInterval(updateDonationStats, 10000); // Update every 10 seconds
+                checkClaimStatus();
+                setInterval(() => {
+                    updateDonationStats();
+                    checkClaimStatus();
+                }, 10000); // Update every 10 seconds
             } else {
                 alert("Please install TronLink.");
+            }
+        };
+
+        const checkClaimStatus = async () => {
+            const [availableToClaim, isClaimable] = await contract.getAvailableToClaim().call();
+            document.getElementById('claimAmount').innerText = `${availableToClaim} TRX available to claim`;
+            if (isClaimable) {
+                document.getElementById('claimTRX').classList.remove('disabled');
+                document.getElementById('claimTRX').disabled = false;
+            } else {
+                document.getElementById('claimTRX').classList.add('disabled');
+                document.getElementById('claimTRX').disabled = true;
+                document.getElementById('claimStatus').innerText = 'Claim not available yet. Please wait.';
             }
         };
 
