@@ -54,7 +54,7 @@
 
         const checkClaimStatus = async () => {
     const [availableToClaim, isClaimable] = await contract.getAvailableToClaim().call();
-
+const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
     document.getElementById('claimAmount').innerText = `${availableToClaim} TRX available to claim`;
 
     if (isClaimable) {
