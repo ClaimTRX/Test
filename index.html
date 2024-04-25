@@ -53,17 +53,19 @@
         };
 
         const checkClaimStatus = async () => {
-            const [availableToClaim, isClaimable] = await contract.getAvailableToClaim().call();
-            document.getElementById('claimAmount').innerText = `${availableToClaim} TRX available to claim`;
-            if (isClaimable) {
-                document.getElementById('claimTRX').classList.remove('disabled');
-                document.getElementById('claimTRX').disabled = false;
-            } else {
-                document.getElementById('claimTRX').classList.add('disabled');
-                document.getElementById('claimTRX').disabled = true;
-                document.getElementById('claimStatus').innerText = 'Claim not available yet. Please wait.';
-            }
-        };
+    const [availableToClaimInSuns, isClaimable] = await contract.getAvailableToClaim().call();
+    const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
+    document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
+    if (isClaimable) {
+        document.getElementById('claimTRX').classList.remove('disabled');
+        document.getElementById('claimTRX').disabled = false;
+    } else {
+        document.getElementById('claimTRX').classList.add('disabled');
+        document.getElementById('claimTRX').disabled = true;
+        document.getElementById('claimStatus').innerText = 'Claim not available yet. Please wait.';
+    }
+};
+
 
         const claimTRX = async () => {
             try {
