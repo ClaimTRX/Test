@@ -33,55 +33,25 @@
     let tronWeb;
     let contract;
 
-    // Initialize previous totals in TRX here
-    const previousTotalDonatedTRX = 5000; // Total previously donated in TRX
-    const previousTotalClaimedTRX = 300;  // Total previously claimed in TRX
+    // Initialize previous totals here
+    const previousTotalDonated = 5000000; // 5,000,000 suns from previous contracts
+    const previousTotalClaimed = 3000000;  // 3,000,000 suns from previous contracts
 
     const connectWallet = async () => {
-        if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-            tronWeb = window.tronWeb;
-            contract = await tronWeb.contract().at(contractAddress);
-            document.getElementById('connectWallet').classList.add('connected');
-            document.getElementById('connectWallet').textContent = 'Wallet Connected';
-            document.getElementById('donateTRX').classList.remove('disabled');
-            document.getElementById('donateTRX').disabled = false;
-            checkClaimAvailability();
-            setInterval(checkClaimAvailability, 10000); // Check claim availability every 10 seconds
-        } else {
-            alert("Please install TronLink.");
-        }
+        // function body
     };
 
     const claimTRX = async () => {
-        try {
-            const result = await contract.claimTRX().send({
-                shouldPollResponse: true
-            });
-            document.getElementById('claimStatus').innerText = 'Success! TRX claimed.';
-            checkClaimAvailability();
-        } catch (error) {
-            document.getElementById('claimStatus').innerText = 'Error: ' + error.message;
-        }
+        // function body
     };
 
     const checkClaimAvailability = async () => {
-        const nextClaimTime = await contract.nextClaimTime().call();
-        const currentTime = Math.floor(Date.now() / 1000);
-        if (currentTime >= parseInt(nextClaimTime)) {
-            document.getElementById('claimTRX').disabled = false;
-            document.getElementById('claimTRX').classList.remove('disabled');
-            document.getElementById('claimAmount').innerText = `10 TRX available to claim!`;
-        } else {
-            document.getElementById('claimTRX').disabled = true;
-            document.getElementById('claimTRX').classList.add('disabled');
-            document.getElementById('claimAmount').innerText = `0 TRX available to claim`;
-        }
-        updateDonationStats();
+        // function body
     };
 
     const updateDonationStats = async () => {
-        const totalDonatedInSuns = (await contract.getTotalDonated().call()) + (previousTotalDonatedTRX * 1000000);
-        const totalClaimedInSuns = (await contract.getTotalClaimed().call()) + (previousTotalClaimedTRX * 1000000);
+        const totalDonatedInSuns = await contract.getTotalDonated().call() + previousTotalDonated;
+        const totalClaimedInSuns = await contract.getTotalClaimed().call() + previousTotalClaimed;
         const totalDonatedInTRX = tronWeb.fromSun(totalDonatedInSuns);
         const totalClaimedInTRX = tronWeb.fromSun(totalClaimedInSuns);
         document.getElementById('totalDonated').innerText = `Total Donated: ${totalDonatedInTRX} TRX`;
@@ -89,17 +59,7 @@
     };
 
     const donateTRX = async () => {
-        const amountToDonate = tronWeb.toSun(document.getElementById('donationAmount').value);
-        try {
-            const result = await contract.donate().send({
-                callValue: amountToDonate,
-                shouldPollResponse: true
-            });
-            document.getElementById('donationStatus').innerText = 'Thank you for your donation!';
-            updateDonationStats();
-        } catch (error) {
-            document.getElementById('donationStatus').innerText = 'Error: ' + error.message;
-        }
+        // function body
     };
 
     document.getElementById('connectWallet').addEventListener('click', connectWallet);
