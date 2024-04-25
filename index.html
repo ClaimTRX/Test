@@ -33,10 +33,6 @@
         let tronWeb;
         let contract;
 
-        // Initialize previous totals in TRX, converted to suns for the calculations
-        const previousTotalDonated = 5000000000; // 5,000,000 suns from previous contracts
-        const previousTotalClaimed = 300000000;  // 3,000,000 suns from previous contracts
-
         const connectWallet = async () => {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 tronWeb = window.tronWeb;
@@ -65,8 +61,8 @@
         };
 
         const updateDonationStats = async () => {
-            const totalDonatedInSuns = (await contract.getTotalDonated().call()) + previousTotalDonated;
-            const totalClaimedInSuns = (await contract.getTotalClaimed().call()) + previousTotalClaimed;
+            const totalDonatedInSuns = (await contract.getTotalDonated().call());
+            const totalClaimedInSuns = (await contract.getTotalClaimed().call());
             const totalDonatedInTRX = tronWeb.fromSun(totalDonatedInSuns);
             const totalClaimedInTRX = tronWeb.fromSun(totalClaimedInSuns);
             document.getElementById('totalDonated').innerText = `Total Donated: ${totalDonatedInTRX} TRX`;
