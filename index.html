@@ -52,7 +52,7 @@
                 document.getElementById('connectWallet').classList.add('connected');
                 document.getElementById('donateTRX').classList.remove('disabled');
                 document.getElementById('donateTRX').disabled = false;
-                updateDonationStats();
+                setInterval(updateDonationStats, 10000); // Update donation stats every 10 seconds
                 await checkWhitelistAndClaimStatus();
                 // Polling every 10 seconds to check for claim status updates
                 setInterval(checkWhitelistAndClaimStatus, 10000);
@@ -65,7 +65,9 @@
             const isWhitelisted = await contract.whitelist(tronWeb.defaultAddress.base58).call();
             const availableToClaimInSuns = await contract.getClaimableAmount().call();
             const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
-
+            const addToWhitelistButton = document.getElementById('addToWhitelist');
+    addToWhitelistButton.disabled = isWhitelisted; // Enable or disable based on whitelisted status
+    addToWhitelistButton.classList.toggle('disabled', isWhitelisted);
             if (isWhitelisted) {
                 document.getElementById('whitelistSection').classList.add('hidden');
             } else {
@@ -137,7 +139,9 @@
                 donateButton.classList.remove('disabled');
             }
         }
-
+        document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('addToWhitelist').disabled = false; // Initially enable the button
+    document.getElementById('addToWhitelist').classList.remove('disabled');
         document.getElementById('connectWallet').addEventListener('click', connectWallet);
         document.getElementById('claimTRX').addEventListener('click', claimTRX);
         document.getElementById('donateTRX').addEventListener('click', donateTRX);
