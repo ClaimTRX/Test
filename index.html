@@ -53,11 +53,10 @@
         };
 
         const checkClaimStatus = async () => {
-    const [availableToClaim, isClaimable] = await contract.getAvailableToClaim().call();
-const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
+    const availableToClaim = await contract.getClaimableAmount().call();
     document.getElementById('claimAmount').innerText = `${availableToClaim} TRX available to claim`;
 
-    if (isClaimable) {
+    if (availableToClaim > 0) {
         document.getElementById('claimTRX').classList.remove('disabled');
         document.getElementById('claimTRX').disabled = false;
         document.getElementById('claimStatus').innerText = '';  // Clear any previous status messages
