@@ -7,7 +7,10 @@
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
         button { margin: 10px; padding: 10px 20px; cursor: pointer; }
-        .connected { background-color: #4CAF50; color: white; }
+        .connected, button:not(.disabled) {
+            background-color: #4CAF50; /* Green */
+            color: white;
+        }
         .disabled { background-color: #ccc; color: #666; }
         #claimStatus, #claimAmount { margin-top: 20px; }
     </style>
@@ -53,23 +56,22 @@
         };
 
         const checkClaimStatus = async () => {
-    const availableToClaimInSuns = await contract.getClaimableAmount().call();
-    const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
-    document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
+            const availableToClaimInSuns = await contract.getClaimableAmount().call();
+            const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
+            document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
 
-    if (availableToClaimInSuns > 0) {
-        document.getElementById('claimTRX').classList.remove('disabled');
-        document.getElementById('claimTRX').disabled = false;
-        document.getElementById('claimStatus').innerText = '';  // Clear any previous status messages
-    } else {
-        document.getElementById('claimTRX').classList.add('disabled');
-        document.getElementById('claimTRX').disabled = true;
-        document.getElementById('claimStatus').innerText = 'Claim not available yet. Please wait.';
-    }
-};
-
-
-
+            if (parseInt(availableToClaimInTRX) > 0) {
+                document.getElementById('claimTRX').classList.remove('disabled');
+                document.getElementById('claimTRX').classList.add('connected');
+                document.getElementById('claimTRX').disabled = false;
+                document.getElementById('claimStatus').innerText = '';  // Clear any previous status messages
+            } else {
+                document.getElementById('claimTRX').classList.add('disabled');
+                document.getElementById('claimTRX').classList.remove('connected');
+                document.getElementById('claimTRX').disabled = true;
+                document.getElementById('claimStatus').innerText = 'Claim not available yet. Please wait.';
+            }
+        };
 
         const claimTRX = async () => {
             try {
