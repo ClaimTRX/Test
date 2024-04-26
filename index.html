@@ -10,7 +10,7 @@
         .hidden { display: none; }
         .connected, button:not(.disabled) { background-color: #4CAF50; color: white; }
         .disabled { background-color: #ccc; color: #666; }
-        #claimStatus, #claimAmount, #whitelistSection { margin-top: 20px; }
+        #claimStatus, #claimAmount, #whitelistSection, #donationStatus { margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -28,58 +28,61 @@
     <div id="donationSection">
         <input type="text" id="donationAmount" placeholder="Amount in TRX">
         <button id="donateTRX" class="disabled" disabled>Donate TRX</button>
-        <div id="totalDonated">Total Donated: 0 TRX</div>
-        <div id="totalClaimed">Total Claimed: 0 TRX</div>
-        <div id="donationStatus"></div>
     </div>
-
+    <div id="totalDonated">Total Donated: 0 TRX</div>
+    <div id="totalClaimed">Total Claimed: 0 TRX</div>
+    
     <div id="whitelistSection">
         <input type="text" id="tgUsername" placeholder="Enter your Telegram username">
         <button id="addToWhitelist" class="disabled" disabled>Add to Whitelist</button>
-        <button id="addToWhitelist">Add to Whitelist</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
-@@ -44,48 +44,104 @@ <h2>Other Tron Projects</h2>
+    <script>
+        const contractAddress = 'TMgDKRsmMJ9HZhaJtiuTFcrALRdPe6xvz5'; // Replace with your contract's address
         let tronWeb;
         let contract;
 
-        // Function to update the donation stats on the page
-        async function updateDonationStats() {
-            const totalDonatedInSuns = await contract.getTotalDonated().call();
-            const totalClaimedInSuns = await contract.getTotalClaimed().call();
-            const totalDonatedInTRX = tronWeb.fromSun(totalDonatedInSuns);
-            const totalClaimedInTRX = tronWeb.fromSun(totalClaimedInSuns);
-            document.getElementById('totalDonated').innerText = `Total Donated: ${totalDonatedInTRX} TRX`;
-            document.getElementById('totalClaimed').innerText = `Total Claimed: ${totalClaimedInTRX} TRX`;
-        async function connectWallet() {
+        async function init() {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 tronWeb = window.tronWeb;
                 contract = await tronWeb.contract().at(contractAddress);
-                document.getElementById('connectWallet').textContent = 'Wallet Connected';
                 document.getElementById('connectWallet').classList.add('connected');
-                await checkWhitelistAndClaimStatus();
+                document.getElementById('connectWallet').textContent = 'Wallet Connected';
+                await checkWhitelistStatus();
                 await updateDonationStats();
                 setInterval(async () => {
+                    await checkWhitelistStatus();
                     await updateDonationStats();
-                }, 10000); // Update donation stats every 10 seconds
+                }, 10000); // Update every 10 seconds
             } else {
                 alert("Please install TronLink.");
             }
         }
 
+        async function checkWhitelistStatus() {
+            const isWhitelisted = await contract.whitelist(tronWeb.defaultAddress.base58).call();
+            document.getElementById('whitelistSection').classList.toggle('hidden', isWhitelisted);
+            document.getElementById('addToWhitelist').disabled = !isWhitelisted;
+            document.getElementById('donateTRX').disabled = !isWhitelisted;
+            checkClaimStatus(isWhitelisted);
+        }
+
+        async function checkClaimStatus(isWhitelisted) {
+            const availableToClaimInSuns = await contract.getClaimableAmount().call();
+            const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
+            document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
+            const claimButton = document.getElementById('claimTRX');
+            claimButton.classList.toggle('disabled', !(parseInt(availableToClaimInTRX) > 0 && isWhitelisted));
+            claimButton.disabled = !(parseInt(availableToClaimInTRX) > 0 && isWhitelisted);
+        }
+
         async function addToWhitelist() {
             const tgUsername = document.getElementById('tgUsername').value;
-            if (!tgUsername) {
-                alert("Please enter your Telegram username.");
-                return;
-            }
             try {
-                await contract.addToWhitelist(tronWeb.defaultAddress.base58, tgUsername).send({
-                    shouldPollResponse: true
-                });
+                await contract.addToWhitelist(tronWeb.defaultAddress.base58, tgUsername).send();
                 alert('Successfully added to whitelist!');
-                await checkWhitelistAndClaimStatus(); // Re-check whitelist status
+                checkWhitelistStatus();
             } catch (error) {
                 alert('Error: ' + error.message);
             }
@@ -87,56 +90,26 @@
 
         async function claimTRX() {
             try {
-                await contract.claimTRX().send({ shouldPollResponse: true });
-                document.getElementById('claimStatus').innerText = 'Success! TRX claimed.';
-                await updateDonationStats();
-                await checkWhitelistAndClaimStatus();
+                await contract.claimTRX().send();
+                alert('TRX successfully claimed!');
+                checkWhitelistStatus();
+                updateDonationStats();
             } catch (error) {
-                document.getElementById('claimStatus').innerText = 'Error: ' + error.message;
+                alert('Error: ' + error.message);
             }
         }
 
         async function donateTRX() {
             const amountToDonate = tronWeb.toSun(document.getElementById('donationAmount').value);
-            const donateButton = document.getElementById('donateTRX');
-            donateButton.disabled = true;
-            donateButton.classList.add('disabled');
             try {
-                await contract.donate().send({ callValue: amountToDonate, shouldPollResponse: true });
-                document.getElementById('donationStatus').innerText = 'Thank you for your donation!';
-                await updateDonationStats();
+                await contract.donate().send({ callValue: amountToDonate });
+                alert('Thank you for your donation!');
+                updateDonationStats();
             } catch (error) {
-                document.getElementById('donationStatus').innerText = 'Error: ' + error.message;
-            } finally {
-                donateButton.disabled = false;
-                donateButton.classList.remove('disabled');
+                alert('Error: ' + error.message);
             }
         }
 
-        // Function to check the whitelist and claim status
-        async function checkWhitelistAndClaimStatus() {
-            const isWhitelisted = await contract.whitelist(tronWeb.defaultAddress.base58).call();
-            const availableToClaimInSuns = await contract.getClaimableAmount().call();
-            const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
-
-            // Enable or disable the Add to Whitelist button
-
-            const addToWhitelistButton = document.getElementById('addToWhitelist');
-            addToWhitelistButton.classList.toggle('disabled', isWhitelisted);
-            addToWhitelistButton.disabled = isWhitelisted;
-
-            // Update claim amount and claim button status
-            document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
-            const claimButton = document.getElementById('claimTRX');
-            claimButton.classList.toggle('disabled', !(parseInt(availableToClaimInTRX) > 0 && isWhitelisted));
-            claimButton.disabled = !(parseInt(availableToClaimInTRX) > 0 && isWhitelisted);
-
-            // Show or hide the whitelist section
-            document.getElementById('whitelistSection').classList.toggle('hidden', isWhitelisted);
-            document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
-        }
-
-        // Rest of the existing functions (addToWhitelist, claimTRX, donateTRX) remain unchanged...
         async function updateDonationStats() {
             const totalDonatedInSuns = await contract.getTotalDonated().call();
             const totalClaimedInSuns = await contract.getTotalClaimed().call();
@@ -146,25 +119,12 @@
             document.getElementById('totalClaimed').innerText = `Total Claimed: ${totalClaimedInTRX} TRX`;
         }
 
-        // Event listeners
-        document.getElementById('connectWallet').addEventListener('click', async () => {
-            await connectWallet();
-            setInterval(updateDonationStats, 10000); // Set interval to update donation stats
-        // Set up the event listeners for the buttons
-        window.addEventListener('load', (event) => {
-            document.getElementById('connectWallet').addEventListener('click', connectWallet);
+        window.addEventListener('load', async () => {
+            await init();
+            document.getElementById('addToWhitelist').addEventListener('click', addToWhitelist);
             document.getElementById('claimTRX').addEventListener('click', claimTRX);
             document.getElementById('donateTRX').addEventListener('click', donateTRX);
-            document.getElementById('addToWhitelist').addEventListener('click', addToWhitelist);
-            // Initially disable buttons until wallet is connected
-            document.getElementById('claimTRX').disabled = true;
-            document.getElementById('addToWhitelist').disabled = true;
-            document.getElementById('donateTRX').disabled = true;
         });
-
-        document.getElementById('claimTRX').addEventListener('click', claimTRX);
-        document.getElementById('donateTRX').addEventListener('click', donateTRX);
-        document.getElementById('addToWhitelist').addEventListener('click', addToWhitelist);
     </script>
 </body>
 </html>
