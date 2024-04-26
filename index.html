@@ -39,70 +39,71 @@
 
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
-        const contractAddress = 'TMgDKRsmMJ9HZhaJtiuTFcrALRdPe6xvz5';
-        let tronWeb;
-        let contract;
+    const contractAddress = 'TMgDKRsmMJ9HZhaJtiuTFcrALRdPe6xvz5';
+    let tronWeb;
+    let contract;
 
-        const connectWallet = async () => {
-            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                tronWeb = window.tronWeb;
-                contract = await tronWeb.contract().at(contractAddress);
-                document.getElementById('connectWallet').classList.add('connected');
-                document.getElementById('connectWallet').textContent = 'Wallet Connected';
-                document.getElementById('donateTRX').classList.remove('disabled');
-                document.getElementById('donateTRX').disabled = false;
-                document.getElementById('addToWhitelist').classList.remove('disabled');
-                document.getElementById('addToWhitelist').disabled = false;
+    const connectWallet = async () => {
+        if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+            tronWeb = window.tronWeb;
+            contract = await tronWeb.contract().at(contractAddress);
+            document.getElementById('connectWallet').classList.add('connected');
+            document.getElementById('connectWallet').textContent = 'Wallet Connected';
+            document.getElementById('donateTRX').classList.remove('disabled');
+            document.getElementById('donateTRX').disabled = false;
+            updateDonationStats();
+            checkClaimStatus();
+            setInterval(() => {
                 updateDonationStats();
                 checkClaimStatus();
-                setInterval(() => {
-                    updateDonationStats();
-                    checkClaimStatus();
-                }, 10000); // Update every 10 seconds
-            } else {
-                alert("Please install TronLink.");
-            }
-        };
+            }, 10000); // Update every 10 seconds
+        } else {
+            alert("Please install TronLink.");
+        }
+    };
 
-        const addToWhitelist = async () => {
-            const tgUsername = document.getElementById('tgUsername').value;
-            try {
-                await contract.addToWhitelist(tronWeb.defaultAddress.base58, tgUsername).send({
-                    shouldPollResponse: true
-                });
-                alert('Successfully added to whitelist!');
-                checkClaimStatus();  // Re-check claim status after updating whitelist
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-        };
+    const addToWhitelist = async () => {
+        const tgUsername = document.getElementById('tgUsername').value;
+        try {
+            await contract.addToWhitelist(tronWeb.defaultAddress.base58, tgUsername).send({
+                shouldPollResponse: true
+            });
+            alert('Successfully added to whitelist!');
+            checkClaimStatus();  // Re-check claim status after updating whitelist
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    };
 
-        document.getElementById('addToWhitelist').addEventListener('click', addToWhitelist);
+    document.getElementById('addToWhitelist').addEventListener('click', addToWhitelist);
 
-        const checkClaimStatus = async () => {
-            const availableToClaimInSuns = await contract.getClaimableAmount().call();
-            const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
-            document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
+    const checkClaimStatus = async () => {
+        const availableToClaimInSuns = await contract.getClaimableAmount().call();
+        const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
+        document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
 
-            // Check if the user is whitelisted
-            const isUserWhitelisted = await contract.whitelist(tronWeb.defaultAddress.base58).call();
+        // Check if the user is whitelisted
+        const isUserWhitelisted = await contract.whitelist(tronWeb.defaultAddress.base58).call();
 
-            if (parseInt(availableToClaimInTRX) > 0 && isUserWhitelisted) {
-                document.getElementById('claimTRX').classList.remove('disabled');
-                document.getElementById('claimTRX').classList.add('connected');
-                document.getElementById('claimTRX').disabled = false;
-                document.getElementById('claimStatus').innerText = '';  // Clear any previous status messages
-            } else {
-                document.getElementById('claimTRX').classList.add('disabled');
-                document.getElementById('claimTRX').classList.remove('connected');
-                document.getElementById('claimTRX').disabled = true;
-                document.getElementById('claimStatus').innerText = 'Claim not available yet or you are not whitelisted. Please wait or ensure you are whitelisted.';
-            }
-        };
+        if (isUserWhitelisted) {
+            document.getElementById('tgUsername').style.display = 'none';
+            document.getElementById('addToWhitelist').style.display = 'none';
+        }
 
-        document.getElementById('connectWallet').addEventListener('click', connectWallet);
-        document.getElementById('claimTRX').addEventListener('click', claimTRX);
-        document.getElementById('donateTRX').addEventListener('click', donateTRX);
-    </script>
-</body>
-</html>
+        if (parseInt(availableToClaimInTRX) > 0 && isUserWhitelisted) {
+            document.getElementById('claimTRX').classList.remove('disabled');
+            document.getElementById('claimTRX').classList.add('connected');
+            document.getElementById('claimTRX').disabled = false;
+            document.getElementById('claimStatus').innerText = '';  // Clear any previous status messages
+        } else {
+            document.getElementById('claimTRX').classList.add('disabled');
+            document.getElementById('claimTRX').classList.remove('connected');
+            document.getElementById('claimTRX').disabled = true;
+            document.getElementById('claimStatus').innerText = 'Claim not available yet or you are not whitelisted. Please wait or ensure you are whitelisted.';
+        }
+    };
+
+    document.getElementById('connectWallet').addEventListener('click', connectWallet);
+    document.getElementById('claimTRX').addEventListener('click', claimTRX);
+    document.getElementById('donateTRX').addEventListener('click', donateTRX);
+</script>
