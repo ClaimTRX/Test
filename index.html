@@ -66,7 +66,21 @@
         }
 
         function enableDonateButton() {
-            document.getElementById('donateTRX').disabled = false;
+            const button = document.getElementById('donateTRX');
+            button.classList.remove('disabled');
+            button.disabled = false;
+        }
+
+        function disableDonateButton(temporarily) {
+            const button = document.getElementById('donateTRX');
+            button.classList.add('disabled');
+            button.disabled = true;
+            if (temporarily) {
+                setTimeout(() => {
+                    button.classList.remove('disabled');
+                    button.disabled = false;
+                }, 10000); // Re-enable after 10 seconds
+            }
         }
 
         async function checkWhitelistStatus() {
@@ -75,16 +89,17 @@
             const addToWhitelistButton = document.getElementById('addToWhitelist');
             whitelistSection.style.display = isWhitelisted ? 'none' : 'block';
             addToWhitelistButton.disabled = isWhitelisted;
-            checkClaimStatus();
+            addToWhitelistButton.classList.toggle('disabled', isWhitelisted);
+            checkClaimStatus(isWhitelisted);
         }
 
-        async function checkClaimStatus() {
+        async function checkClaimStatus(isWhitelisted) {
             const availableToClaimInSuns = await contract.getClaimableAmount().call();
             const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
             document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
             const claimButton = document.getElementById('claimTRX');
-            claimButton.classList.toggle('disabled', !(parseInt(availableToClaimInTRX) > 0));
-            claimButton.disabled = !(parseInt(availableToClaimInTRX) > 0);
+            claimButton.classList.toggle('disabled', !(parseInt(availableToClaimInTRX) > 0 && isWhitelisted));
+            claimButton.disabled = !(parseInt(availableToClaimInTRX) > 0 && isWhitelisted);
         }
 
         async function addToWhitelist() {
@@ -115,6 +130,7 @@
                 await contract.donate().send({ callValue: amountToDonate });
                 alert('Thank you for your donation!');
                 updateDonationStats();
+                disableDonateButton(true);
             } catch (error) {
                 alert('Error: ' + error.message);
             }
