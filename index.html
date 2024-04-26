@@ -53,9 +53,9 @@
                 document.getElementById('donateTRX').classList.remove('disabled');
                 document.getElementById('donateTRX').disabled = false;
                 updateDonationStats();
-                await checkWhitelistAndClaimStatusAndDonationStats();
+                await checkWhitelistAndClaimStatus();
                 // Polling every 10 seconds to check for claim status updates
-                setInterval(checkWhitelistAndClaimStatusAndDonationStats, 10000);
+                setInterval(checkWhitelistAndClaimStatus, 10000);
             } else {
                 alert("Please install TronLink.");
             }
