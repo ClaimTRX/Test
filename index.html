@@ -53,9 +53,9 @@
                 document.getElementById('donateTRX').classList.remove('disabled');
                 document.getElementById('donateTRX').disabled = false;
                 updateDonationStats();
-                await checkWhitelistAndClaimStatus();
+                await checkWhitelistAndClaimStatusAndDonationStats();
                 // Polling every 10 seconds to check for claim status updates
-                setInterval(checkWhitelistAndClaimStatus, 10000);
+                setInterval(checkWhitelistAndClaimStatusAndDonationStats, 10000);
             } else {
                 alert("Please install TronLink.");
             }
@@ -112,14 +112,15 @@
             }
         }
 
-        async function updateDonationStats() {
-            const totalDonatedInSuns = await contract.getTotalDonated().call();
-            const totalClaimedInSuns = await contract.getTotalClaimed().call();
+        const updateDonationStats = async () => {
+            const totalDonatedInSuns = (await contract.getTotalDonated().call());
+            const totalClaimedInSuns = (await contract.getTotalClaimed().call());
             const totalDonatedInTRX = tronWeb.fromSun(totalDonatedInSuns);
             const totalClaimedInTRX = tronWeb.fromSun(totalClaimedInSuns);
             document.getElementById('totalDonated').innerText = `Total Donated: ${totalDonatedInTRX} TRX`;
             document.getElementById('totalClaimed').innerText = `Total Claimed: ${totalClaimedInTRX} TRX`;
-        }
+        };
+
 
         async function donateTRX() {
             const amountToDonate = tronWeb.toSun(document.getElementById('donationAmount').value);
