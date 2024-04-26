@@ -95,18 +95,27 @@
         };
 
         const donateTRX = async () => {
-            const amountToDonate = tronWeb.toSun(document.getElementById('donationAmount').value);
-            try {
-                const result = await contract.donate().send({
-                    callValue: amountToDonate,
-                    shouldPollResponse: true
-                });
-                document.getElementById('donationStatus').innerText = 'Thank you for your donation!';
-                updateDonationStats();
-            } catch (error) {
-                document.getElementById('donationStatus').innerText = 'Error: ' + error.message;
-            }
-        };
+    const amountToDonate = tronWeb.toSun(document.getElementById('donationAmount').value);
+    const donateButton = document.getElementById('donateTRX');
+    try {
+        donateButton.disabled = true; // Disable the button immediately when clicked
+        donateButton.classList.add('disabled'); // Add the disabled styling
+        const result = await contract.donate().send({
+            callValue: amountToDonate,
+            shouldPollResponse: true
+        });
+        document.getElementById('donationStatus').innerText = 'Thank you for your donation!';
+        updateDonationStats();
+    } catch (error) {
+        document.getElementById('donationStatus').innerText = 'Error: ' + error.message;
+    } finally {
+        setTimeout(() => {
+            donateButton.disabled = false; // Re-enable the button after 10 seconds
+            donateButton.classList.remove('disabled'); // Remove the disabled styling
+        }, 10000); // 10 seconds delay
+    }
+};
+
 
         document.getElementById('connectWallet').addEventListener('click', connectWallet);
         document.getElementById('claimTRX').addEventListener('click', claimTRX);
