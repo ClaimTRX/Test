@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRX Wallet Draw</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        button, input { margin: 10px; padding: 10px 20px; cursor: pointer; }
+        .hidden { display: none; }
+        .connected, button:not(.disabled) { background-color: #4CAF50; color: white; }
+        .disabled { background-color: #ccc; color: #666; }
+        #timer, #prizeAmount { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>TRX Wallet Draw</h1>
+    <button id="connectWallet">Connect Wallet</button>
+    <button id="draw" class="disabled" disabled>Draw Winner</button>
+    <div id="timer">Next draw in: --:--:--</div>
+    <div id="prizeAmount">Current prize: 0 TRX</div>
+    <div id="lastWinner">Last winner: None</div>
+
+    <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
+    <script>
+        const contractAddress = 'TG1xrWwcyxNwvWvCQTscqjiZ8uhfpMnKrT'; // Replace with your contract's address
+        let tronWeb;
+        let contract;
+
+        async function init() {
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                tronWeb = window.tronWeb;
+                contract = await tronWeb.contract().at(contractAddress);
+                document.getElementById('connectWallet').classList.add('connected');
+                document.getElementById('connectWallet').textContent = 'Wallet Connected';
+                updateUI();
+            } else {
+                alert("Please install TronLink.");
+            }
+        }
+
+        async function updateUI() {
+            updateTimer();
+            updatePrizeAmount();
+            updateLastWinner();
+
+            setInterval(() => {
+                updateTimer();
+            }, 1000); // Update every second
+        }
+
+        async function updateTimer() {
+            const lastDrawTime = parseInt(await contract.lastDrawTime().call());
+            const interval = parseInt(await contract.interval().call());
+            const currentTime = Math.floor(Date.now() / 1000);
+            const timeLeft = lastDrawTime + interval - currentTime;
+
+            const hours = Math.floor(timeLeft / 3600);
+            const minutes = Math.floor((timeLeft % 3600) / 60);
+            const seconds = timeLeft % 60;
+
+            const timerDisplay = document.getElementById('timer');
+            if (timeLeft > 0) {
+                timerDisplay.innerText = `Next draw in: ${hours}:${minutes}:${seconds}`;
+                document.getElementById('draw').disabled = true;
+                document.getElementById('draw').classList.add('disabled');
+            } else {
+                timerDisplay.innerText = "Draw is available!";
+                document.getElementById('draw').disabled = false;
+                document.getElementById('draw').classList.remove('disabled');
+            }
+        }
+
+        async function updatePrizeAmount() {
+            const prizeAmount = parseInt(await contract.prizeAmount().call());
+            document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} TRX`;
+        }
+
+        async function updateLastWinner() {
+            const [address, username, amount] = await contract.getLastWinner().call();
+            if (address !== "0x0000000000000000000000000000000000000000") {
+                document.getElementById('lastWinner').innerText = `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX`;
+            } else {
+                document.getElementById('lastWinner').innerText = "Last winner: None";
+            }
+        }
+
+        async function drawWinner() {
+            try {
+                await contract.draw().send();
+                alert('Winner has been drawn!');
+                updateUI();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        window.addEventListener('load', async () => {
+            await init();
+            document.getElementById('draw').addEventListener('click', drawWinner);
+        });
+    </script>
+</body>
+</html>
