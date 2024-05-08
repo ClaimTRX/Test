@@ -10,18 +10,22 @@
         .hidden { display: none; }
         .connected, button:not(.disabled) { background-color: #4CAF50; color: white; }
         .disabled { background-color: #ccc; color: #666; }
-        #timer, #prizeAmount, #lastWinner { margin-top: 20px; }
+        .warning { color: red; font-size: 20px; }
+        #appContent { display: none; }
     </style>
 </head>
-<body>
-    <a href="index.html">Go to Home Page</a>
 
+<body>
     <h1>TRX Wallet Draw</h1>
-    <button id="connectWallet" class="connected">Connect Wallet</button>
-    <button id="draw" class="disabled" disabled>Draw Winner</button>
-    <div id="timer">Next draw in: --:--:--</div>
-    <div id="prizeAmount">Current prize: 0 TRX</div>
-    <div id="lastWinner">Last winner: None</div>
+    <button id="connectWallet">Connect Wallet</button>
+    <div id="warningMessage" class="hidden warning">Contact "Stian_86 on Telegram" to be whitelisted for this page</div>
+
+    <div id="appContent">
+        <button id="draw" class="disabled" disabled>Draw Winner</button>
+        <div id="timer">Next draw in: --:--:--</div>
+        <div id="prizeAmount">Current prize: 0 TRX</div>
+        <div id="lastWinner">Last winner: None</div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
@@ -29,53 +33,47 @@
         let tronWeb;
         let contract;
 
+        async function checkWhitelistStatus() {
+            const isWhitelisted = await contract.whitelist(tronWeb.defaultAddress.base58).call();
+            const appContent = document.getElementById('appContent');
+            const warningMessage = document.getElementById('warningMessage');
+
+            if (isWhitelisted) {
+                appContent.style.display = 'block';
+                warningMessage.classList.add('hidden');
+                updateUI();
+            } else {
+                appContent.style.display = 'none';
+                warningMessage.classList.remove('hidden');
+            }
+        }
+
         async function init() {
-            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                tronWeb = window.tronWeb;
-                contract = await tronWeb.contract().at(contractAddress);
-                updateConnectButton(true);
-                startUIUpdates();
+            if (window.tronWeb && window.tronWeb.ready) {
+                if (window.tronWeb.fullNode.host.includes("shasta")) {
+                    console.log("Connected to Shasta Testnet");
+                    tronWeb = window.tronWeb;
+                    contract = await tronWeb.contract().at(contractAddress);
+                    const connectButton = document.getElementById('connectWallet');
+                    connectButton.classList.add('connected');
+                    connectButton.textContent = 'Wallet Connected';
+                    await checkWhitelistStatus();
+                } else {
+                    alert("Please switch to the Shasta Testnet in TronLink.");
+                }
             } else {
-                updateConnectButton(false);
-                alert("Please install TronLink and ensure it's properly configured.");
+                alert("Waiting for TronLink.");
             }
-        }
-
-        function updateConnectButton(connected) {
-            const connectButton = document.getElementById('connectWallet');
-            if (connected) {
-                connectButton.classList.add('connected');
-                connectButton.textContent = 'Wallet Connected';
-                connectButton.disabled = true;
-                enableDrawButton();
-            } else {
-                connectButton.classList.remove('connected');
-                connectButton.textContent = 'Connect Wallet';
-                connectButton.disabled = false;
-            }
-        }
-
-        function enableDrawButton() {
-            const drawButton = document.getElementById('draw');
-            drawButton.classList.remove('disabled');
-            drawButton.disabled = false;
-        }
-
-        function disableDrawButton() {
-            const drawButton = document.getElementById('draw');
-            drawButton.classList.add('disabled');
-            drawButton.disabled = true;
-        }
-
-        function startUIUpdates() {
-            updateUI();
-            setInterval(updateUI, 10000); // Update every 10 seconds
         }
 
         async function updateUI() {
             updateTimer();
             updatePrizeAmount();
             updateLastWinner();
+
+            setInterval(() => {
+                updateTimer();
+            }, 1000); // Update every second
         }
 
         async function updateTimer() {
@@ -90,11 +88,13 @@
 
             const timerDisplay = document.getElementById('timer');
             if (timeLeft > 0) {
-                timerDisplay.innerText = `Next draw in: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                disableDrawButton();
+                timerDisplay.innerText = `Next draw in: ${hours}:${minutes}:${seconds}`;
+                document.getElementById('draw').disabled = true;
+                document.getElementById('draw').classList.add('disabled');
             } else {
                 timerDisplay.innerText = "Draw is available!";
-                enableDrawButton();
+                document.getElementById('draw').disabled = false;
+                document.getElementById('draw').classList.remove('disabled');
             }
         }
 
@@ -104,7 +104,6 @@
         }
 
         async function updateLastWinner() {
-            // Adjust according to your contract's method for fetching the last winner
             const [address, username, amount] = await contract.getLastWinner().call();
             if (address !== "0x0000000000000000000000000000000000000000") {
                 document.getElementById('lastWinner').innerText = `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX`;
@@ -124,7 +123,7 @@
         }
 
         window.addEventListener('load', async () => {
-            await init();
+            document.getElementById('connectWallet').addEventListener('click', init);
             document.getElementById('draw').addEventListener('click', drawWinner);
         });
     </script>
