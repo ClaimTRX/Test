@@ -18,14 +18,17 @@
 <body>
     <h1>TRX Wallet Draw</h1>
     <button id="connectWallet">Connect Wallet</button>
-    <div id="warningMessage" class="hidden warning">Contact "Stian_86 on Telegram" to be whitelisted for this page</div>
+    <div id="warningMessage" class="hidden warning">
+        Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.
+    </div>
 
     <div id="appContent">
-        <button id="register" class="disabled" disabled>Register for Draw</button>
+        <button id="register" class="disabled" disabled>Register</button>
         <button id="draw" class="disabled" disabled>Draw Winner</button>
         <div id="timer">Next draw in: --:--:--</div>
         <div id="prizeAmount">Current prize: 0 TRX</div>
         <div id="lastWinner">Last winner: None</div>
+        <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> TRX every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
@@ -35,91 +38,143 @@
         let contract;
 
         async function checkWhitelistStatus() {
-            const isWhitelisted = await contract.whitelist(tronWeb.defaultAddress.base58).call();
-            const appContent = document.getElementById('appContent');
-            const warningMessage = document.getElementById('warningMessage');
+            try {
+                const userAddress = tronWeb.defaultAddress.base58;
+                if (!userAddress) throw new Error("Invalid Wallet Address");
 
-            if (isWhitelisted) {
-                appContent.style.display = 'block';
-                warningMessage.classList.add('hidden');
-                enableButton(document.getElementById('register'));
-                updateUI();
-            } else {
-                appContent.style.display = 'none';
-                warningMessage.classList.remove('hidden');
+                const isWhitelisted = await contract.whitelist(userAddress).call();
+                const appContent = document.getElementById('appContent');
+                const warningMessage = document.getElementById('warningMessage');
+
+                if (isWhitelisted) {
+                    appContent.style.display = 'block';
+                    warningMessage.classList.add('hidden');
+                    enableButton('register');
+                    updateUI();
+                } else {
+                    appContent.style.display = 'none';
+                    warningMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error("Whitelist Check Error: ", error.message);
+                alert("An error occurred while checking whitelist status.");
             }
         }
 
         async function init() {
-            if (window.tronWeb && window.tronWeb.ready) {
-                if (window.tronWeb.fullNode.host.includes("shasta")) {
-                    console.log("Connected to Shasta Testnet");
+            try {
+                if (window.tronWeb && window.tronWeb.ready) {
                     tronWeb = window.tronWeb;
                     contract = await tronWeb.contract().at(contractAddress);
+
                     const connectButton = document.getElementById('connectWallet');
                     connectButton.classList.add('connected');
                     connectButton.textContent = 'Wallet Connected';
+
+                    enableButton('register');
                     await checkWhitelistStatus();
                 } else {
-                    alert("Please switch to the Shasta Testnet in TronLink.");
+                    alert("Please install TronLink or open in a supported browser.");
                 }
-            } else {
-                alert("Waiting for TronLink.");
+            } catch (error) {
+                console.error("Initialization Error: ", error.message);
+                alert("An error occurred while initializing the wallet connection.");
             }
         }
 
         async function updateUI() {
-            updateTimer();
-            updatePrizeAmount();
-            updateLastWinner();
-
-            setInterval(() => {
+            try {
                 updateTimer();
-            }, 1000); // Update every second
+                updatePrizeAmount();
+                updateLastWinner();
+                updateRegistrationDetails();
+
+                setInterval(() => {
+                    updateTimer();
+                }, 1000); // Update every second
+            } catch (error) {
+                console.error("UI Update Error: ", error.message);
+                alert("An error occurred while updating the UI.");
+            }
         }
 
         async function updateTimer() {
-            const lastDrawTime = parseInt(await contract.lastDrawTime().call());
-            const interval = parseInt(await contract.interval().call());
-            const currentTime = Math.floor(Date.now() / 1000);
-            const timeLeft = lastDrawTime + interval - currentTime;
+            try {
+                const lastDrawTime = parseInt(await contract.lastDrawTime().call());
+                const interval = parseInt(await contract.interval().call());
+                const currentTime = Math.floor(Date.now() / 1000);
+                const timeLeft = lastDrawTime + interval - currentTime;
 
-            const hours = Math.floor(timeLeft / 3600);
-            const minutes = Math.floor((timeLeft % 3600) / 60);
-            const seconds = timeLeft % 60;
+                const hours = Math.floor(timeLeft / 3600);
+                const minutes = Math.floor((timeLeft % 3600) / 60);
+                const seconds = timeLeft % 60;
 
-            const timerDisplay = document.getElementById('timer');
-            if (timeLeft > 0) {
-                timerDisplay.innerText = `Next draw in: ${hours}:${minutes}:${seconds}`;
-                document.getElementById('draw').disabled = true;
-                document.getElementById('draw').classList.add('disabled');
-            } else {
-                timerDisplay.innerText = "Draw is available!";
-                document.getElementById('draw').disabled = false;
-                document.getElementById('draw').classList.remove('disabled');
+                const timerDisplay = document.getElementById('timer');
+                if (timeLeft > 0) {
+                    timerDisplay.innerText = `Next draw in: ${hours}:${minutes}:${seconds}`;
+                    disableButton('draw');
+                } else {
+                    timerDisplay.innerText = "Draw is available!";
+                    enableButton('draw');
+                }
+            } catch (error) {
+                console.error("Timer Update Error: ", error.message);
             }
         }
 
         async function updatePrizeAmount() {
-            const prizeAmount = parseInt(await contract.prizeAmount().call());
-            document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} TRX`;
+            try {
+                const prizeAmount = parseInt(await contract.prizeAmount().call());
+                document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} TRX`;
+            } catch (error) {
+                console.error("Prize Amount Update Error: ", error.message);
+            }
         }
 
         async function updateLastWinner() {
-            const [address, username, amount] = await contract.getLastWinner().call();
-            if (address !== "0x0000000000000000000000000000000000000000") {
-                document.getElementById('lastWinner').innerText = `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX`;
-            } else {
-                document.getElementById('lastWinner').innerText = "Last winner: None";
+            try {
+                const [address, username, amount] = await contract.getLastWinner().call();
+                if (address !== "0x0000000000000000000000000000000000000000") {
+                    document.getElementById('lastWinner').innerText = `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX`;
+                } else {
+                    document.getElementById('lastWinner').innerText = "Last winner: None";
+                }
+            } catch (error) {
+                console.error("Last Winner Update Error: ", error.message);
             }
+        }
+
+        async function updateRegistrationDetails() {
+            try {
+                const interval = parseInt(await contract.interval().call()) / 3600; // Convert to hours
+                const prizeAmount = tronWeb.fromSun(parseInt(await contract.prizeAmount().call()));
+
+                document.getElementById('intervalDisplay').innerText = `${interval}`;
+                document.getElementById('prizeDisplay').innerText = `${prizeAmount} TRX`;
+            } catch (error) {
+                console.error("Registration Details Update Error: ", error.message);
+            }
+        }
+
+        function enableButton(buttonId) {
+            const button = document.getElementById(buttonId);
+            button.disabled = false;
+            button.classList.remove('disabled');
+        }
+
+        function disableButton(buttonId) {
+            const button = document.getElementById(buttonId);
+            button.disabled = true;
+            button.classList.add('disabled');
         }
 
         async function registerForDraw() {
             try {
                 await contract.register().send();
                 alert('Successfully registered for the draw!');
-                enableButton(document.getElementById('draw'));
+                updateUI();
             } catch (error) {
+                console.error("Registration Error: ", error.message);
                 alert('Error: ' + error.message);
             }
         }
@@ -130,13 +185,9 @@
                 alert('Winner has been drawn!');
                 updateUI();
             } catch (error) {
+                console.error("Draw Winner Error: ", error.message);
                 alert('Error: ' + error.message);
             }
-        }
-
-        function enableButton(button) {
-            button.disabled = false;
-            button.classList.remove('disabled');
         }
 
         window.addEventListener('load', async () => {
