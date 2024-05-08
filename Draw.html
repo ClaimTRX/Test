@@ -10,12 +10,12 @@
         .hidden { display: none; }
         .connected, button:not(.disabled) { background-color: #4CAF50; color: white; }
         .disabled { background-color: #ccc; color: #666; }
-        #timer, #prizeAmount { margin-top: 20px; }
+        #timer, #prizeAmount, #lastWinner { margin-top: 20px; }
     </style>
 </head>
+<body>
     <a href="index.html">Go to Home Page</a>
 
-<body>
     <h1>TRX Wallet Draw</h1>
     <button id="connectWallet">Connect Wallet</button>
     <button id="draw" class="disabled" disabled>Draw Winner</button>
@@ -35,20 +35,21 @@
                 contract = await tronWeb.contract().at(contractAddress);
                 document.getElementById('connectWallet').classList.add('connected');
                 document.getElementById('connectWallet').textContent = 'Wallet Connected';
-                updateUI();
+                startUIUpdates();
             } else {
                 alert("Please install TronLink.");
             }
+        }
+
+        function startUIUpdates() {
+            updateUI();
+            setInterval(updateUI, 10000); // Update every 10 seconds
         }
 
         async function updateUI() {
             updateTimer();
             updatePrizeAmount();
             updateLastWinner();
-
-            setInterval(() => {
-                updateTimer();
-            }, 1000); // Update every second
         }
 
         async function updateTimer() {
@@ -63,7 +64,7 @@
 
             const timerDisplay = document.getElementById('timer');
             if (timeLeft > 0) {
-                timerDisplay.innerText = `Next draw in: ${hours}:${minutes}:${seconds}`;
+                timerDisplay.innerText = `Next draw in: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
                 document.getElementById('draw').disabled = true;
                 document.getElementById('draw').classList.add('disabled');
             } else {
@@ -79,6 +80,7 @@
         }
 
         async function updateLastWinner() {
+            // Adjust according to your contract's method for fetching the last winner
             const [address, username, amount] = await contract.getLastWinner().call();
             if (address !== "0x0000000000000000000000000000000000000000") {
                 document.getElementById('lastWinner').innerText = `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX`;
