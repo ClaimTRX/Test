@@ -23,6 +23,7 @@
     </div>
 
     <div id="appContent">
+        <input type="text" id="walletAddressInput" placeholder="Enter your TRX wallet address" />
         <button id="register" class="disabled" disabled>Register</button>
         <button id="draw" class="disabled" disabled>Draw Winner</button>
         <div id="timer">Next draw in: --:--:--</div>
@@ -39,10 +40,10 @@
 
         async function checkWhitelistStatus() {
             try {
-                const userAddress = tronWeb.defaultAddress.base58;
-                if (!userAddress) throw new Error("Invalid Wallet Address");
+                const walletAddress = document.getElementById('walletAddressInput').value || tronWeb.defaultAddress.base58;
+                if (!walletAddress) throw new Error("Invalid Wallet Address");
 
-                const isWhitelisted = await contract.whitelist(userAddress).call();
+                const isWhitelisted = await contract.whitelist(walletAddress).call();
                 const appContent = document.getElementById('appContent');
                 const warningMessage = document.getElementById('warningMessage');
 
@@ -170,7 +171,19 @@
 
         async function registerForDraw() {
             try {
-                await contract.register().send();
+                const walletAddress = document.getElementById('walletAddressInput').value || tronWeb.defaultAddress.base58;
+                if (!walletAddress) {
+                    alert("Please enter a valid wallet address.");
+                    return;
+                }
+
+                const isWhitelisted = await contract.whitelist(walletAddress).call();
+                if (!isWhitelisted) {
+                    alert("The entered wallet address is not whitelisted.");
+                    return;
+                }
+
+                await contract.register().send({ from: walletAddress });
                 alert('Successfully registered for the draw!');
                 updateUI();
             } catch (error) {
