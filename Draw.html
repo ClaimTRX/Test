@@ -6,7 +6,7 @@
     <title>TRX Wallet Draw</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        button, input { margin: 10px; padding: 10px 20px; cursor: pointer; }
+        button { margin: 10px; padding: 10px 20px; cursor: pointer; }
         .hidden { display: none; }
         .connected, button:not(.disabled) { background-color: #4CAF50; color: white; }
         .disabled { background-color: #ccc; color: #666; }
@@ -23,7 +23,6 @@
     </div>
 
     <div id="appContent">
-        <input type="text" id="walletAddressInput" placeholder="Enter your TRX wallet address" />
         <button id="register" class="disabled" disabled>Register</button>
         <button id="draw" class="disabled" disabled>Draw Winner</button>
         <div id="timer">Next draw in: --:--:--</div>
@@ -34,13 +33,13 @@
 
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
-        const contractAddress = 'TG1xrWwcyxNwvWvCQTscqjiZ8uhfpMnKrT'; // Replace with your contract's address
+        const contractAddress = 'TD1m2bAcRv8upZYxWVeAZsGjxeMxM7w4yE';
         let tronWeb;
         let contract;
 
         async function checkWhitelistStatus() {
             try {
-                const walletAddress = document.getElementById('walletAddressInput').value || tronWeb.defaultAddress.base58;
+                const walletAddress = tronWeb.defaultAddress.base58;
                 if (!walletAddress) throw new Error("Invalid Wallet Address");
 
                 const isWhitelisted = await contract.whitelist(walletAddress).call();
@@ -51,7 +50,6 @@
                     appContent.style.display = 'block';
                     warningMessage.classList.add('hidden');
                     enableButton('register');
-                    updateUI();
                 } else {
                     appContent.style.display = 'none';
                     warningMessage.classList.remove('hidden');
@@ -74,6 +72,7 @@
 
                     enableButton('register');
                     await checkWhitelistStatus();
+                    startDataUpdates();
                 } else {
                     alert("Please install TronLink or open in a supported browser.");
                 }
@@ -83,19 +82,24 @@
             }
         }
 
-        async function updateUI() {
+        async function startDataUpdates() {
             try {
-                updateTimer();
-                updatePrizeAmount();
-                updateLastWinner();
-                updateRegistrationDetails();
-
+                // Refresh timer and claim button every second
                 setInterval(() => {
                     updateTimer();
-                }, 1000); // Update every second
+                }, 1000);
+
+                // Refresh prize amount and last winner every 5 seconds
+                setInterval(() => {
+                    updatePrizeAmount();
+                    updateLastWinner();
+                }, 5000);
+
+                // Refresh static interval and prize info once
+                await updateRegistrationDetails();
             } catch (error) {
-                console.error("UI Update Error: ", error.message);
-                alert("An error occurred while updating the UI.");
+                console.error("Data Updates Error: ", error.message);
+                alert("An error occurred while updating data.");
             }
         }
 
@@ -171,21 +175,8 @@
 
         async function registerForDraw() {
             try {
-                const walletAddress = document.getElementById('walletAddressInput').value || tronWeb.defaultAddress.base58;
-                if (!walletAddress) {
-                    alert("Please enter a valid wallet address.");
-                    return;
-                }
-
-                const isWhitelisted = await contract.whitelist(walletAddress).call();
-                if (!isWhitelisted) {
-                    alert("The entered wallet address is not whitelisted.");
-                    return;
-                }
-
-                await contract.register().send({ from: walletAddress });
+                await contract.register().send();
                 alert('Successfully registered for the draw!');
-                updateUI();
             } catch (error) {
                 console.error("Registration Error: ", error.message);
                 alert('Error: ' + error.message);
@@ -196,7 +187,6 @@
             try {
                 await contract.draw().send();
                 alert('Winner has been drawn!');
-                updateUI();
             } catch (error) {
                 console.error("Draw Winner Error: ", error.message);
                 alert('Error: ' + error.message);
