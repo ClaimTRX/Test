@@ -37,7 +37,7 @@
                 startUIUpdates();
             } else {
                 updateConnectButton(false);
-                alert("Please install TronLink and ensure it is properly configured.");
+                alert("Please install TronLink and ensure it's properly configured.");
             }
         }
 
@@ -47,11 +47,24 @@
                 connectButton.classList.add('connected');
                 connectButton.textContent = 'Wallet Connected';
                 connectButton.disabled = true;
+                enableDrawButton();
             } else {
                 connectButton.classList.remove('connected');
                 connectButton.textContent = 'Connect Wallet';
                 connectButton.disabled = false;
             }
+        }
+
+        function enableDrawButton() {
+            const drawButton = document.getElementById('draw');
+            drawButton.classList.remove('disabled');
+            drawButton.disabled = false;
+        }
+
+        function disableDrawButton() {
+            const drawButton = document.getElementById('draw');
+            drawButton.classList.add('disabled');
+            drawButton.disabled = true;
         }
 
         function startUIUpdates() {
@@ -78,12 +91,10 @@
             const timerDisplay = document.getElementById('timer');
             if (timeLeft > 0) {
                 timerDisplay.innerText = `Next draw in: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                document.getElementById('draw').disabled = true;
-                document.getElementById('draw').classList.add('disabled');
+                disableDrawButton();
             } else {
                 timerDisplay.innerText = "Draw is available!";
-                document.getElementById('draw').disabled = false;
-                document.getElementById('draw').classList.remove('disabled');
+                enableDrawButton();
             }
         }
 
