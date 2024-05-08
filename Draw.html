@@ -17,7 +17,7 @@
     <a href="index.html">Go to Home Page</a>
 
     <h1>TRX Wallet Draw</h1>
-    <button id="connectWallet">Connect Wallet</button>
+    <button id="connectWallet" class="connected">Connect Wallet</button>
     <button id="draw" class="disabled" disabled>Draw Winner</button>
     <div id="timer">Next draw in: --:--:--</div>
     <div id="prizeAmount">Current prize: 0 TRX</div>
@@ -33,11 +33,24 @@
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 tronWeb = window.tronWeb;
                 contract = await tronWeb.contract().at(contractAddress);
-                document.getElementById('connectWallet').classList.add('connected');
-                document.getElementById('connectWallet').textContent = 'Wallet Connected';
+                updateConnectButton(true);
                 startUIUpdates();
             } else {
-                alert("Please install TronLink.");
+                updateConnectButton(false);
+                alert("Please install TronLink and ensure it is properly configured.");
+            }
+        }
+
+        function updateConnectButton(connected) {
+            const connectButton = document.getElementById('connectWallet');
+            if (connected) {
+                connectButton.classList.add('connected');
+                connectButton.textContent = 'Wallet Connected';
+                connectButton.disabled = true;
+            } else {
+                connectButton.classList.remove('connected');
+                connectButton.textContent = 'Connect Wallet';
+                connectButton.disabled = false;
             }
         }
 
