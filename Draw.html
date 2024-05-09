@@ -138,23 +138,23 @@
             }
         }
 
-        async function updateLastWinner() {
-            try {
-                const [address, username, amount, txHash] = await contract.getLastWinner().call();
-                if (address !== "0x0000000000000000000000000000000000000000") {
-                    // Create a description of the winner with a link to the transaction hash
-                    const winnerInfo = `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX. `;
-                    const txLink = `<a href="${explorerBaseUrl}${txHash}" target="_blank" rel="noopener noreferrer">View on Explorer</a>`;
-                    
-                    // Insert the combined information into the "lastWinner" element
-                    document.getElementById('lastWinner').innerHTML = winnerInfo + txLink;
-                } else {
-                    document.getElementById('lastWinner').innerText = "Last winner: None";
-                }
-            } catch (error) {
-                console.error("Last Winner Update Error:", error.message);
-            }
+       async function updateLastWinner() {
+    try {
+        const [address, username, amount] = await contract.getLastWinner().call(); // Removed txHash from the destructuring
+        if (address !== "0x0000000000000000000000000000000000000000") {
+            // Only include the winner's username and the prize amount
+            const winnerInfo = `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX.`;
+
+            // Set the text directly without any additional links
+            document.getElementById('lastWinner').innerText = winnerInfo;
+        } else {
+            document.getElementById('lastWinner').innerText = "Last winner: None";
         }
+    } catch (error) {
+        console.error("Last Winner Update Error:", error.message);
+    }
+}
+
 
         async function updateTimer() {
             try {
