@@ -5,42 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRX Wallet Draw</title>
     <style>
-        body { 
-            font-family: 'Arial', sans-serif; 
-            text-align: center; 
-            padding: 20px; 
-            background-color: #f4f4f8;
-        }
-        button {
-            margin: 10px;
-            padding: 10px 20px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #367c39;
-        }
-        button.disabled, button.disabled:hover {
-            background-color: #ccc;
-            color: #666;
-            cursor: not-allowed;
-        }
-        .hidden { 
-            display: none; 
-        }
-        .warning {
-            color: red;
-            font-size: 20px;
-            margin-top: 20px;
-        }
-        #appContent {
-            display: none;
-        }
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        button { margin: 10px; padding: 10px 20px; cursor: pointer; }
+        .hidden { display: none; }
+        .connected, button:not(.disabled) { background-color: #4CAF50; color: white; }
+        .disabled { background-color: #ccc; color: #666; }
+        .warning { color: red; font-size: 20px; }
+        #appContent { display: none; }
     </style>
 </head>
 <body>
@@ -56,7 +27,6 @@
         <div id="timer">Next draw in: --:--:--</div>
         <div id="prizeAmount">Current prize: 0 TRX</div>
         <div id="lastWinner">Last winner: None</div>
-        <div id="participantCount">Participants: 0</div>
         <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> TRX every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
     </div>
 
@@ -72,7 +42,7 @@
                 contract = await tronWeb.contract().at(contractAddress);
                 document.getElementById('connectWallet').classList.add('connected');
                 document.getElementById('connectWallet').textContent = 'Wallet Connected';
-                checkWhitelistStatus();
+                await checkWhitelistStatus();
                 startDataUpdates();
             } else {
                 setTimeout(init, 1000); // Retry after 1 second if TronWeb isn't ready
@@ -96,8 +66,8 @@
             }
         }
 
-        async function startDataUpdates() {
-            await updateTimer(); // Immediate update before setting interval
+        function startDataUpdates() {
+            updateTimer();
             setInterval(() => {
                 updateTimer();
             }, 1000);
@@ -105,7 +75,6 @@
             setInterval(async () => {
                 await updatePrizeAmount();
                 await updateLastWinner();
-                await updateParticipantCount();
             }, 5000);
         }
 
@@ -113,28 +82,30 @@
             const lastDrawTime = parseInt(await contract.lastDrawTime().call());
             const interval = parseInt(await contract.interval().call());
             const currentTime = Math.floor(Date.now() / 1000);
-            const timeLeft = lastDrawTime + interval - currentTime;
+            const timeLeft = Math.max(lastDrawTime + interval - currentTime, 0);
+
+            const hours = Math.floor(timeLeft / 3600);
+            const minutes = Math.floor((timeLeft % 3600) / 60);
+            const seconds = timeLeft % 60;
+
             const timerDisplay = document.getElementById('timer');
-            if (timeLeft > 0) {
-                const hours = Math.floor(timeLeft / 3600);
-                const minutes = Math.floor((timeLeft % 3600) / 60);
-                const seconds = timeLeft % 60;
-                timerDisplay.innerText = `Next draw in: ${hours}:${minutes}:${seconds}`;
-                disableButton('draw');
-            } else {
-                timerDisplay.innerText = "Draw is available!";
+            timerDisplay.innerText = timeLeft > 0 ? `Next draw in: ${hours}:${minutes}:${seconds}` : "Draw is available!";
+
+            if (timeLeft <= 0) {
                 enableButton('draw');
+            } else {
+                disableButton('draw');
             }
         }
 
-        function enableButton(id) {
-            const button = document.getElementById(id);
+        function enableButton(buttonId) {
+            const button = document.getElementById(buttonId);
             button.disabled = false;
             button.classList.remove('disabled');
         }
 
-        function disableButton(id) {
-            const button = document.getElementById(id);
+        function disableButton(buttonId) {
+            const button = document.getElementById(buttonId);
             button.disabled = true;
             button.classList.add('disabled');
         }
