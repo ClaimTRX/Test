@@ -138,16 +138,27 @@
             }
         }
 
-      async function updateLastWinner() {
+     async function updateLastWinner() {
     try {
         const [address, username, amount] = await contract.getLastWinner().call();
         if (address !== "0x0000000000000000000000000000000000000000") {
             const lastWinnerElement = document.getElementById('lastWinner');
             const amountInTRX = tronWeb.fromSun(amount);
+            const txHash = await contract.lastTxHash().call(); // Assuming this function exists and returns the transaction hash
+
             lastWinnerElement.innerHTML = `Last winner: ${username} won ${amountInTRX} TRX`;
 
-            // Fetch and display transaction hash
-            await fetchLastWinnerTransaction(address);
+            // Create and append the link to the transaction on TronScan or other explorer
+            const txLink = `https://tronscan.org/#/transaction/${txHash}`;
+            const linkElement = document.createElement('a');
+            linkElement.href = txLink;
+            linkElement.target = '_blank';
+            linkElement.rel = 'noopener noreferrer';
+            linkElement.textContent = 'View Transaction';
+            linkElement.style.marginLeft = '10px';
+
+            lastWinnerElement.appendChild(document.createTextNode(' ')); // Add space before link
+            lastWinnerElement.appendChild(linkElement);
         } else {
             document.getElementById('lastWinner').innerHTML = "Last winner: None";
         }
@@ -155,6 +166,7 @@
         console.error("Last Winner Update Error: ", error.message);
     }
 }
+
 
 async function fetchLastWinnerTransaction(winnerAddress) {
     try {
