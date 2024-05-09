@@ -12,8 +12,7 @@
         .disabled { background-color: #ccc; color: #666; }
         .warning { color: red; font-size: 20px; }
         #appContent { display: none; }
-        
-         #timer, #prizeAmount, #lastWinner, #intervalInfo {
+        #timer, #prizeAmount, #lastWinner, #intervalInfo {
             margin: 15px 0;
         }
 
@@ -36,6 +35,7 @@
 
         iframe {
             margin-top: 20px;
+        }
     </style>
 </head>
 
@@ -93,30 +93,29 @@
         }
 
         async function init() {
-    try {
-        if (window.tronWeb && window.tronWeb.ready) {
-            tronWeb = window.tronWeb;
-            contract = await tronWeb.contract().at(contractAddress);
+            try {
+                if (window.tronWeb && window.tronWeb.ready) {
+                    tronWeb = window.tronWeb;
+                    contract = await tronWeb.contract().at(contractAddress);
 
-            const connectButton = document.getElementById('connectWallet');
-            connectButton.classList.add('connected');
-            connectButton.textContent = 'Wallet Connected';
+                    const connectButton = document.getElementById('connectWallet');
+                    connectButton.classList.add('connected');
+                    connectButton.textContent = 'Wallet Connected';
 
-            // Show logo container when wallet is connected
-            document.getElementById('logoContainer').style.display = 'block';
+                    // Show logo container when wallet is connected
+                    document.getElementById('logoContainer').style.display = 'block';
 
-            enableButton('register');
-            await checkWhitelistStatus();
-            startDataUpdates();
-        } else {
-            alert("Please install TronLink or open in a supported browser.");
+                    enableButton('register');
+                    await checkWhitelistStatus();
+                    startDataUpdates();
+                } else {
+                    alert("Please install TronLink or open in a supported browser.");
+                }
+            } catch (error) {
+                console.error("Initialization Error: ", error.message);
+                alert("An error occurred while initializing the wallet connection.");
+            }
         }
-    } catch (error) {
-        console.error("Initialization Error: ", error.message);
-        alert("An error occurred while initializing the wallet connection.");
-    }
-}
-
 
         async function startDataUpdates() {
             try {
@@ -139,12 +138,15 @@
             }
         }
 
-    async function updateLastWinner() {
+        async function updateLastWinner() {
             try {
                 const [address, username, amount, txHash] = await contract.getLastWinner().call();
                 if (address !== "0x0000000000000000000000000000000000000000") {
+                    // Create a description of the winner with a link to the transaction hash
                     const winnerInfo = `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX. `;
-                    const txLink = `<a href="${explorerBaseUrl + txHash}" target="_blank">View on Explorer</a>`;
+                    const txLink = `<a href="${explorerBaseUrl}${txHash}" target="_blank" rel="noopener noreferrer">View on Explorer</a>`;
+                    
+                    // Insert the combined information into the "lastWinner" element
                     document.getElementById('lastWinner').innerHTML = winnerInfo + txLink;
                 } else {
                     document.getElementById('lastWinner').innerText = "Last winner: None";
@@ -153,40 +155,6 @@
                 console.error("Last Winner Update Error:", error.message);
             }
         }
-
-
-async function fetchLastWinnerTransaction(winnerAddress) {
-    try {
-        // Assume using TronScan API; adjust URL to your requirements
-        const trxApiUrl = `https://apilist.tronscan.org/api/transaction?address=${winnerAddress}&sort=-timestamp&limit=1`;
-        const response = await fetch(trxApiUrl);
-        const data = await response.json();
-
-        if (data && data.data && data.data.length > 0) {
-            const lastTransaction = data.data[0];
-            const transactionHash = lastTransaction.hash;
-
-            const txLink = `https://tronscan.org/#/transaction/${transactionHash}`;
-            const linkElement = document.createElement('a');
-            linkElement.href = txLink;
-            linkElement.target = '_blank';
-            linkElement.rel = 'noopener noreferrer';
-            linkElement.textContent = 'View Transaction';
-            linkElement.style.marginLeft = '10px';
-
-            // Append the link to the last winner display
-            const lastWinnerElement = document.getElementById('lastWinner');
-            lastWinnerElement.appendChild(document.createTextNode(' ')); // Add space before link
-            lastWinnerElement.appendChild(linkElement);
-        } else {
-            console.log("No transactions found for the last winner");
-        }
-    } catch (error) {
-        console.error("Error fetching last winner transaction hash:", error.message);
-    }
-}
-
-
 
         async function updateTimer() {
             try {
@@ -221,19 +189,6 @@ async function fetchLastWinnerTransaction(winnerAddress) {
             }
         }
 
-        async function updateLastWinner() {
-            try {
-                const [address, username, amount] = await contract.getLastWinner().call();
-                if (address !== "0x0000000000000000000000000000000000000000") {
-                    document.getElementById('lastWinner').innerText = `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX`;
-                } else {
-                    document.getElementById('lastWinner').innerText = "Last winner: None";
-                }
-            } catch (error) {
-                console.error("Last Winner Update Error: ", error.message);
-            }
-        }
-
         async function updateRegistrationDetails() {
             try {
                 const interval = parseInt(await contract.interval().call()) / 3600; // Convert to hours
@@ -242,7 +197,7 @@ async function fetchLastWinnerTransaction(winnerAddress) {
                 document.getElementById('intervalDisplay').innerText = `${interval}`;
                 document.getElementById('prizeDisplay').innerText = `${prizeAmount} TRX`;
             } catch (error) {
-                console.error("Registration Details Update Error: ", error.message);
+                console.error("Registration Details Update Error:", error.message);
             }
         }
 
