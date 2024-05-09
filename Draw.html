@@ -40,11 +40,9 @@
         }
         #appContent {
             display: none;
-            margin-top: 20px;
         }
     </style>
 </head>
-
 <body>
     <h1>TRX Wallet Draw</h1>
     <button id="connectWallet">Connect Wallet</button>
@@ -92,7 +90,6 @@
                 warningMessage.classList.add('hidden');
                 enableButton('register');
                 enableButton('draw');
-                startDataUpdates();
             } else {
                 appContent.style.display = 'none';
                 warningMessage.classList.remove('hidden');
@@ -101,15 +98,15 @@
 
         async function startDataUpdates() {
             await updateTimer(); // Immediate update before setting interval
-            await updatePrizeAmount();
-            await updateLastWinner();
-            await updateParticipantCount();
             setInterval(() => {
                 updateTimer();
-                updatePrizeAmount();
-                updateLastWinner();
-                updateParticipantCount();
             }, 1000);
+
+            setInterval(async () => {
+                await updatePrizeAmount();
+                await updateLastWinner();
+                await updateParticipantCount();
+            }, 5000);
         }
 
         async function updateTimer() {
@@ -130,24 +127,8 @@
             }
         }
 
-        async function updatePrizeAmount() {
-            const prizeAmount = await contract.prizeAmount().call();
-            document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} TRX`;
-            document.getElementById('prizeDisplay').innerText = `${tronWeb.fromSun(prizeAmount)} TRX`;
-        }
-
-        async function updateLastWinner() {
-            const [address, username, amount] = await contract.getLastWinner().call();
-            document.getElementById('lastWinner').innerText = address === "0x0000000000000000000000000000000000000000" ? "Last winner: None" : `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX`;
-        }
-
-        async function updateParticipantCount() {
-            const count = (await contract.participants()).length; // Ensure your contract has a public getter for participants
-            document.getElementById('participantCount').innerText = `Participants: ${count}`;
-        }
-
-        function enableButton(buttonId) {
-            const button = document.getElementById(buttonId);
+        function enableButton(id) {
+            const button = document.getElementById(id);
             button.disabled = false;
             button.classList.remove('disabled');
         }
@@ -162,7 +143,6 @@
             try {
                 await contract.register().send();
                 alert('Successfully registered for the draw!');
-                updateParticipantCount(); // Update participant count after registration
             } catch (error) {
                 console.error("Registration Error:", error);
                 alert('Error: ' + error.message);
@@ -173,7 +153,6 @@
             try {
                 await contract.draw().send();
                 alert('Winner has been drawn!');
-                updateLastWinner(); // Update last winner information after draw
             } catch (error) {
                 console.error("Draw Winner Error:", error);
                 alert('Error: ' + error.message);
