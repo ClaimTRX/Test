@@ -138,7 +138,7 @@
             }
         }
 
-        async function fetchLastWinnerTransaction() {
+      async function fetchLastWinnerTransaction() {
     try {
         const [winnerAddress, , ] = await contract.getLastWinner().call();
         if (winnerAddress === "0x0000000000000000000000000000000000000000") {
@@ -155,7 +155,18 @@
             const lastTransaction = data.data[0];
             const transactionHash = lastTransaction.hash;
 
-            document.getElementById('lastWinner').innerText += ` (Tx Hash: ${transactionHash})`;
+            // Create a link to the transaction on TronScan
+            const txLink = `https://tronscan.org/#/transaction/${transactionHash}`;
+            const linkElement = document.createElement('a');
+            linkElement.href = txLink;
+            linkElement.target = '_blank';
+            linkElement.rel = 'noopener noreferrer';
+            linkElement.textContent = 'View Transaction';
+            linkElement.style.marginLeft = '10px';
+
+            // Append the link to the last winner display
+            const lastWinnerElement = document.getElementById('lastWinner');
+            lastWinnerElement.appendChild(linkElement);
         } else {
             console.log("No transactions found for the last winner");
         }
@@ -164,12 +175,18 @@
     }
 }
 
+
         async function updateLastWinner() {
     try {
         const [address, username, amount] = await contract.getLastWinner().call();
         const lastWinnerText = (address !== "0x0000000000000000000000000000000000000000") ? 
             `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX` : "Last winner: None";
-        document.getElementById('lastWinner').innerText = lastWinnerText;
+        const lastWinnerElement = document.getElementById('lastWinner');
+        lastWinnerElement.innerText = lastWinnerText;
+        lastWinnerElement.innerHTML = ""; // Clear previous contents
+
+        const winnerText = document.createTextNode(lastWinnerText);
+        lastWinnerElement.appendChild(winnerText);
 
         if (address !== "0x0000000000000000000000000000000000000000") {
             await fetchLastWinnerTransaction();
@@ -178,6 +195,7 @@
         console.error("Last Winner Update Error: ", error.message);
     }
 }
+
 
 
         async function updateTimer() {
