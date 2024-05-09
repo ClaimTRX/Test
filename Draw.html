@@ -92,26 +92,30 @@
         }
 
         async function init() {
-            try {
-                if (window.tronWeb && window.tronWeb.ready) {
-                    tronWeb = window.tronWeb;
-                    contract = await tronWeb.contract().at(contractAddress);
+    try {
+        if (window.tronWeb && window.tronWeb.ready) {
+            tronWeb = window.tronWeb;
+            contract = await tronWeb.contract().at(contractAddress);
 
-                    const connectButton = document.getElementById('connectWallet');
-                    connectButton.classList.add('connected');
-                    connectButton.textContent = 'Wallet Connected';
+            const connectButton = document.getElementById('connectWallet');
+            connectButton.classList.add('connected');
+            connectButton.textContent = 'Wallet Connected';
 
-                    enableButton('register');
-                    await checkWhitelistStatus();
-                    startDataUpdates();
-                } else {
-                    alert("Please install TronLink or open in a supported browser.");
-                }
-            } catch (error) {
-                console.error("Initialization Error: ", error.message);
-                alert("An error occurred while initializing the wallet connection.");
-            }
+            // Show logo container when wallet is connected
+            document.getElementById('logoContainer').style.display = 'block';
+
+            enableButton('register');
+            await checkWhitelistStatus();
+            startDataUpdates();
+        } else {
+            alert("Please install TronLink or open in a supported browser.");
         }
+    } catch (error) {
+        console.error("Initialization Error: ", error.message);
+        alert("An error occurred while initializing the wallet connection.");
+    }
+}
+
 
         async function startDataUpdates() {
             try {
