@@ -12,6 +12,30 @@
         .disabled { background-color: #ccc; color: #666; }
         .warning { color: red; font-size: 20px; }
         #appContent { display: none; }
+        
+         #timer, #prizeAmount, #lastWinner, #intervalInfo {
+            margin: 15px 0;
+        }
+
+        #logoContainer {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #logo {
+            width: 300px;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        #visitText {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        iframe {
+            margin-top: 20px;
     </style>
 </head>
 
@@ -29,6 +53,13 @@
         <div id="prizeAmount">Current prize: 0 TRX</div>
         <div id="lastWinner">Last winner: None</div>
         <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> TRX every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
+    </div>
+
+    <div id="logoContainer">
+        <p id="visitText">Visit the new Just.Money Explorer</p>
+        <a href="https://explorer.just.money/" target="_blank" rel="noopener noreferrer">
+            <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/JustMoneyLogo.jpg?raw=true" alt="Just Money Logo">
+        </a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
