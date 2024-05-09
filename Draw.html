@@ -139,11 +139,9 @@
                     updateTimer();
                     updatePrizeAmount();
                     updateLastWinner();
-                    updateSpecificWalletEnergy(); // Include specific wallet energy updates
                 }, 5000); // Adjust interval as needed
 
                 await updateRegistrationDetails();
-                await updateSpecificWalletEnergy(); // Initial energy update on load
             } catch (error) {
                 console.error("Data Updates Error: ", error.message);
                 alert("An error occurred while updating data.");
