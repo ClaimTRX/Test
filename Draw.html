@@ -58,6 +58,7 @@
         <div id="energyWarning">
             Important! Contract consumes users' energy, make sure you have 100,000 energy available before registering or drawing.
         </div>
+        <div id="energyLevel">Energy for TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA: -- available</div>
         <div id="timer">Next draw in: --:--:--</div>
         <div id="prizeAmount">Current prize: 0 TRX</div>
         <div id="lastWinner">Last winner: None</div>
@@ -76,6 +77,18 @@
         const contractAddress = 'TXaCHFfkJiS2eZYnWPr7LPrdrP8vjVvS7a';
         let tronWeb;
         let contract;
+
+        async function updateSpecificWalletEnergy() {
+            const specificWalletAddress = 'TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA';
+            try {
+                const accountResources = await tronWeb.trx.getAccountResources(specificWalletAddress);
+                const energy = accountResources.Energy || 0; // In case the property is undefined, default to 0
+                document.getElementById('energyLevel').innerText = `Energy for TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA: ${energy} available`;
+            } catch (error) {
+                console.error("Specific Wallet Energy Update Error: ", error.message);
+                document.getElementById('energyLevel').innerText = "Energy: Error fetching energy";
+            }
+        }
 
         async function checkWhitelistStatus() {
             try {
@@ -128,14 +141,13 @@
             try {
                 setInterval(() => {
                     updateTimer();
-                }, 1000);
-
-                setInterval(() => {
                     updatePrizeAmount();
                     updateLastWinner();
-                }, 5000);
+                    updateSpecificWalletEnergy(); // Include specific wallet energy updates
+                }, 5000); // Adjust interval as needed
 
                 await updateRegistrationDetails();
+                await updateSpecificWalletEnergy(); // Initial energy update on load
             } catch (error) {
                 console.error("Data Updates Error: ", error.message);
                 alert("An error occurred while updating data.");
