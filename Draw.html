@@ -33,13 +33,14 @@
         .hidden { 
             display: none; 
         }
-        .warning, #appContent {
+        .warning {
             color: red;
             font-size: 20px;
             margin-top: 20px;
         }
         #appContent {
             display: none;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -74,6 +75,7 @@
                 document.getElementById('connectWallet').classList.add('connected');
                 document.getElementById('connectWallet').textContent = 'Wallet Connected';
                 checkWhitelistStatus();
+                startDataUpdates();
             } else {
                 setTimeout(init, 1000); // Retry after 1 second if TronWeb isn't ready
             }
@@ -115,17 +117,23 @@
             const interval = parseInt(await contract.interval().call());
             const currentTime = Math.floor(Date.now() / 1000);
             const timeLeft = lastDrawTime + interval - currentTime;
-            const hours = Math.floor(timeLeft / 3600);
-            const minutes = Math.floor((timeLeft % 3600) / 60);
-            const seconds = timeLeft % 60;
-            document.getElementById('timer').innerText = `Next draw in: ${hours}:${minutes}:${seconds}`;
-            document.getElementById('draw').classList.toggle('disabled', timeLeft > 0);
-            document.getElementById('draw').disabled = timeLeft > 0;
+            const timerDisplay = document.getElementById('timer');
+            if (timeLeft > 0) {
+                const hours = Math.floor(timeLeft / 3600);
+                const minutes = Math.floor((timeLeft % 3600) / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.innerText = `Next draw in: ${hours}:${minutes}:${seconds}`;
+                disableButton('draw');
+            } else {
+                timerDisplay.innerText = "Draw is available!";
+                enableButton('draw');
+            }
         }
 
         async function updatePrizeAmount() {
             const prizeAmount = await contract.prizeAmount().call();
             document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} TRX`;
+            document.getElementById('prizeDisplay').innerText = `${tronWeb.fromSun(prizeAmount)} TRX`;
         }
 
         async function updateLastWinner() {
@@ -134,7 +142,7 @@
         }
 
         async function updateParticipantCount() {
-            const count = (await contract.participants()).length;
+            const count = (await contract.participants()).length; // Ensure your contract has a public getter for participants
             document.getElementById('participantCount').innerText = `Participants: ${count}`;
         }
 
@@ -142,6 +150,34 @@
             const button = document.getElementById(id);
             button.disabled = false;
             button.classList.remove('disabled');
+        }
+
+        function disableButton(id) {
+            const button = document.getElementById(id);
+            button.disabled = true;
+            button.classList.add('disabled');
+        }
+
+        async function registerForDraw() {
+            try {
+                await contract.register().send();
+                alert('Successfully registered for the draw!');
+                updateParticipantCount(); // Update participant count after registration
+            } catch (error) {
+                console.error("Registration Error:", error);
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function drawWinner() {
+            try {
+                await contract.draw().send();
+                alert('Winner has been drawn!');
+                updateLastWinner(); // Update last winner information after draw
+            } catch (error) {
+                console.error("Draw Winner Error:", error);
+                alert('Error: ' + error.message);
+            }
         }
 
         window.addEventListener('load', init);
