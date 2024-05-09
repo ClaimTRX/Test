@@ -67,33 +67,58 @@
         <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> TRX every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
-        const contractAddress = 'TD1m2bAcRv8upZYxWVeAZsGjxeMxM7w4yE';
-        let tronWeb;
-        let contract;
+    const contractAddress = 'TD1m2bAcRv8upZYxWVeAZsGjxeMxM7w4yE'; // Your contract address here
+    let tronWeb;
+    let contract;
 
-        async function checkWhitelistStatus() {
-            try {
-                const walletAddress = tronWeb.defaultAddress.base58;
-                if (!walletAddress) throw new Error("Invalid Wallet Address");
+    function initTronWeb() {
+        if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+            tronWeb = window.tronWeb;
+            setupContract();
+        } else {
+            console.log('Waiting for TronLink...');
+            setTimeout(initTronWeb, 1000); // Retry initialization after 1 second
+        }
+    }
 
-                const isWhitelisted = await contract.whitelist(walletAddress).call();
-                const appContent = document.getElementById('appContent');
-                const warningMessage = document.getElementById('warningMessage');
+    async function setupContract() {
+        try {
+            contract = await tronWeb.contract().at(contractAddress);
+            console.log('Contract initialized:', contract);
+            document.getElementById('connectWallet').textContent = 'Wallet Connected';
+            document.getElementById('connectWallet').disabled = true;
+            document.getElementById('connectWallet').classList.add('connected');
+            checkWhitelistStatus();
+            startDataUpdates();
+        } catch (error) {
+            console.error('Error setting up contract:', error);
+            alert('Failed to load the contract. Make sure you are connected to TronLink.');
+        }
+    }
 
-                if (isWhitelisted) {
-                    appContent.style.display = 'block';
-                    warningMessage.classList.add('hidden');
-                    enableButton('register');
-                } else {
-                    appContent.style.display = 'none';
-                    warningMessage.classList.remove('hidden');
-                }
-            } catch (error) {
-                console.error("Whitelist Check Error: ", error.message);
-                alert("An error occurred while checking whitelist status.");
-            }
+    async function checkWhitelistStatus() {
+        const walletAddress = tronWeb.defaultAddress.base58;
+        const isWhitelisted = await contract.whitelist(walletAddress).call();
+        const appContent = document.getElementById('appContent');
+        const warningMessage = document.getElementById('warningMessage');
+
+        if (isWhitelisted) {
+            appContent.style.display = 'block';
+            warningMessage.classList.add('hidden');
+            enableButton('register');
+        } else {
+            appContent.style.display = 'none';
+            warningMessage.classList.remove('hidden');
+            alert('Your address is not whitelisted. Please contact admin.');
+        }
+    }
+
+    window.addEventListener('load', initTronWeb); // Ensure TronWeb initialization starts after page load
+
+    // Additional functions like enableButton, updateTimer, etc., should follow here as previously defined
+</script>
+
         }
 
         async function init() {
