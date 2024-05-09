@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRX Wallet Draw</title>
     <style>
-        body { 
-            font-family: 'Arial', sans-serif; 
-            text-align: center; 
-            padding: 20px; 
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            padding: 20px;
             background-color: #f4f4f8;
         }
         button {
@@ -64,7 +64,7 @@
 
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
-        const contractAddress = 'TD1m2bAcRv8upZYxWVeAZsGjxeMxM7w4yE'; // Contract address here
+        const contractAddress = 'TD1m2bAcRv8upZYxWVeAZsGjxeMxM7w4yE';
         let tronWeb;
         let contract;
 
@@ -116,8 +116,24 @@
         }
 
         async function updateParticipantCount() {
-            const count = await contract.getParticipantCount().call();
+            const count = (await contract.participants()).length;
             document.getElementById('participantCount').innerText = `Participants: ${count}`;
+        }
+
+        function checkWhitelistStatus() {
+            // Add this functionality based on your contract's capabilities
+        }
+
+        function enableButton(id) {
+            const button = document.getElementById(id);
+            button.disabled = false;
+            button.classList.remove('disabled');
+        }
+
+        function disableButton(id) {
+            const button = document.getElementById(id);
+            button.disabled = true;
+            button.classList.add('disabled');
         }
 
         async function registerForDraw() {
@@ -138,22 +154,6 @@
                 console.error("Draw Winner Error:", error);
                 alert('Error: ' + error.message);
             }
-        }
-
-        function checkWhitelistStatus() {
-            // Add this functionality based on your contract's capabilities
-        }
-
-        function enableButton(id) {
-            const button = document.getElementById(id);
-            button.disabled = false;
-            button.classList.remove('disabled');
-        }
-
-        function disableButton(id) {
-            const button = document.getElementById(id);
-            button.disabled = true;
-            button.classList.add('disabled');
         }
 
         window.addEventListener('load', init);
