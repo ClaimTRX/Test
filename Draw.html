@@ -6,47 +6,41 @@
     <title>TRX Wallet Draw</title>
     <style>
         body { 
-            font-family: 'Open Sans', Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-            background-color: #f3f4f6;
-            color: #333;
+            font-family: 'Arial', sans-serif; 
+            text-align: center; 
+            padding: 20px; 
+            background-color: #f4f4f8;
         }
         button {
             margin: 10px;
             padding: 10px 20px;
             cursor: pointer;
             background-color: #4CAF50;
+            color: white;
             border: none;
             border-radius: 5px;
-            color: white;
             font-size: 16px;
-            transition: background-color 0.3s, box-shadow 0.3s;
+            transition: background-color 0.3s ease;
         }
         button:hover {
             background-color: #367c39;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         button.disabled, button.disabled:hover {
             background-color: #ccc;
             color: #666;
             cursor: not-allowed;
-            box-shadow: none;
         }
-        .hidden { display: none; }
-        .warning { 
-            color: red; 
-            font-size: 18px; 
-            font-weight: bold;
-            margin: 20px;
+        .hidden { 
+            display: none; 
+        }
+        .warning {
+            color: red;
+            font-size: 20px;
+            margin-top: 20px;
         }
         #appContent {
             display: none;
             margin-top: 20px;
-        }
-        #timer, #prizeAmount, #lastWinner, #intervalInfo {
-            font-size: 18px;
-            margin-top: 10px;
         }
     </style>
 </head>
@@ -64,174 +58,66 @@
         <div id="timer">Next draw in: --:--:--</div>
         <div id="prizeAmount">Current prize: 0 TRX</div>
         <div id="lastWinner">Last winner: None</div>
+        <div id="participantCount">Participants: 0</div>
         <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> TRX every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
-    const contractAddress = 'TD1m2bAcRv8upZYxWVeAZsGjxeMxM7w4yE'; // Your contract address here
-    let tronWeb;
-    let contract;
-
-    function initTronWeb() {
-        if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-            tronWeb = window.tronWeb;
-            setupContract();
-        } else {
-            console.log('Waiting for TronLink...');
-            setTimeout(initTronWeb, 1000); // Retry initialization after 1 second
-        }
-    }
-
-    async function setupContract() {
-        try {
-            contract = await tronWeb.contract().at(contractAddress);
-            console.log('Contract initialized:', contract);
-            document.getElementById('connectWallet').textContent = 'Wallet Connected';
-            document.getElementById('connectWallet').disabled = true;
-            document.getElementById('connectWallet').classList.add('connected');
-            checkWhitelistStatus();
-            startDataUpdates();
-        } catch (error) {
-            console.error('Error setting up contract:', error);
-            alert('Failed to load the contract. Make sure you are connected to TronLink.');
-        }
-    }
-
-    async function checkWhitelistStatus() {
-        const walletAddress = tronWeb.defaultAddress.base58;
-        const isWhitelisted = await contract.whitelist(walletAddress).call();
-        const appContent = document.getElementById('appContent');
-        const warningMessage = document.getElementById('warningMessage');
-
-        if (isWhitelisted) {
-            appContent.style.display = 'block';
-            warningMessage.classList.add('hidden');
-            enableButton('register');
-        } else {
-            appContent.style.display = 'none';
-            warningMessage.classList.remove('hidden');
-            alert('Your address is not whitelisted. Please contact admin.');
-        }
-    }
-
-    window.addEventListener('load', initTronWeb); // Ensure TronWeb initialization starts after page load
-
-    // Additional functions like enableButton, updateTimer, etc., should follow here as previously defined
-</script>
-
-        }
+        const contractAddress = 'TD1m2bAcRv8upZYxWVeAZsGjxeMxM7w4yE'; // Contract address here
+        let tronWeb;
+        let contract;
 
         async function init() {
-            try {
-                if (window.tronWeb && window.tronWeb.ready) {
-                    tronWeb = window.tronWeb;
-                    contract = await tronWeb.contract().at(contractAddress);
-
-                    const connectButton = document.getElementById('connectWallet');
-                    connectButton.classList.add('connected');
-                    connectButton.textContent = 'Wallet Connected';
-
-                    enableButton('register');
-                    await checkWhitelistStatus();
-                    startDataUpdates();
-                } else {
-                    alert("Please install TronLink or open in a supported browser.");
-                }
-            } catch (error) {
-                console.error("Initialization Error: ", error.message);
-                alert("An error occurred while initializing the wallet connection.");
+            if (window.tronWeb && window.tronWeb.ready) {
+                tronWeb = window.tronWeb;
+                contract = await tronWeb.contract().at(contractAddress);
+                document.getElementById('connectWallet').classList.add('connected');
+                document.getElementById('connectWallet').textContent = 'Wallet Connected';
+                enableButton('register');
+                checkWhitelistStatus();
+                startDataUpdates();
+            } else {
+                setTimeout(init, 1000); // Retry after 1 second if TronWeb isn't ready
             }
         }
 
         async function startDataUpdates() {
-            try {
-                // Refresh timer and claim button every second
-                setInterval(() => {
-                    updateTimer();
-                }, 1000);
-
-                // Refresh prize amount and last winner every 5 seconds
-                setInterval(() => {
-                    updatePrizeAmount();
-                    updateLastWinner();
-                }, 5000);
-
-                // Refresh static interval and prize info once
-                await updateRegistrationDetails();
-            } catch (error) {
-                console.error("Data Updates Error: ", error.message);
-                alert("An error occurred while updating data.");
-            }
+            updateTimer();
+            setInterval(updateTimer, 1000); // Update every second
+            setInterval(async () => {
+                await updatePrizeAmount();
+                await updateLastWinner();
+                await updateParticipantCount();
+            }, 5000); // Update every 5 seconds
         }
 
         async function updateTimer() {
-            try {
-                const lastDrawTime = parseInt(await contract.lastDrawTime().call());
-                const interval = parseInt(await contract.interval().call());
-                const currentTime = Math.floor(Date.now() / 1000);
-                const timeLeft = lastDrawTime + interval - currentTime;
-
-                const hours = Math.floor(timeLeft / 3600);
-                const minutes = Math.floor((timeLeft % 3600) / 60);
-                const seconds = timeLeft % 60;
-
-                const timerDisplay = document.getElementById('timer');
-                if (timeLeft > 0) {
-                    timerDisplay.innerText = `Next draw in: ${hours}:${minutes}:${seconds}`;
-                    disableButton('draw');
-                } else {
-                    timerDisplay.innerText = "Draw is available!";
-                    enableButton('draw');
-                }
-            } catch (error) {
-                console.error("Timer Update Error: ", error.message);
-            }
+            const lastDrawTime = parseInt(await contract.lastDrawTime().call());
+            const interval = parseInt(await contract.interval().call());
+            const currentTime = Math.floor(Date.now() / 1000);
+            const timeLeft = lastDrawTime + interval - currentTime;
+            const hours = Math.floor(timeLeft / 3600);
+            const minutes = Math.floor((timeLeft % 3600) / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').innerText = `Next draw in: ${hours}:${minutes}:${seconds}`;
+            document.getElementById('draw').classList.toggle('disabled', timeLeft > 0);
+            document.getElementById('draw').disabled = timeLeft > 0;
         }
 
         async function updatePrizeAmount() {
-            try {
-                const prizeAmount = parseInt(await contract.prizeAmount().call());
-                document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} TRX`;
-            } catch (error) {
-                console.error("Prize Amount Update Error: ", error.message);
-            }
+            const prizeAmount = await contract.prizeAmount().call();
+            document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} TRX`;
         }
 
         async function updateLastWinner() {
-            try {
-                const [address, username, amount] = await contract.getLastWinner().call();
-                if (address !== "0x0000000000000000000000000000000000000000") {
-                    document.getElementById('lastWinner').innerText = `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX`;
-                } else {
-                    document.getElementById('lastWinner').innerText = "Last winner: None";
-                }
-            } catch (error) {
-                console.error("Last Winner Update Error: ", error.message);
-            }
+            const [address, username, amount] = await contract.getLastWinner().call();
+            document.getElementById('lastWinner').innerText = address === "0x0000000000000000000000000000000000000000" ? "Last winner: None" : `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX`;
         }
 
-        async function updateRegistrationDetails() {
-            try {
-                const interval = parseInt(await contract.interval().call()) / 3600; // Convert to hours
-                const prizeAmount = tronWeb.fromSun(parseInt(await contract.prizeAmount().call()));
-
-                document.getElementById('intervalDisplay').innerText = `${interval}`;
-                document.getElementById('prizeDisplay').innerText = `${prizeAmount} TRX`;
-            } catch (error) {
-                console.error("Registration Details Update Error: ", error.message);
-            }
-        }
-
-        function enableButton(buttonId) {
-            const button = document.getElementById(buttonId);
-            button.disabled = false;
-            button.classList.remove('disabled');
-        }
-
-        function disableButton(buttonId) {
-            const button is disabled = document.getElementById(buttonId);
-            button.disabled = true;
-            button.classList.add('disabled');
+        async function updateParticipantCount() {
+            const count = await contract.getParticipantCount().call();
+            document.getElementById('participantCount').innerText = `Participants: ${count}`;
         }
 
         async function registerForDraw() {
@@ -239,7 +125,7 @@
                 await contract.register().send();
                 alert('Successfully registered for the draw!');
             } catch (error) {
-                console.error("Registration Error: ", error.message);
+                console.error("Registration Error:", error);
                 alert('Error: ' + error.message);
             }
         }
@@ -249,16 +135,28 @@
                 await contract.draw().send();
                 alert('Winner has been drawn!');
             } catch (error) {
-                console.error("Draw Winner Error: ", error.message);
+                console.error("Draw Winner Error:", error);
                 alert('Error: ' + error.message);
             }
         }
 
-        window.addEventListener('load', async () => {
-            document.getElementById('connectWallet').addEventListener('click', init);
-            document.getElementById('register').addEventListener('click', registerForDraw);
-            document.getElementById('draw').addEventListener('click', drawWinner);
-        });
+        function checkWhitelistStatus() {
+            // Add this functionality based on your contract's capabilities
+        }
+
+        function enableButton(id) {
+            const button = document.getElementById(id);
+            button.disabled = false;
+            button.classList.remove('disabled');
+        }
+
+        function disableButton(id) {
+            const button = document.getElementById(id);
+            button.disabled = true;
+            button.classList.add('disabled');
+        }
+
+        window.addEventListener('load', init);
     </script>
 </body>
 </html>
