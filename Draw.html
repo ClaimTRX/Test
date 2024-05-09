@@ -12,7 +12,7 @@
         .disabled { background-color: #ccc; color: #666; }
         .warning { color: red; font-size: 20px; }
         #appContent { display: none; }
-        #timer, #prizeAmount, #lastWinner, #intervalInfo {
+        #timer, #prizeAmount, #lastWinner, #intervalInfo, #warningMessage {
             margin: 15px 0;
         }
 
@@ -36,6 +36,12 @@
         iframe {
             margin-top: 20px;
         }
+
+        #energyWarning {
+            color: red;
+            font-weight: bold;
+            margin: 10px;
+        }
     </style>
 </head>
 
@@ -49,6 +55,9 @@
     <div id="appContent">
         <button id="register" class="disabled" disabled>Register</button>
         <button id="draw" class="disabled" disabled>Draw Winner</button>
+        <div id="energyWarning">
+            Important! Contract consumes users' energy, make sure you have 100,000 energy available before registering or drawing.
+        </div>
         <div id="timer">Next draw in: --:--:--</div>
         <div id="prizeAmount">Current prize: 0 TRX</div>
         <div id="lastWinner">Last winner: None</div>
@@ -65,7 +74,6 @@
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
         const contractAddress = 'TXaCHFfkJiS2eZYnWPr7LPrdrP8vjVvS7a';
-        const explorerBaseUrl = "https://explorer.just.money/#/tx/";
         let tronWeb;
         let contract;
 
@@ -102,7 +110,6 @@
                     connectButton.classList.add('connected');
                     connectButton.textContent = 'Wallet Connected';
 
-                    // Show logo container when wallet is connected
                     document.getElementById('logoContainer').style.display = 'block';
 
                     enableButton('register');
@@ -119,18 +126,15 @@
 
         async function startDataUpdates() {
             try {
-                // Refresh timer and claim button every second
                 setInterval(() => {
                     updateTimer();
                 }, 1000);
 
-                // Refresh prize amount and last winner every 5 seconds
                 setInterval(() => {
                     updatePrizeAmount();
                     updateLastWinner();
                 }, 5000);
 
-                // Refresh static interval and prize info once
                 await updateRegistrationDetails();
             } catch (error) {
                 console.error("Data Updates Error: ", error.message);
@@ -138,23 +142,19 @@
             }
         }
 
-       async function updateLastWinner() {
-    try {
-        const [address, username, amount] = await contract.getLastWinner().call(); // Removed txHash from the destructuring
-        if (address !== "0x0000000000000000000000000000000000000000") {
-            // Only include the winner's username and the prize amount
-            const winnerInfo = `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX.`;
-
-            // Set the text directly without any additional links
-            document.getElementById('lastWinner').innerText = winnerInfo;
-        } else {
-            document.getElementById('lastWinner').innerText = "Last winner: None";
+        async function updateLastWinner() {
+            try {
+                const [address, username, amount] = await contract.getLastWinner().call();
+                if (address !== "0x0000000000000000000000000000000000000000") {
+                    const winnerInfo = `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX.`;
+                    document.getElementById('lastWinner').innerText = winnerInfo;
+                } else {
+                    document.getElementById('lastWinner').innerText = "Last winner: None";
+                }
+            } catch (error) {
+                console.error("Last Winner Update Error:", error.message);
+            }
         }
-    } catch (error) {
-        console.error("Last Winner Update Error:", error.message);
-    }
-}
-
 
         async function updateTimer() {
             try {
@@ -191,7 +191,7 @@
 
         async function updateRegistrationDetails() {
             try {
-                const interval = parseInt(await contract.interval().call()) / 3600; // Convert to hours
+                const interval = parseInt(await contract.interval().call()) / 3600;
                 const prizeAmount = tronWeb.fromSun(parseInt(await contract.prizeAmount().call()));
 
                 document.getElementById('intervalDisplay').innerText = `${interval}`;
@@ -217,6 +217,7 @@
             try {
                 await contract.register().send();
                 alert('Successfully registered for the draw!');
+                disableButton('register');
             } catch (error) {
                 console.error("Registration Error: ", error.message);
                 alert('Error: ' + error.message);
