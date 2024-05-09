@@ -1,19 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRX Wallet Draw</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        button { margin: 10px; padding: 10px 20px; cursor: pointer; }
-        .hidden { display: none; }
-        .connected, button:not(.disabled) { background-color: #4CAF50; color: white; }
-        .disabled { background-color: #ccc; color: #666; }
-        .warning { color: red; font-size: 20px; }
-        #appContent { display: none; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f2f2f2; /* Light grey background */
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 12px; /* Rounded corners */
+            border: none; /* Remove border */
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .connected,
+        button:not(.disabled) {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .disabled {
+            background-color: #ccc;
+            color: #666;
+        }
+
+        .warning {
+            color: red;
+            font-size: 20px;
+        }
+
+        #appContent {
+            display: none;
+        }
     </style>
 </head>
+
 <body>
     <h1>TRX Wallet Draw</h1>
     <button id="connectWallet">Connect Wallet</button>
@@ -29,7 +62,6 @@
         <div id="lastWinner">Last winner: None</div>
         <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> TRX every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
     </div>
-
 
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
@@ -200,4 +232,5 @@
         });
     </script>
 </body>
+
 </html>
