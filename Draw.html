@@ -86,18 +86,6 @@
         let tronWeb;
         let contract;
 
-        async function updateSpecificWalletEnergy() {
-            const specificWalletAddress = 'TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA';
-            try {
-                const accountResources = await tronWeb.trx.getAccountResources(specificWalletAddress);
-                const energy = accountResources.Energy || 0; // In case the property is undefined, default to 0
-                document.getElementById('energyLevel').innerText = `Energy for TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA: ${energy} available`;
-            } catch (error) {
-                console.error("Specific Wallet Energy Update Error: ", error.message);
-                document.getElementById('energyLevel').innerText = "Energy: Error fetching energy";
-            }
-        }
-
         async function checkWhitelistStatus() {
             try {
                 const walletAddress = tronWeb.defaultAddress.base58;
