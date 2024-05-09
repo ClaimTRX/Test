@@ -61,6 +61,8 @@
         <div id="timer">Next draw in: --:--:--</div>
         <div id="prizeAmount">Current prize: 0 TRX</div>
         <div id="lastWinner">Last winner: None</div>
+        <div id="lastTxHashLink">Last Transaction Hash: <a id="txHash" href="" target="_blank">None</a></div>
+
         <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> TRX every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
     </div>
 
@@ -101,28 +103,40 @@
         }
 
         async function init() {
-            try {
-                if (window.tronWeb && window.tronWeb.ready) {
-                    tronWeb = window.tronWeb;
-                    contract = await tronWeb.contract().at(contractAddress);
+        if (window.tronWeb && window.tronWeb.ready) {
+            tronWeb = window.tronWeb;
+            contract = await tronWeb.contract().at(contractAddress);
 
-                    const connectButton = document.getElementById('connectWallet');
-                    connectButton.classList.add('connected');
-                    connectButton.textContent = 'Wallet Connected';
+            document.getElementById('connectWallet').textContent = 'Wallet Connected';
+            document.getElementById('connectWallet').classList.add('connected');
 
-                    document.getElementById('logoContainer').style.display = 'block';
-
-                    enableButton('register');
-                    await checkWhitelistStatus();
-                    startDataUpdates();
-                } else {
-                    alert("Please install TronLink or open in a supported browser.");
-                }
-            } catch (error) {
-                console.error("Initialization Error: ", error.message);
-                alert("An error occurred while initializing the wallet connection.");
-            }
+            document.getElementById('logoContainer').style.display = 'block';
+            enableButton('register');
+            await checkWhitelistStatus();
+            startDataUpdates();
+            subscribeToEvents();
+        } else {
+            alert("Please install TronLink or open in a supported browser.");
         }
+    }
+
+    function subscribeToEvents() {
+        contract.PaymentMade().watch((err, event) => {
+            if (err) return console.error('Error with "PaymentMade" event:', err);
+            const txHash = event.result.txHash;
+            const link = `https://explorer.just.money/#/transaction/${txHash}`;
+            document.getElementById('txHash').href = link;
+            document.getElementById('txHash').innerText = txHash;
+        });
+    }
+
+    // The rest of your existing functions (enableButton, disableButton, etc.)
+
+    window.addEventListener('load', async () => {
+        document.getElementById('connectWallet').addEventListener('click', init);
+        document.getElementById('register').addEventListener('click', registerForDraw);
+        document.getElementById('draw').addEventListener('click', drawWinner);
+    });
 
         async function startDataUpdates() {
             try {
