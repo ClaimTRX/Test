@@ -142,16 +142,29 @@
             }
         }
 
-        async function claimToken(tokenAddress) {
-            const contract = await tronWeb.contract(contractABI, contractAddress);
-            try {
-                await contract.claim(tokenAddress).send({ from: tronWeb.defaultAddress.base58 });
-                alert('Claim successful!');
-            } catch (error) {
-                console.error('Claim failed:', error);
-                alert('Claim failed: ' + error.message);
-            }
-        }
+       async function claimToken(tokenAddress) {
+    try {
+        // Ensure the contract is loaded with the correct ABI and address
+        const contract = await tronWeb.contract(contractABI, contractAddress);
+
+        // Logging the address to verify it's correct
+        console.log('Attempting to claim tokens for address:', tokenAddress);
+
+        // Using the 'claim' function of the contract and specifying the token address
+        const result = await contract.methods.claim(tokenAddress).send({
+            from: tronWeb.defaultAddress.base58,
+            shouldPollResponse: true
+        });
+
+        // Success alert with transaction details (if needed)
+        alert('Claim successful! Transaction: ' + result);
+    } catch (error) {
+        // Error handling with detailed console logging
+        console.error('Claim failed:', error);
+        alert('Claim failed: ' + error.message);
+    }
+}
+
     </script>
 </body>
 </html>
