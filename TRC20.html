@@ -210,10 +210,6 @@
                     }
                 } catch (error) {
                     console.error(`Error checking cooldown for token ${address}:`, error);
-                    // In case of an error, keep the button enabled to allow claiming if the cooldown status isn't confirmed
-                    const button = document.getElementById(buttonId);
-                    button.classList.remove("disabled");
-                    button.removeAttribute("disabled");
                 }
             }
         }
