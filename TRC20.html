@@ -3,13 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRC20 Token Claimer</title>
+    <title>TRX Token Claimer</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 
             text-align: center; 
             padding: 20px; 
             background-color: #f2f2f2;
+        }
+        h1 {
+            margin-bottom: 0;
+        }
+        p {
+            font-size: 16px; /* Increased font size */
+            margin: 20px auto; /* Centered text with more space */
+            max-width: 600px; /* Optimal line length */
+            line-height: 1.6; /* Improved line spacing */
+        }
+        a {
+            color: #007BFF; /* Bootstrap primary blue */
+            text-decoration: none;
+        }
+        a:hover, a:focus {
+            text-decoration: underline;
         }
         button, input { 
             margin: 10px; 
@@ -30,12 +46,21 @@
         #tokens { 
             display: none;
         }
+        @media (max-width: 768px) {
+            p {
+                font-size: 14px; /* Smaller font size for smaller screens */
+                padding: 0 10px; /* Less padding on the sides */
+            }
+            button, input {
+                padding: 15px 20px; /* Smaller buttons on mobile */
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>TRC20 Token Claimer</h1>
+    <h1>TRX Token Claimer</h1>
 
-<p>Claim TRC20 tokens once every 24 hours. Energy is consumed from users' addresses, so make sure the claimable amount is worth claiming. Tokens accumulate every minute. Will you claim now or risk someone else claiming before you? If you need Energy, you can <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA" target="_blank">rent it from TronNRG</a>.</p>
+    <p>Claim TRC20 tokens once every 24 hours. Energy is consumed from users' addresses, so make sure the claimable amount is worth claiming. Tokens accumulate every minute. Will you claim now or risk someone else claiming before you? If you need Energy, you can <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA" target="_blank">rent it from TronNRG</a>.</p>
 
     <button id="connectWallet">Connect TronLink Wallet</button>
 
@@ -51,6 +76,11 @@
             <button id="claimToken2" class="disabled" disabled>Claim Token 2</button>
         </div>
     </div>
+
+    <!-- JavaScript remains the same -->
+</body>
+</html>
+
 
     <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
     <script>
