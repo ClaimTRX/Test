@@ -184,7 +184,7 @@
             for (const [address, amountElementId] of Object.entries(tokenAddresses)) {
                 try {
                     const amount = await contract.viewAccumulatedAmount(address).call();
-                    const formattedAmount = tronWeb.toBigNumber(amount).div(1e6).toFixed(0); // Adjust '1e6' based on the token's decimals
+                    const formattedAmount = tronWeb.toBigNumber(amount).div(1e6).toFixed(0);
                     document.getElementById(`claimableAmount${Object.keys(tokenAddresses).indexOf(address) + 1}`).innerText = 'Claimable Amount: ' + formattedAmount;
                 } catch (error) {
                     console.error(`Error fetching amount for token ${address}:`, error);
@@ -214,8 +214,14 @@
         async function claimToken(tokenAddress) {
             try {
                 const contract = await tronWeb.contract(claimerABI, contractAddress);
-                console.log('Claiming tokens for address:', tokenAddress);
+                const isCooldownActive = await contract.isCooldownActive(tokenAddress).call();
 
+                if (isCooldownActive) {
+                    alert('This token is still on cooldown. Please wait before claiming again.');
+                    return;
+                }
+
+                console.log('Claiming tokens for address:', tokenAddress);
                 const result = await contract.claimTokens(tokenAddress).send({
                     from: tronWeb.defaultAddress.base58
                 });
