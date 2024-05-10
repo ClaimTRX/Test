@@ -15,13 +15,13 @@
             margin-bottom: 0;
         }
         p {
-            font-size: 16px; /* Increased font size */
-            margin: 20px auto; /* Centered text with more space */
-            max-width: 600px; /* Optimal line length */
-            line-height: 1.6; /* Improved line spacing */
+            font-size: 16px;
+            margin: 20px auto;
+            max-width: 600px;
+            line-height: 1.6;
         }
         a {
-            color: #007BFF; /* Bootstrap primary blue */
+            color: #007BFF;
             text-decoration: none;
         }
         a:hover, a:focus {
@@ -48,11 +48,11 @@
         }
         @media (max-width: 768px) {
             p {
-                font-size: 14px; /* Smaller font size for smaller screens */
-                padding: 0 10px; /* Less padding on the sides */
+                font-size: 14px;
+                padding: 0 10px;
             }
             button, input {
-                padding: 15px 20px; /* Smaller buttons on mobile */
+                padding: 15px 20px;
             }
         }
     </style>
@@ -68,16 +68,14 @@
         <div>
             <p id="token1Name">Token 1:</p>
             <p id="claimableAmount1">Claimable Amount: 0</p>
-            <button id="claimToken1" class="disabled" disabled>Claim Token 1</button>
+            <button id="claimToken1" onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')" class="disabled" disabled>Claim Token 1</button>
         </div>
         <div>
             <p id="token2Name">Token 2:</p>
             <p id="claimableAmount2">Claimable Amount: 0</p>
-            <button id="claimToken2" class="disabled" disabled>Claim Token 2</button>
+            <button id="claimToken2" onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')" class="disabled" disabled>Claim Token 2</button>
         </div>
     </div>
-
-
 
     <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
     <script>
