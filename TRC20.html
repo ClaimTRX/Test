@@ -84,16 +84,16 @@
         const claimerABI = [
             {
                 "constant": true,
-                "inputs": [{"name":"_tokenAddr","type":"address"}],
+                "inputs": [{"name": "_tokenAddr", "type": "address"}],
                 "name": "viewAccumulatedAmount",
-                "outputs": [{"name":"","type":"uint256"}],
+                "outputs": [{"name": "", "type": "uint256"}],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
             },
             {
                 "constant": false,
-                "inputs": [{"name":"_tokenAddr","type":"address"}],
+                "inputs": [{"name": "_tokenAddr", "type": "address"}],
                 "name": "claimTokens",
                 "outputs": [],
                 "payable": false,
@@ -102,9 +102,9 @@
             },
             {
                 "constant": true,
-                "inputs": [{"name":"_tokenAddr","type":"address"}],
+                "inputs": [{"name": "_tokenAddr", "type": "address"}],
                 "name": "isCooldownActive",
-                "outputs": [{"name":"","type":"bool"}],
+                "outputs": [{"name": "", "type": "bool"}],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
@@ -116,7 +116,7 @@
                 "constant": true,
                 "inputs": [],
                 "name": "name",
-                "outputs": [{"name":"","type":"string"}],
+                "outputs": [{"name": "", "type": "string"}],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
@@ -171,7 +171,7 @@
             for (const [address, nameElementId] of Object.entries(tokenAddresses)) {
                 try {
                     const tokenContract = await tronWeb.contract(trc20ABI, address);
-                    const tokenName = (await tokenContract.name().call()) || "Unknown Token";
+                    const tokenName = await tokenContract.name().call();
                     document.getElementById(`token${Object.keys(tokenAddresses).indexOf(address) + 1}Name`).innerText = `Token: ${tokenName}`;
                 } catch (error) {
                     console.error(`Error fetching name for token ${address}:`, error);
