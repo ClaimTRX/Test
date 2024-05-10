@@ -26,7 +26,7 @@
             background-color: #ccc; 
             color: #666;
         }
-        .hidden { 
+        #tokens, #connectWallet { 
             display: none;
         }
         #claimStatus, #claimAmount, #whitelistSection, #donationStatus, #donationSection, #totalDonated, #totalClaimed {
@@ -37,9 +37,6 @@
             margin-top: 0;
             width: 300px;
         }
-        iframe {
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
@@ -48,29 +45,14 @@
 
     <div id="tokens">
         <div>
-            <button onclick="getAccumulatedAmount('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Check Accumulated Token 1</button>
+            <p id="tokenName1">Token 1</p>
             <p id="amountToken1">Accumulated Amount: 0</p>
+            <button onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim Token 1</button>
         </div>
         <div>
-            <button onclick="getAccumulatedAmount('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Check Accumulated Token 2</button>
+            <p id="tokenName2">Token 2</p>
             <p id="amountToken2">Accumulated Amount: 0</p>
-        </div>
-        <!-- Placeholder for additional tokens -->
-        <div>
-            <button class="disabled">Token 3 (Coming Soon)</button>
-            <p>Accumulated Amount: Coming Soon</p>
-        </div>
-        <div>
-            <button class="disabled">Token 4 (Coming Soon)</button>
-            <p>Accumulated Amount: Coming Soon</p>
-        </div>
-        <div>
-            <button class="disabled">Token 5 (Coming Soon)</button>
-            <p>Accumulated Amount: Coming Soon</p>
-        </div>
-        <div>
-            <button class="disabled">Token 6 (Coming Soon)</button>
-            <p>Accumulated Amount: Coming Soon</p>
+            <button onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim Token 2</button>
         </div>
     </div>
 
@@ -89,7 +71,21 @@
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [{"name":"_tokenAddr","type":"address"}],
+                "name": "claim",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
             }
+        ];
+
+        const tokens = [
+            { address: 'TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1', nameElement: 'tokenName1', amountElement: 'amountToken1' },
+            { address: 'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb', nameElement: 'tokenName2', amountElement: 'amountToken2' }
         ];
 
         // Initialize TronWeb
@@ -109,24 +105,52 @@
                 return;
             }
             console.log('TronLink is connected. Wallet Address:', tronWeb.defaultAddress.base58);
+            document.getElementById('connectWallet').style.display = 'none';
+            document.getElementById('tokens').style.display = 'block';
+            fetchTokenNamesAndStartAutoUpdate();
         }
 
         document.getElementById('connectWallet').addEventListener('click', function() {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 alert('Wallet connected: ' + tronWeb.defaultAddress.base58);
+                document.getElementById('connectWallet').style.display = 'none';
+                document.getElementById('tokens').style.display = 'block';
+                fetchTokenNamesAndStartAutoUpdate();
             } else {
                 alert('Please install TronLink or log in.');
             }
         });
 
-        async function getAccumulatedAmount(tokenAddress) {
+        async function fetchTokenNamesAndStartAutoUpdate() {
+            for (const token of tokens) {
+                const tokenContract = await tronWeb.contract().at(token.address);
+                const tokenName = await tokenContract.name().call();
+                document.getElementById(token.nameElement).innerText = tokenName;
+            }
+            updateAccumulatedAmounts();
+            setInterval(updateAccumulatedAmounts, 5000);
+        }
+
+        async function updateAccumulatedAmounts() {
             const contract = await tronWeb.contract(contractABI, contractAddress);
-            contract.viewAccumulatedAmount(tokenAddress).call().then(result => {
-                const id = tokenAddress === 'TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1' ? 'amountToken1' : 'amountToken2';
-                document.getElementById(id).innerText = 'Accumulated Amount: ' + result;
-            }).catch(error => {
-                console.error('Error fetching accumulated amount:', error);
-            });
+            for (const token of tokens) {
+                contract.viewAccumulatedAmount(token.address).call().then(result => {
+                    document.getElementById(token.amountElement).innerText = 'Accumulated Amount: ' + result;
+                }).catch(error => {
+                    console.error('Error fetching accumulated amount:', error);
+                });
+            }
+        }
+
+        async function claimToken(tokenAddress) {
+            const contract = await tronWeb.contract(contractABI, contractAddress);
+            try {
+                await contract.claim(tokenAddress).send({ from: tronWeb.defaultAddress.base58 });
+                alert('Claim successful!');
+            } catch (error) {
+                console.error('Claim failed:', error);
+                alert('Claim failed: ' + error.message);
+            }
         }
     </script>
 </body>
