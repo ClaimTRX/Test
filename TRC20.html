@@ -181,25 +181,26 @@
 
         async function updateClaimableAmounts() {
             const contract = await tronWeb.contract(claimerABI, contractAddress);
-            contract.viewAccumulatedAmount('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1').call().then(amount => {
-                const formattedAmount = tronWeb.toBigNumber(amount).div(1e6).toFixed(0); // Adjust '1e6' based on the token's decimals
-                document.getElementById('claimableAmount1').innerText = 'Claimable Amount: ' + formattedAmount;
-            }).catch(error => {
-                console.error('Error fetching amount for Token 1:', error);
-            });
-            contract.viewAccumulatedAmount('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb').call().then(amount => {
-                const formattedAmount = tronWeb.toBigNumber(amount).div(1e6).toFixed(0); // Adjust '1e6' based on the token's decimals
-                document.getElementById('claimableAmount2').innerText = 'Claimable Amount: ' + formattedAmount;
-            }).catch(error => {
-                console.error('Error fetching amount for Token 2:', error);
-            });
+            await contract.viewAccumulatedAmount('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1').call()
+                .then(amount => {
+                    const formattedAmount = tronWeb.toBigNumber(amount).div(1e6).toFixed(0);
+                    document.getElementById('claimableAmount1').innerText = 'Claimable Amount: ' + formattedAmount;
+                })
+                .catch(error => console.error('Error fetching amount for Token 1:', error));
+            
+            await contract.viewAccumulatedAmount('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb').call()
+                .then(amount => {
+                    const formattedAmount = tronWeb.toBigNumber(amount).div(1e6).toFixed(0);
+                    document.getElementById('claimableAmount2').innerText = 'Claimable Amount: ' + formattedAmount;
+                })
+                .catch(error => console.error('Error fetching amount for Token 2:', error));
         }
 
         async function checkCooldowns() {
             const contract = await tronWeb.contract(claimerABI, contractAddress);
-            for (const [address, buttonId] of Object.entries(tokenAddresses)) {
+            for (const [tokenAddress, buttonId] of Object.entries(tokenAddresses)) {
                 try {
-                    const isCooldownActive = await contract.isCooldownActive(address).call();
+                    const isCooldownActive = await contract.isCooldownActive(tokenAddress).call();
                     const button = document.getElementById(buttonId);
                     if (isCooldownActive) {
                         button.classList.add("disabled");
@@ -209,7 +210,7 @@
                         button.removeAttribute("disabled");
                     }
                 } catch (error) {
-                    console.error(`Error checking cooldown for token ${address}:`, error);
+                    console.error(`Error checking cooldown for token ${tokenAddress}:`, error);
                 }
             }
         }
