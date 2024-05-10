@@ -52,7 +52,7 @@
     <script>
         let tronWeb;
         const contractAddress = "TDz3ou9AzJZL4W8if5rMP5pqkqeDqbfGJX";
-        const contractABI = [
+        const claimerABI = [
             {
                 "constant": true,
                 "inputs": [{"name":"_tokenAddr","type":"address"}],
@@ -73,10 +73,22 @@
             }
         ];
 
-        // Mapping of token addresses to their names
-        const tokenMapping = {
-            'TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1': 'Token Name 1',
-            'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb': 'Token Name 2'
+        const trc20ABI = [
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "name",
+                "outputs": [{"name":"","type":"string"}],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        // Token addresses to be claimed
+        const tokenAddresses = {
+            'TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1': 'token1Name',
+            'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb': 'token2Name'
         };
 
         window.addEventListener('load', function() {
@@ -98,10 +110,7 @@
             document.getElementById('connectWallet').innerText = 'Connected';
             document.getElementById('tokens').style.display = 'block';
 
-            // Set token names
-            document.getElementById('token1Name').innerText = 'Token 1: ' + tokenMapping['TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1'];
-            document.getElementById('token2Name').innerText = 'Token 2: ' + tokenMapping['TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb'];
-
+            fetchTokenNames();
             updateClaimableAmounts();
             setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
         }
@@ -111,6 +120,7 @@
                 alert('Wallet connected: ' + tronWeb.defaultAddress.base58);
                 document.getElementById('tokens').style.display = 'block';
                 document.getElementById('connectWallet').innerText = 'Connected';
+                fetchTokenNames();
                 updateClaimableAmounts();
                 setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
             } else {
@@ -118,18 +128,30 @@
             }
         });
 
+        async function fetchTokenNames() {
+            for (const [address, nameElementId] of Object.entries(tokenAddresses)) {
+                try {
+                    const tokenContract = await tronWeb.contract(trc20ABI, address);
+                    const tokenName = await tokenContract.name().call();
+                    document.getElementById(nameElementId).innerText = `Token: ${tokenName}`;
+                } catch (error) {
+                    console.error(`Error fetching name for token ${address}:`, error);
+                }
+            }
+        }
+
         async function updateClaimableAmounts() {
-            const contract = await tronWeb.contract(contractABI, contractAddress);
+            const contract = await tronWeb.contract(claimerABI, contractAddress);
             // Update for Token 1
             contract.viewAccumulatedAmount('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1').call().then(amount => {
-                const formattedAmount = tronWeb.toBigNumber(amount).div(1e6).toFixed(0); // Adjust '1e6' based on the token's actual decimals
+                const formattedAmount = tronWeb.toBigNumber(amount).div(1e6).toFixed(0); // Adjust '1e6' based on the token's decimals
                 document.getElementById('claimableAmount1').innerText = 'Claimable Amount: ' + formattedAmount;
             }).catch(error => {
                 console.error('Error fetching amount for Token 1:', error);
             });
             // Update for Token 2
             contract.viewAccumulatedAmount('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb').call().then(amount => {
-                const formattedAmount = tronWeb.toBigNumber(amount).div(1e6).toFixed(0); // Adjust '1e6' based on the token's actual decimals
+                const formattedAmount = tronWeb.toBigNumber(amount).div(1e6).toFixed(0); // Adjust '1e6' based on the token's decimals
                 document.getElementById('claimableAmount2').innerText = 'Claimable Amount: ' + formattedAmount;
             }).catch(error => {
                 console.error('Error fetching amount for Token 2:', error);
@@ -138,7 +160,7 @@
 
         async function claimToken(tokenAddress) {
             try {
-                const contract = await tronWeb.contract(contractABI, contractAddress);
+                const contract = await tronWeb.contract(claimerABI, contractAddress);
                 console.log('Claiming tokens for address:', tokenAddress);
 
                 const result = await contract.claimTokens(tokenAddress).send({
