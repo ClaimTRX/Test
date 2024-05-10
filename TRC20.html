@@ -25,6 +25,7 @@
         .disabled { 
             background-color: #ccc; 
             color: #666;
+            cursor: not-allowed;
         }
         #tokens { 
             display: none;
@@ -39,12 +40,12 @@
         <div>
             <p id="token1Name">Token 1: </p>
             <p id="claimableAmount1">Claimable Amount: 0</p>
-            <button onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim Token 1</button>
+            <button id="claimToken1" class="disabled" onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim Token 1</button>
         </div>
         <div>
             <p id="token2Name">Token 2: </p>
             <p id="claimableAmount2">Claimable Amount: 0</p>
-            <button onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim Token 2</button>
+            <button id="claimToken2" class="disabled" onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim Token 2</button>
         </div>
     </div>
 
@@ -70,6 +71,15 @@
                 "payable": false,
                 "stateMutability": "nonpayable",
                 "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [{"name":"_tokenAddr","type":"address"}],
+                "name": "isCooldownActive",
+                "outputs": [{"name":"","type":"bool"}],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
             }
         ];
 
@@ -85,10 +95,9 @@
             }
         ];
 
-        // Token addresses to be claimed
         const tokenAddresses = {
-            'TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1': 'token1Name',
-            'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb': 'token2Name'
+            'TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1': 'claimToken1',
+            'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb': 'claimToken2'
         };
 
         window.addEventListener('load', function() {
@@ -112,6 +121,7 @@
 
             fetchTokenNames();
             updateClaimableAmounts();
+            checkCooldowns();
             setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
         }
 
@@ -122,6 +132,7 @@
                 document.getElementById('connectWallet').innerText = 'Connected';
                 fetchTokenNames();
                 updateClaimableAmounts();
+                checkCooldowns();
                 setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
             } else {
                 alert('Please install TronLink or log in.');
@@ -133,7 +144,7 @@
                 try {
                     const tokenContract = await tronWeb.contract(trc20ABI, address);
                     const tokenName = await tokenContract.name().call();
-                    document.getElementById(nameElementId).innerText = `Token: ${tokenName}`;
+                    document.getElementById(`token${Object.keys(tokenAddresses).indexOf(address) + 1}Name`).innerText = `Token: ${tokenName}`;
                 } catch (error) {
                     console.error(`Error fetching name for token ${address}:`, error);
                 }
@@ -142,20 +153,37 @@
 
         async function updateClaimableAmounts() {
             const contract = await tronWeb.contract(claimerABI, contractAddress);
-            // Update for Token 1
             contract.viewAccumulatedAmount('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1').call().then(amount => {
                 const formattedAmount = tronWeb.toBigNumber(amount).div(1e6).toFixed(0); // Adjust '1e6' based on the token's decimals
                 document.getElementById('claimableAmount1').innerText = 'Claimable Amount: ' + formattedAmount;
             }).catch(error => {
                 console.error('Error fetching amount for Token 1:', error);
             });
-            // Update for Token 2
             contract.viewAccumulatedAmount('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb').call().then(amount => {
                 const formattedAmount = tronWeb.toBigNumber(amount).div(1e6).toFixed(0); // Adjust '1e6' based on the token's decimals
                 document.getElementById('claimableAmount2').innerText = 'Claimable Amount: ' + formattedAmount;
             }).catch(error => {
                 console.error('Error fetching amount for Token 2:', error);
             });
+        }
+
+        async function checkCooldowns() {
+            const contract = await tronWeb.contract(claimerABI, contractAddress);
+            for (const [address, buttonId] of Object.entries(tokenAddresses)) {
+                try {
+                    const isCooldownActive = await contract.isCooldownActive(address).call();
+                    const button = document.getElementById(buttonId);
+                    if (isCooldownActive) {
+                        button.classList.add("disabled");
+                        button.setAttribute("disabled", true);
+                    } else {
+                        button.classList.remove("disabled");
+                        button.removeAttribute("disabled");
+                    }
+                } catch (error) {
+                    console.error(`Error checking cooldown for token ${address}:`, error);
+                }
+            }
         }
 
         async function claimToken(tokenAddress) {
@@ -169,6 +197,7 @@
 
                 console.log('Claim transaction result:', result);
                 alert('Claim successful! Transaction ID: ' + result);
+                checkCooldowns();
             } catch (error) {
                 console.error('Claim failed:', error);
                 alert('Claim failed: ' + error.message);
