@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRX Claimer</title>
+    <title>TRX Token Claimer</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 
@@ -29,14 +29,6 @@
         #tokens { 
             display: none;
         }
-        #claimStatus, #claimAmount, #whitelistSection, #donationStatus, #donationSection, #totalDonated, #totalClaimed {
-            margin-top: 20px;
-        }
-        input[type="text"] {
-            padding: 10px;
-            margin-top: 0;
-            width: 300px;
-        }
     </style>
 </head>
 <body>
@@ -45,48 +37,33 @@
 
     <div id="tokens">
         <div>
-            <p id="tokenName1">Token 1</p>
-            <p id="amountToken1">Accumulated Amount: 0</p>
-            <button id="claimButton1" onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim Token 1</button>
+            <p>Token 1: TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1</p>
+            <button onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim Token 1</button>
         </div>
         <div>
-            <p id="tokenName2">Token 2</p>
-            <p id="amountToken2">Accumulated Amount: 0</p>
-            <button id="claimButton2" onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim Token 2</button>
+            <p>Token 2: TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb</p>
+            <button onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim Token 2</button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
     <script>
         let tronWeb;
-        const contractAddress = "TDz3ou9AzJZL4W8if5rMP5pqkqeDqbfGJX";
+        const contractAddress = "TDz3ou9AzJZL4W8if5rMP5pqkqeDqbfGJX"; // Your contract address
         const contractABI = [
-            {
-                "constant": true,
-                "inputs": [{"name":"_tokenAddr","type":"address"}],
-                "name": "viewAccumulatedAmount",
-                "outputs": [{"name":"","type":"uint256"}],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
             {
                 "constant": false,
                 "inputs": [{"name":"_tokenAddr","type":"address"}],
-                "name": "claim",
+                "name": "claimTokens",
                 "outputs": [],
                 "payable": false,
                 "stateMutability": "nonpayable",
                 "type": "function"
             }
+            // Add other function ABIs as needed
         ];
 
-        const tokens = [
-            { address: 'TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1', nameElement: 'tokenName1', amountElement: 'amountToken1', claimButton: 'claimButton1', decimals: 0 },
-            { address: 'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb', nameElement: 'tokenName2', amountElement: 'amountToken2', claimButton: 'claimButton2', decimals: 0 }
-        ];
-
-        window.addEventListener('load', async () => {
+        window.addEventListener('load', function() {
             if (typeof window.tronWeb === 'undefined') {
                 console.log("Waiting for TronLink...");
                 setTimeout(startApp, 1000);
@@ -102,9 +79,8 @@
                 return;
             }
             console.log('TronLink connected. Wallet Address:', tronWeb.defaultAddress.base58);
-            document.getElementById('tokens').style.display = 'block';
             document.getElementById('connectWallet').innerText = 'Connected';
-            fetchTokenNamesAndStartAutoUpdate();
+            document.getElementById('tokens').style.display = 'block';
         }
 
         document.getElementById('connectWallet').addEventListener('click', function() {
@@ -112,59 +88,27 @@
                 alert('Wallet connected: ' + tronWeb.defaultAddress.base58);
                 document.getElementById('tokens').style.display = 'block';
                 document.getElementById('connectWallet').innerText = 'Connected';
-                fetchTokenNamesAndStartAutoUpdate();
             } else {
                 alert('Please install TronLink or log in.');
             }
         });
 
-        async function fetchTokenNamesAndStartAutoUpdate() {
-            for (const token of tokens) {
-                const tokenContract = await tronWeb.contract().at(token.address);
-                const tokenName = await tokenContract.name().call();
-                token.decimals = await tokenContract.decimals().call();
-                document.getElementById(token.nameElement).innerText = tokenName;
-                document.getElementById(token.claimButton).innerText = `Claim ${tokenName}`;
-            }
-            updateAccumulatedAmounts();
-            setInterval(updateAccumulatedAmounts, 5000);
-        }
+        async function claimToken(tokenAddress) {
+            try {
+                const contract = await tronWeb.contract(contractABI, contractAddress);
+                console.log('Claiming tokens for address:', tokenAddress);
 
-        async function updateAccumulatedAmounts() {
-            const contract = await tronWeb.contract(contractABI, contractAddress);
-            for (const token of tokens) {
-                contract.viewAccumulatedAmount(token.address).call().then(result => {
-                    const adjustedAmount = Number(result) / Math.pow(10, token.decimals);
-                    document.getElementById(token.amountElement).innerText = 'Accumulated Amount: ' + Math.floor(adjustedAmount);
-                }).catch(error => {
-                    console.error('Error fetching accumulated amount:', error);
+                const result = await contract.claimTokens(tokenAddress).send({
+                    from: tronWeb.defaultAddress.base58
                 });
+
+                console.log('Claim transaction result:', result);
+                alert('Claim successful! Transaction ID: ' + result);
+            } catch (error) {
+                console.error('Claim failed:', error);
+                alert('Claim failed: ' + error.message);
             }
         }
-
-       async function claimToken(tokenAddress) {
-    try {
-        // Ensure the contract is loaded with the correct ABI and address
-        const contract = await tronWeb.contract(contractABI, contractAddress);
-
-        // Logging the address to verify it's correct
-        console.log('Attempting to claim tokens for address:', tokenAddress);
-
-        // Using the 'claim' function of the contract and specifying the token address
-        const result = await contract.methods.claim(tokenAddress).send({
-            from: tronWeb.defaultAddress.base58,
-            shouldPollResponse: true
-        });
-
-        // Success alert with transaction details (if needed)
-        alert('Claim successful! Transaction: ' + result);
-    } catch (error) {
-        // Error handling with detailed console logging
-        console.error('Claim failed:', error);
-        alert('Claim failed: ' + error.message);
-    }
-}
-
     </script>
 </body>
 </html>
