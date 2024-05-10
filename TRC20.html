@@ -32,18 +32,18 @@
     </style>
 </head>
 <body>
-    <h1>TRX Token Claimer</h1>
+    <h1>TRC20 Token Claimer</h1>
     <button id="connectWallet">Connect TronLink Wallet</button>
 
     <div id="tokens">
         <div>
-            <p>Token 1: TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1</p>
-            <p id="claimableAmount1">Claimable Amount: 0</p>
+            <p id="tokenName1"></p>
+            <p id="amountToken1">Claimable Amount: 0</p>
             <button onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim Token 1</button>
         </div>
         <div>
-            <p>Token 2: TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb</p>
-            <p id="claimableAmount2">Claimable Amount: 0</p>
+            <p id="tokenName2"></p>
+            <p id="amountToken2">Claimable Amount: 0</p>
             <button onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim Token 2</button>
         </div>
     </div>
@@ -51,26 +51,14 @@
     <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
     <script>
         let tronWeb;
-        const contractAddress = "TDz3ou9AzJZL4W8if5rMP5pqkqeDqbfGJX";
+        const contractAddress = "TDz3ou9AzJZL4W8if5rMP5pqkqeDqbfGJX"; // Your contract address
         const contractABI = [
-            {
-                "constant": true,
-                "inputs": [{"name":"_tokenAddr","type":"address"}],
-                "name": "viewAccumulatedAmount",
-                "outputs": [{"name":"","type":"uint256"}],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "constant": false,
-                "inputs": [{"name":"_tokenAddr","type":"address"}],
-                "name": "claimTokens",
-                "outputs": [],
-                "payable": false,
-                "stateMutability": "nonpayable",
-                "type": "function"
-            }
+            // Add the entire ABI JSON here
+        ];
+
+        const tokens = [
+            { address: 'TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1', nameElement: 'tokenName1', amountElement: 'amountToken1' },
+            { address: 'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb', nameElement: 'tokenName2', amountElement: 'amountToken2' }
         ];
 
         window.addEventListener('load', function() {
@@ -91,8 +79,8 @@
             console.log('TronLink connected. Wallet Address:', tronWeb.defaultAddress.base58);
             document.getElementById('connectWallet').innerText = 'Connected';
             document.getElementById('tokens').style.display = 'block';
-            updateClaimableAmounts();
-            setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
+            fetchTokenDetails();
+            setInterval(fetchTokenDetails, 10000); // Update every 10 seconds
         }
 
         document.getElementById('connectWallet').addEventListener('click', function() {
@@ -100,26 +88,23 @@
                 alert('Wallet connected: ' + tronWeb.defaultAddress.base58);
                 document.getElementById('tokens').style.display = 'block';
                 document.getElementById('connectWallet').innerText = 'Connected';
-                updateClaimableAmounts();
-                setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
+                fetchTokenDetails();
+                setInterval(fetchTokenDetails, 10000); // Update every 10 seconds
             } else {
                 alert('Please install TronLink or log in.');
             }
         });
 
-        async function updateClaimableAmounts() {
+        async function fetchTokenDetails() {
             const contract = await tronWeb.contract(contractABI, contractAddress);
-            // Update for Token 1
-            contract.viewAccumulatedAmount('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1').call().then(amount => {
-                document.getElementById('claimableAmount1').innerText = 'Claimable Amount: ' + amount;
-            }).catch(error => {
-                console.error('Error fetching amount for Token 1:', error);
-            });
-            // Update for Token 2
-            contract.viewAccumulatedAmount('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb').call().then(amount => {
-                document.getElementById('claimableAmount2').innerText = 'Claimable Amount: ' + amount;
-            }).catch(error => {
-                console.error('Error fetching amount for Token 2:', error);
+            tokens.forEach(async (token) => {
+                const tokenContract = await tronWeb.contract().at(token.address);
+                const name = await tokenContract.name().call();
+                const decimals = await tokenContract.decimals().call();
+                const claimableAmount = await contract.viewAccumulatedAmount(token.address).call();
+
+                document.getElementById(token.nameElement).innerText = name;
+                document.getElementById(token.amountElement).innerText = 'Claimable Amount: ' + (claimableAmount / (10 ** decimals)).toFixed(0);
             });
         }
 
