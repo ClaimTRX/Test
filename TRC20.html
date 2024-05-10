@@ -26,7 +26,7 @@
             background-color: #ccc; 
             color: #666;
         }
-        #tokens, #connectWallet { 
+        #tokens { 
             display: none;
         }
         #claimStatus, #claimAmount, #whitelistSection, #donationStatus, #donationSection, #totalDonated, #totalClaimed {
@@ -61,8 +61,7 @@
         let tronWeb;
         const contractAddress = "TDz3ou9AzJZL4W8if5rMP5pqkqeDqbfGJX";  // Your Shasta Contract Address
         const contractABI = [
-            // Insert your contract's ABI here
-            // Example ABI method:
+            // Example ABI methods
             {
                 "constant": true,
                 "inputs": [{"name":"_tokenAddr","type":"address"}],
@@ -88,7 +87,6 @@
             { address: 'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb', nameElement: 'tokenName2', amountElement: 'amountToken2' }
         ];
 
-        // Initialize TronWeb
         window.addEventListener('load', async () => {
             if (typeof window.tronWeb === 'undefined') {
                 console.log("Waiting for TronLink...");
@@ -101,11 +99,10 @@
         function startApp() {
             tronWeb = window.tronWeb;
             if (!tronWeb.defaultAddress.base58) {
-                console.log('Please login to TronLink.');
+                console.log('Please log in to TronLink.');
                 return;
             }
-            console.log('TronLink is connected. Wallet Address:', tronWeb.defaultAddress.base58);
-            document.getElementById('connectWallet').style.display = 'none';
+            console.log('TronLink connected. Wallet Address:', tronWeb.defaultAddress.base58);
             document.getElementById('tokens').style.display = 'block';
             fetchTokenNamesAndStartAutoUpdate();
         }
@@ -113,7 +110,6 @@
         document.getElementById('connectWallet').addEventListener('click', function() {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 alert('Wallet connected: ' + tronWeb.defaultAddress.base58);
-                document.getElementById('connectWallet').style.display = 'none';
                 document.getElementById('tokens').style.display = 'block';
                 fetchTokenNamesAndStartAutoUpdate();
             } else {
