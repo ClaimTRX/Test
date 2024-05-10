@@ -37,12 +37,12 @@
 
     <div id="tokens">
         <div>
-            <p>Token 1: TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1</p>
+            <p id="token1Name">Token 1: </p>
             <p id="claimableAmount1">Claimable Amount: 0</p>
             <button onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim Token 1</button>
         </div>
         <div>
-            <p>Token 2: TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb</p>
+            <p id="token2Name">Token 2: </p>
             <p id="claimableAmount2">Claimable Amount: 0</p>
             <button onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim Token 2</button>
         </div>
@@ -73,6 +73,12 @@
             }
         ];
 
+        // Mapping of token addresses to their names
+        const tokenMapping = {
+            'TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1': 'Token Name 1',
+            'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb': 'Token Name 2'
+        };
+
         window.addEventListener('load', function() {
             if (typeof window.tronWeb === 'undefined') {
                 console.log("Waiting for TronLink...");
@@ -91,6 +97,11 @@
             console.log('TronLink connected. Wallet Address:', tronWeb.defaultAddress.base58);
             document.getElementById('connectWallet').innerText = 'Connected';
             document.getElementById('tokens').style.display = 'block';
+
+            // Set token names
+            document.getElementById('token1Name').innerText = 'Token 1: ' + tokenMapping['TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1'];
+            document.getElementById('token2Name').innerText = 'Token 2: ' + tokenMapping['TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb'];
+
             updateClaimableAmounts();
             setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
         }
@@ -111,13 +122,15 @@
             const contract = await tronWeb.contract(contractABI, contractAddress);
             // Update for Token 1
             contract.viewAccumulatedAmount('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1').call().then(amount => {
-                document.getElementById('claimableAmount1').innerText = 'Claimable Amount: ' + amount;
+                const formattedAmount = tronWeb.toBigNumber(amount).div(1e6).toFixed(0); // Adjust '1e6' based on the token's actual decimals
+                document.getElementById('claimableAmount1').innerText = 'Claimable Amount: ' + formattedAmount;
             }).catch(error => {
                 console.error('Error fetching amount for Token 1:', error);
             });
             // Update for Token 2
             contract.viewAccumulatedAmount('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb').call().then(amount => {
-                document.getElementById('claimableAmount2').innerText = 'Claimable Amount: ' + amount;
+                const formattedAmount = tronWeb.toBigNumber(amount).div(1e6).toFixed(0); // Adjust '1e6' based on the token's actual decimals
+                document.getElementById('claimableAmount2').innerText = 'Claimable Amount: ' + formattedAmount;
             }).catch(error => {
                 console.error('Error fetching amount for Token 2:', error);
             });
