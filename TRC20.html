@@ -83,8 +83,8 @@
         ];
 
         const tokens = [
-            { address: 'TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1', nameElement: 'tokenName1', amountElement: 'amountToken1' },
-            { address: 'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb', nameElement: 'tokenName2', amountElement: 'amountToken2' }
+            { address: 'TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1', nameElement: 'tokenName1', amountElement: 'amountToken1', decimals: 0 },
+            { address: 'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb', nameElement: 'tokenName2', amountElement: 'amountToken2', decimals: 0 }
         ];
 
         window.addEventListener('load', async () => {
@@ -121,6 +121,7 @@
             for (const token of tokens) {
                 const tokenContract = await tronWeb.contract().at(token.address);
                 const tokenName = await tokenContract.name().call();
+                token.decimals = await tokenContract.decimals().call(); // Fetch the decimals
                 document.getElementById(token.nameElement).innerText = tokenName;
             }
             updateAccumulatedAmounts();
@@ -131,7 +132,8 @@
             const contract = await tronWeb.contract(contractABI, contractAddress);
             for (const token of tokens) {
                 contract.viewAccumulatedAmount(token.address).call().then(result => {
-                    document.getElementById(token.amountElement).innerText = 'Accumulated Amount: ' + result;
+                    const adjustedAmount = Number(result) / Math.pow(10, token.decimals); // Adjust by decimals
+                    document.getElementById(token.amountElement).innerText = 'Accumulated Amount: ' + Math.floor(adjustedAmount);
                 }).catch(error => {
                     console.error('Error fetching accumulated amount:', error);
                 });
