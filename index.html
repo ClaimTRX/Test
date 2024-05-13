@@ -182,20 +182,13 @@
             button.classList.add('disabled');
         }
 
-        async function checkClaimStatus() {
-            try {
-                const availableToClaimInSuns = await contract.getClaimableAmount().call();
-                const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
-                console.log("Available to Claim in Suns:", availableToClaimInSuns);
-                console.log("Available to Claim in TRX:", availableToClaimInTRX);
-                document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
-                const claimButton = document.getElementById('claimTRX');
-                claimButton.classList.toggle('disabled', !(parseInt(availableToClaimInTRX) > 0));
-                claimButton.disabled = !(parseInt(availableToClaimInTRX) > 0);
-            } catch (error) {
-                console.error("Check Claim Status Error: ", error.message);
-                alert("An error occurred while checking claim status.");
-            }
+              async function checkClaimStatus(isWhitelisted) {
+            const availableToClaimInSuns = await contract.getClaimableAmount().call();
+            const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
+            document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
+            const claimButton = document.getElementById('claimTRX');
+            claimButton.classList.toggle('disabled', !(parseInt(availableToClaimInTRX) > 0 && isWhitelisted));
+            claimButton.disabled = !(parseInt(availableToClaimInTRX) > 0 && isWhitelisted);
         }
 
         async function claimTRX() {
