@@ -5,12 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRX Claimer</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        button, input { margin: 10px; padding: 10px 20px; cursor: pointer; }
-        .hidden { display: none; }
-        .connected, button:not(.disabled) { background-color: #4CAF50; color: white; }
-        .disabled { background-color: #ccc; color: #666; }
-        #claimStatus, #claimAmount, #whitelistSection, #donationStatus { margin-top: 20px; }
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 20px; 
+        }
+        button, input { 
+            margin: 10px; 
+            padding: 10px 20px; 
+            cursor: pointer; 
+        }
+        .hidden { 
+            display: none; 
+        }
+        .connected, button:not(.disabled) { 
+            background-color: #4CAF50; 
+            color: white; 
+        }
+        .disabled { 
+            background-color: #ccc; 
+            color: #666; 
+        }
+        #claimStatus, #claimAmount, #whitelistSection, #donationStatus { 
+            margin-top: 20px; 
+        }
+        .warning { 
+            color: red; 
+            font-size: 20px; 
+        }
     </style>
 </head>
 <body>
@@ -19,18 +41,20 @@
     <button id="claimTRX" class="disabled" disabled>Claim TRX</button>
     <div id="claimAmount">0 TRX available to claim</div>
     <div id="claimStatus"></div>
-     <div id="whitelistSection" class="hidden">
-         <p>To be able to claim you first need to add your Telegram handle to our whitelist and join our Telegram group. Whitelisted wallets who are not a Telegram group member will be blacklisted.</p>
+    <div id="whitelistSection" class="hidden">
+        <p>To be able to claim, you first need to add your Telegram handle to our whitelist and join our Telegram group. Whitelisted wallets who are not Telegram group members will be blacklisted.</p>
         <input type="text" id="tgUsername" placeholder="Enter Telegram username">
         <button id="addToWhitelist" class="disabled" disabled>Add to Whitelist</button>
-        
+        <div id="warningMessage" class="hidden warning">
+            Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.
+        </div>
     </div>
 
     <div><p>TRX is made available for claim at random times through the day</p></div>
     <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
     <a href="https://t.me/claimfreetrxnow">Join our Telegram group</a>
     <h2>Visit our sponsors</h2>
-    <iframe width=300" height="250" src="https://tronnrg.com/verts/Mobile300x250/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA" frameBorder="0"> </iframe>
+    <iframe width="300" height="250" src="https://tronnrg.com/verts/Mobile300x250/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA" frameBorder="0"></iframe>
     <br>
     
     <div id="donationSection">
@@ -40,24 +64,57 @@
     <div id="totalDonated">Total Donated: 0 TRX</div>
     <div id="totalClaimed">Total Claimed: 0 TRX</div>
     
-    
-
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
         const contractAddress = 'TXp11vVghc8WN8MxKdw2bVDDigZxcpzJW9'; // Replace with your contract's address
         let tronWeb;
         let contract;
 
+        async function checkWhitelistStatus() {
+            try {
+                const walletAddress = tronWeb.defaultAddress.base58;
+                if (!walletAddress) throw new Error("Invalid Wallet Address");
+
+                const isWhitelisted = await contract.whitelist(walletAddress).call();
+                const whitelistSection = document.getElementById('whitelistSection');
+                const warningMessage = document.getElementById('warningMessage');
+                const addToWhitelistButton = document.getElementById('addToWhitelist');
+
+                if (isWhitelisted) {
+                    whitelistSection.style.display = 'none';
+                    warningMessage.classList.add('hidden');
+                    enableButton('claimTRX');
+                } else {
+                    whitelistSection.style.display = 'block';
+                    warningMessage.classList.remove('hidden');
+                    disableButton('claimTRX');
+                    addToWhitelistButton.disabled = false;
+                    addToWhitelistButton.classList.remove('disabled');
+                }
+            } catch (error) {
+                console.error("Whitelist Check Error: ", error.message);
+                alert("An error occurred while checking whitelist status.");
+            }
+        }
+
         async function init() {
-            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                tronWeb = window.tronWeb;
-                contract = await tronWeb.contract().at(contractAddress);
-                document.getElementById('connectWallet').classList.add('connected');
-                document.getElementById('connectWallet').textContent = 'Wallet Connected';
-                enableDonateButton(); // Always enable donate button once wallet is connected
-                await updateUIStates();
-            } else {
-                alert("Please install TronLink.");
+            try {
+                if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                    tronWeb = window.tronWeb;
+                    contract = await tronWeb.contract().at(contractAddress);
+
+                    const connectButton = document.getElementById('connectWallet');
+                    connectButton.classList.add('connected');
+                    connectButton.textContent = 'Wallet Connected';
+
+                    enableDonateButton(); // Always enable donate button once wallet is connected
+                    await updateUIStates();
+                } else {
+                    alert("Please install TronLink.");
+                }
+            } catch (error) {
+                console.error("Initialization Error: ", error.message);
+                alert("An error occurred while initializing the wallet connection.");
             }
         }
 
@@ -88,23 +145,25 @@
             }
         }
 
-        async function checkWhitelistStatus() {
-            const isWhitelisted = await contract.whitelist(tronWeb.defaultAddress.base58).call();
-            const whitelistSection = document.getElementById('whitelistSection');
-            const addToWhitelistButton = document.getElementById('addToWhitelist');
-            whitelistSection.style.display = isWhitelisted ? 'none' : 'block';
-            addToWhitelistButton.disabled = isWhitelisted;
-            addToWhitelistButton.classList.toggle('disabled', isWhitelisted);
-            checkClaimStatus(isWhitelisted);
+        function enableButton(buttonId) {
+            const button = document.getElementById(buttonId);
+            button.disabled = false;
+            button.classList.remove('disabled');
         }
 
-        async function checkClaimStatus(isWhitelisted) {
+        function disableButton(buttonId) {
+            const button = document.getElementById(buttonId);
+            button.disabled = true;
+            button.classList.add('disabled');
+        }
+
+        async function checkClaimStatus() {
             const availableToClaimInSuns = await contract.getClaimableAmount().call();
             const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
             document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
             const claimButton = document.getElementById('claimTRX');
-            claimButton.classList.toggle('disabled', !(parseInt(availableToClaimInTRX) > 0 && isWhitelisted));
-            claimButton.disabled = !(parseInt(availableToClaimInTRX) > 0 && isWhitelisted);
+            claimButton.classList.toggle('disabled', !(parseInt(availableToClaimInTRX) > 0));
+            claimButton.disabled = !(parseInt(availableToClaimInTRX) > 0);
         }
 
         async function addToWhitelist() {
