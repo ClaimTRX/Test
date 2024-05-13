@@ -108,15 +108,16 @@
                 if (isWhitelisted) {
                     whitelistSection.style.display = 'none';
                     claimSection.classList.remove('hidden');
-                    enableButton('claimTRX');
                 } else {
                     whitelistSection.style.display = 'block';
                     claimSection.classList.add('hidden');
                     disableButton('claimTRX');
                 }
+                return isWhitelisted;
             } catch (error) {
                 console.error("Whitelist Check Error: ", error.message);
                 alert("An error occurred while checking whitelist status.");
+                return false;
             }
         }
 
@@ -142,12 +143,12 @@
         }
 
         async function updateUIStates() {
-            await checkWhitelistStatus();
-            await checkClaimStatus();
+            const isWhitelisted = await checkWhitelistStatus();
+            await checkClaimStatus(isWhitelisted);
             await updateDonationStats();
             setInterval(async () => {
-                await checkWhitelistStatus();
-                await checkClaimStatus();
+                const isWhitelisted = await checkWhitelistStatus();
+                await checkClaimStatus(isWhitelisted);
                 await updateDonationStats();
             }, 10000); // Update every 10 seconds
         }
@@ -182,21 +183,29 @@
             button.classList.add('disabled');
         }
 
-              async function checkClaimStatus(isWhitelisted) {
-            const availableToClaimInSuns = await contract.getClaimableAmount().call();
-            const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
-            document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
-            const claimButton = document.getElementById('claimTRX');
-            claimButton.classList.toggle('disabled', !(parseInt(availableToClaimInTRX) > 0 && isWhitelisted));
-            claimButton.disabled = !(parseInt(availableToClaimInTRX) > 0 && isWhitelisted);
+        async function checkClaimStatus(isWhitelisted) {
+            try {
+                const availableToClaimInSuns = await contract.getClaimableAmount().call();
+                const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
+                document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
+                
+                const claimButton = document.getElementById('claimTRX');
+                if (parseFloat(availableToClaimInTRX) > 0 && isWhitelisted) {
+                    enableButton('claimTRX');
+                } else {
+                    disableButton('claimTRX');
+                }
+            } catch (error) {
+                console.error("Claim Status Check Error: ", error.message);
+                alert("An error occurred while checking claim status.");
+            }
         }
 
         async function claimTRX() {
             try {
                 await contract.claimTRX().send();
                 alert('TRX successfully claimed!');
-                checkWhitelistStatus();
-                updateDonationStats();
+                await updateUIStates();
             } catch (error) {
                 alert('Error: ' + error.message);
             }
@@ -207,7 +216,7 @@
             try {
                 await contract.donate().send({ callValue: amountToDonate });
                 alert('Thank you for your donation!');
-                updateDonationStats();
+                await updateDonationStats();
                 disableDonateButton(true);
             } catch (error) {
                 alert('Error: ' + error.message);
@@ -215,19 +224,22 @@
         }
 
         async function updateDonationStats() {
-            const totalDonatedInSuns = await contract.getTotalDonated().call();
-            const totalClaimedInSuns = await contract.getTotalClaimed().call();
-            const totalDonatedInTRX = tronWeb.fromSun(totalDonatedInSuns);
-            const totalClaimedInTRX = tronWeb.fromSun(totalClaimedInSuns);
-            document.getElementById('totalDonated').innerText = `Total Donated: ${totalDonatedInTRX} TRX`;
-            document.getElementById('totalClaimed').innerText = `Total Claimed: ${totalClaimedInTRX} TRX`;
+            try {
+                const totalDonatedInSuns = await contract.getTotalDonated().call();
+                const totalClaimedInSuns = await contract.getTotalClaimed().call();
+                const totalDonatedInTRX = tronWeb.fromSun(totalDonatedInSuns);
+                const totalClaimedInTRX = tronWeb.fromSun(totalClaimedInSuns);
+                document.getElementById('totalDonated').innerText = `Total Donated: ${totalDonatedInTRX} TRX`;
+                document.getElementById('totalClaimed').innerText = `Total Claimed: ${totalClaimedInTRX} TRX`;
+            } catch (error) {
+                console.error("Donation Stats Update Error: ", error.message);
+                alert("An error occurred while updating donation stats.");
+            }
         }
 
-        window.addEventListener('load', async () => {
-            await init();
-            document.getElementById('claimTRX').addEventListener('click', claimTRX);
-            document.getElementById('donateTRX').addEventListener('click', donateTRX);
-        });
+        document.getElementById('connectWallet').addEventListener('click', init);
+        document.getElementById('claimTRX').addEventListener('click', claimTRX);
+        document.getElementById('donateTRX').addEventListener('click', donateTRX);
     </script>
 </body>
 </html>
