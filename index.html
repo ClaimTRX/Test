@@ -26,7 +26,7 @@
             background-color: #ccc; 
             color: #666; 
         }
-        #claimStatus, #claimAmount, #whitelistSection, #donationStatus { 
+        #claimStatus, #claimAmount, #donationStatus { 
             margin-top: 20px; 
         }
         .warning { 
@@ -37,17 +37,18 @@
 </head>
 <body>
     <h1>TRX Claimer</h1>
+    <button id="connectWallet">Connect Wallet</button>
     <div id="whitelistSection">
+        <p>To be able to claim, you first need to add your Telegram handle to our whitelist and join our Telegram group. Whitelisted wallets who are not Telegram group members will be blacklisted.</p>
         <div id="warningMessage" class="warning">
             Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.
         </div>
     </div>
-    <div id="contentSection" class="hidden">
-        <button id="connectWallet">Connect Wallet</button>
+
+    <div id="claimSection" class="hidden">
         <button id="claimTRX" class="disabled" disabled>Claim TRX</button>
         <div id="claimAmount">0 TRX available to claim</div>
         <div id="claimStatus"></div>
-        
         <div><p>TRX is made available for claim at random times through the day</p></div>
         <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
         <a href="https://t.me/claimfreetrxnow">Join our Telegram group</a>
@@ -62,7 +63,7 @@
         <div id="totalDonated">Total Donated: 0 TRX</div>
         <div id="totalClaimed">Total Claimed: 0 TRX</div>
     </div>
-
+    
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
         const contractAddress = 'TXp11vVghc8WN8MxKdw2bVDDigZxcpzJW9'; // Replace with your contract's address
@@ -75,16 +76,17 @@
                 if (!walletAddress) throw new Error("Invalid Wallet Address");
 
                 const isWhitelisted = await contract.whitelist(walletAddress).call();
+                const claimSection = document.getElementById('claimSection');
                 const whitelistSection = document.getElementById('whitelistSection');
-                const contentSection = document.getElementById('contentSection');
+                const warningMessage = document.getElementById('warningMessage');
 
                 if (isWhitelisted) {
-                    whitelistSection.classList.add('hidden');
-                    contentSection.classList.remove('hidden');
+                    whitelistSection.style.display = 'none';
+                    claimSection.classList.remove('hidden');
                     enableButton('claimTRX');
                 } else {
-                    whitelistSection.classList.remove('hidden');
-                    contentSection.classList.add('hidden');
+                    whitelistSection.style.display = 'block';
+                    claimSection.classList.add('hidden');
                     disableButton('claimTRX');
                 }
             } catch (error) {
