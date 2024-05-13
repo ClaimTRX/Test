@@ -37,33 +37,32 @@
 </head>
 <body>
     <h1>TRX Claimer</h1>
-    <button id="connectWallet">Connect Wallet</button>
-    <button id="claimTRX" class="disabled" disabled>Claim TRX</button>
-    <div id="claimAmount">0 TRX available to claim</div>
-    <div id="claimStatus"></div>
-    <div id="whitelistSection" class="hidden">
-        <p>To be able to claim, you first need to add your Telegram handle to our whitelist and join our Telegram group. Whitelisted wallets who are not Telegram group members will be blacklisted.</p>
-        <input type="text" id="tgUsername" placeholder="Enter Telegram username">
-        <button id="addToWhitelist" class="disabled" disabled>Add to Whitelist</button>
-        <div id="warningMessage" class="hidden warning">
+    <div id="whitelistSection">
+        <div id="warningMessage" class="warning">
             Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.
         </div>
     </div>
-
-    <div><p>TRX is made available for claim at random times through the day</p></div>
-    <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
-    <a href="https://t.me/claimfreetrxnow">Join our Telegram group</a>
-    <h2>Visit our sponsors</h2>
-    <iframe width="300" height="250" src="https://tronnrg.com/verts/Mobile300x250/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA" frameBorder="0"></iframe>
-    <br>
-    
-    <div id="donationSection">
-        <input type="text" id="donationAmount" placeholder="Amount in TRX">
-        <button id="donateTRX" class="disabled" disabled>Donate TRX</button>
+    <div id="contentSection" class="hidden">
+        <button id="connectWallet">Connect Wallet</button>
+        <button id="claimTRX" class="disabled" disabled>Claim TRX</button>
+        <div id="claimAmount">0 TRX available to claim</div>
+        <div id="claimStatus"></div>
+        
+        <div><p>TRX is made available for claim at random times through the day</p></div>
+        <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
+        <a href="https://t.me/claimfreetrxnow">Join our Telegram group</a>
+        <h2>Visit our sponsors</h2>
+        <iframe width="300" height="250" src="https://tronnrg.com/verts/Mobile300x250/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA" frameBorder="0"></iframe>
+        <br>
+        
+        <div id="donationSection">
+            <input type="text" id="donationAmount" placeholder="Amount in TRX">
+            <button id="donateTRX" class="disabled" disabled>Donate TRX</button>
+        </div>
+        <div id="totalDonated">Total Donated: 0 TRX</div>
+        <div id="totalClaimed">Total Claimed: 0 TRX</div>
     </div>
-    <div id="totalDonated">Total Donated: 0 TRX</div>
-    <div id="totalClaimed">Total Claimed: 0 TRX</div>
-    
+
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
         const contractAddress = 'TXp11vVghc8WN8MxKdw2bVDDigZxcpzJW9'; // Replace with your contract's address
@@ -77,19 +76,16 @@
 
                 const isWhitelisted = await contract.whitelist(walletAddress).call();
                 const whitelistSection = document.getElementById('whitelistSection');
-                const warningMessage = document.getElementById('warningMessage');
-                const addToWhitelistButton = document.getElementById('addToWhitelist');
+                const contentSection = document.getElementById('contentSection');
 
                 if (isWhitelisted) {
-                    whitelistSection.style.display = 'none';
-                    warningMessage.classList.add('hidden');
+                    whitelistSection.classList.add('hidden');
+                    contentSection.classList.remove('hidden');
                     enableButton('claimTRX');
                 } else {
-                    whitelistSection.style.display = 'block';
-                    warningMessage.classList.remove('hidden');
+                    whitelistSection.classList.remove('hidden');
+                    contentSection.classList.add('hidden');
                     disableButton('claimTRX');
-                    addToWhitelistButton.disabled = false;
-                    addToWhitelistButton.classList.remove('disabled');
                 }
             } catch (error) {
                 console.error("Whitelist Check Error: ", error.message);
@@ -166,17 +162,6 @@
             claimButton.disabled = !(parseInt(availableToClaimInTRX) > 0);
         }
 
-        async function addToWhitelist() {
-            const tgUsername = document.getElementById('tgUsername').value;
-            try {
-                await contract.addToWhitelist(tronWeb.defaultAddress.base58, tgUsername).send();
-                alert('Successfully added to whitelist!');
-                checkWhitelistStatus();
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-        }
-
         async function claimTRX() {
             try {
                 await contract.claimTRX().send();
@@ -211,7 +196,6 @@
 
         window.addEventListener('load', async () => {
             await init();
-            document.getElementById('addToWhitelist').addEventListener('click', addToWhitelist);
             document.getElementById('claimTRX').addEventListener('click', claimTRX);
             document.getElementById('donateTRX').addEventListener('click', donateTRX);
         });
