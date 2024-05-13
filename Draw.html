@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRX Draw</title>
+    <title>TRX Claimer</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 
@@ -11,7 +11,7 @@
             padding: 20px; 
             background-color: #f2f2f2; /* Sets background color */
         }
-        button { 
+        button, input { 
             margin: 10px; 
             padding: 20px 30px; /* Increased padding for better appearance */
             cursor: pointer; 
@@ -24,20 +24,25 @@
         .hidden { 
             display: none; 
         }
+        .connected, button:not(.disabled) { 
+            background-color: #4CAF50; 
+            color: white; 
+        }
         .disabled { 
             background-color: #ccc; 
             color: #666;
         }
+        #claimStatus, #claimAmount, #donationStatus { 
+            margin-top: 20px; 
+        }
         .warning { 
             color: red; 
-            font-size: 20px;
+            font-size: 20px; 
         }
-        #appContent, #logoContainer, #energyWarning {
-            display: none;
-            margin-top: 40px;
-        }
-        #timer, #prizeAmount, #lastWinner, #intervalInfo, #warningMessage {
-            margin: 15px 0;
+        #logoContainer {
+            text-align: center; /* Centers the logo within the container */
+            margin: 0 auto; /* Ensures even spacing around the container */
+            padding: 20px; /* Adds some space around the container */
         }
         #logo {
             width: 300px;
@@ -49,41 +54,51 @@
             font-size: 18px;
             margin-bottom: 10px;
         }
-        iframe {
-            margin-top: 20px;
+        @media (max-width: 768px) { /* Adjusts styling for smaller devices */
+            #logoContainer {
+                padding: 10px; /* Reduces padding on smaller screens */
+            }
+            #logo {
+                max-width: 80%; /* Allows a bit of margin around the image */
+            }
         }
     </style>
 </head>
-
 <body>
     <a href="index.html">Go to claim Page</a>
     <a href="TRC20.html">Go to TRC20 Page</a>
-    <h1>TRX Draw</h1>
+    <h1>TRX Claimer</h1>
     <button id="connectWallet">Connect Wallet</button>
-    <div id="warningMessage" class="hidden warning">
-        Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.
+    <div id="whitelistSection">
+        <div id="warningMessage" class="warning">
+            Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.
+        </div>
     </div>
 
-    <div id="appContent">
-        <button id="register" class="disabled" disabled>Register</button>
-        <button id="draw" class="disabled" disabled>Draw Winner</button>
-        
-        <div id="timer">Next draw in: --:--:--</div>
-        <div id="prizeAmount">Current prize: 0 TRX</div>
-        <div id="lastWinner">Last winner: None</div>
-        <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> TRX every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
+    <div id="claimSection" class="hidden">
+        <button id="claimTRX" class="disabled" disabled>Claim TRX</button>
+        <div id="claimAmount">0 TRX available to claim</div>
+        <div id="claimStatus"></div>
+        <div><p>TRX is made available for claim at random times through the day</p></div>
+        <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
+        <a href="https://t.me/claimfreetrxnow">Join our Telegram group</a>
+        <h2>Need energy? visit TronNRG</h2>
+        <div id="logoContainer">
+            <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA/" target="_blank" rel="noopener noreferrer">
+                <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/affiliateProgramEnglish.png?raw=true" alt="Affiliate Program Logo">
+            </a>
+        </div>
+        <div id="donationSection">
+            <input type="text" id="donationAmount" placeholder="Amount in TRX">
+            <button id="donateTRX" class="disabled" disabled>Donate TRX</button>
+        </div>
+        <div id="totalDonated">Total Donated: 0 TRX</div>
+        <div id="totalClaimed">Total Claimed: 0 TRX</div>
     </div>
-
-    <div id="logoContainer">
-        <p id="visitText">Visit the new Just.Money Explorer</p>
-        <a href="https://explorer.just.money/" target="_blank" rel="noopener noreferrer">
-            <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/JustMoneyLogo.jpg?raw=true" alt="Just Money Logo">
-        </a>
-    </div>
-
+    
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
-        const contractAddress = 'TXaCHFfkJiS2eZYnWPr7LPrdrP8vjVvS7a';
+        const contractAddress = 'TXp11vVghc8WN8MxKdw2bVDDigZxcpzJW9'; // Replace with your contract's address
         let tronWeb;
         let contract;
 
@@ -93,26 +108,29 @@
                 if (!walletAddress) throw new Error("Invalid Wallet Address");
 
                 const isWhitelisted = await contract.whitelist(walletAddress).call();
-                const appContent = document.getElementById('appContent');
+                const claimSection = document.getElementById('claimSection');
+                const whitelistSection = document.getElementById('whitelistSection');
                 const warningMessage = document.getElementById('warningMessage');
 
                 if (isWhitelisted) {
-                    appContent.style.display = 'block';
-                    warningMessage.classList.add('hidden');
-                    enableButton('register');
+                    whitelistSection.style.display = 'none';
+                    claimSection.classList.remove('hidden');
                 } else {
-                    appContent.style.display = 'none';
-                    warningMessage.classList.remove('hidden');
+                    whitelistSection.style.display = 'block';
+                    claimSection.classList.add('hidden');
+                    disableButton('claimTRX');
                 }
+                return isWhitelisted;
             } catch (error) {
                 console.error("Whitelist Check Error: ", error.message);
                 alert("An error occurred while checking whitelist status.");
+                return false;
             }
         }
 
         async function init() {
             try {
-                if (window.tronWeb && window.tronWeb.ready) {
+                if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                     tronWeb = window.tronWeb;
                     contract = await tronWeb.contract().at(contractAddress);
 
@@ -120,13 +138,10 @@
                     connectButton.classList.add('connected');
                     connectButton.textContent = 'Wallet Connected';
 
-                    document.getElementById('logoContainer').style.display = 'block';
-
-                    enableButton('register');
-                    await checkWhitelistStatus();
-                    startDataUpdates();
+                    enableDonateButton(); // Always enable donate button once wallet is connected
+                    await updateUIStates();
                 } else {
-                    alert("Please install TronLink or open in a supported browser.");
+                    alert("Please install TronLink.");
                 }
             } catch (error) {
                 console.error("Initialization Error: ", error.message);
@@ -134,77 +149,32 @@
             }
         }
 
-        async function startDataUpdates() {
-            try {
-                setInterval(() => {
-                    updateTimer();
-                    updatePrizeAmount();
-                    updateLastWinner();
-                }, 1000); // Adjust interval as needed
-
-                await updateRegistrationDetails();
-            } catch (error) {
-                console.error("Data Updates Error: ", error.message);
-                alert("An error occurred while updating data.");
-            }
+        async function updateUIStates() {
+            const isWhitelisted = await checkWhitelistStatus();
+            await checkClaimStatus(isWhitelisted);
+            await updateDonationStats();
+            setInterval(async () => {
+                const isWhitelisted = await checkWhitelistStatus();
+                await checkClaimStatus(isWhitelisted);
+                await updateDonationStats();
+            }, 10000); // Update every 10 seconds
         }
 
-        async function updateLastWinner() {
-            try {
-                const [address, username, amount] = await contract.getLastWinner().call();
-                if (address !== "0x0000000000000000000000000000000000000000") {
-                    const winnerInfo = `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX.`;
-                    document.getElementById('lastWinner').innerText = winnerInfo;
-                } else {
-                    document.getElementById('lastWinner').innerText = "Last winner: None";
-                }
-            } catch (error) {
-                console.error("Last Winner Update Error:", error.message);
-            }
+        function enableDonateButton() {
+            const button = document.getElementById('donateTRX');
+            button.classList.remove('disabled');
+            button.disabled = false;
         }
 
-        async function updateTimer() {
-            try {
-                const lastDrawTime = parseInt(await contract.lastDrawTime().call());
-                const interval = parseInt(await contract.interval().call());
-                const currentTime = Math.floor(Date.now() / 1000);
-                const timeLeft = lastDrawTime + interval - currentTime;
-
-                const hours = Math.floor(timeLeft / 3600);
-                const minutes = Math.floor((timeLeft % 3600) / 60);
-                const seconds = timeLeft % 60;
-
-                const timerDisplay = document.getElementById('timer');
-                if (timeLeft > 0) {
-                    timerDisplay.innerText = `Next draw in: ${hours}:${minutes}:${seconds}`;
-                    disableButton('draw');
-                } else {
-                    timerDisplay.innerText = "Draw is available!";
-                    enableButton('draw');
-                }
-            } catch (error) {
-                console.error("Timer Update Error: ", error.message);
-            }
-        }
-
-        async function updatePrizeAmount() {
-            try {
-                const prizeAmount = parseInt(await contract.prizeAmount().call());
-                document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} TRX`;
-            } catch (error) {
-                console.error("Prize Amount Update Error: ", error.message);
-            }
-        }
-
-        async function updateRegistrationDetails() {
-            try {
-                const interval = parseInt(await contract.interval().call()) / 3600;
-                const prizeAmount = tronWeb.fromSun(parseInt(await contract.prizeAmount().call()));
-
-                document.getElementById('intervalDisplay').innerText = `${interval}`;
-                document.getElementById('prizeDisplay').innerText = `${prizeAmount} TRX`;
-            } catch (error) {
-                console.error("Registration Details Update Error:", error.message);
+        function disableDonateButton(temporarily) {
+            const button = document.getElementById('donateTRX');
+            button.classList.add('disabled');
+            button.disabled = true;
+            if (temporarily) {
+                setTimeout(() => {
+                    button.classList.remove('disabled');
+                    button.disabled = false;
+                }, 10000); // Re-enable after 10 seconds
             }
         }
 
@@ -220,32 +190,60 @@
             button.classList.add('disabled');
         }
 
-        async function registerForDraw() {
+        async function checkClaimStatus(isWhitelisted) {
             try {
-                await contract.register().send();
-                alert('Successfully registered for the draw!');
-                disableButton('register');
+                const availableToClaimInSuns = await contract.getClaimableAmount().call();
+                const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
+                document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
+                
+                const claimButton = document.getElementById('claimTRX');
+                if (parseFloat(availableToClaimInTRX) > 0 && isWhitelisted) {
+                    enableButton('claimTRX');
+                } else {
+                    disableButton('claimTRX');
+                }
             } catch (error) {
-                console.error("Registration Error: ", error.message);
+                console.error("Claim Status Check Error: ", error.message);
+                alert("An error occurred while checking claim status.");
+            }
+        }
+
+        async function claimTRX() {
+            try {
+                await contract.claimTRX().send();
+                alert('TRX successfully claimed!');
+                await updateUIStates();
+            } catch (error) {
                 alert('Error: ' + error.message);
             }
         }
 
-        async function drawWinner() {
+        async function donateTRX() {
+            const amountToDonate = tronWeb.toSun(document.getElementById('donationAmount').value);
             try {
-                await contract.draw().send();
-                alert('Winner has been drawn!');
+                await contract.donate().send({ callValue: amountToDonate });
+                alert('Thank you for your donation!');
+                await updateDonationStats();
+                disableDonateButton(true);
             } catch (error) {
-                console.error("Draw Winner Error: ", error.message);
                 alert('Error: ' + error.message);
             }
         }
 
-        window.addEventListener('load', async () => {
-            document.getElementById('connectWallet').addEventListener('click', init);
-            document.getElementById('register').addEventListener('click', registerForDraw);
-            document.getElementById('draw').addEventListener('click', drawWinner);
-        });
+        async function updateDonationStats() {
+            try {
+                const totalDonatedInSuns = await contract.getTotalDonated().call();
+                const totalClaimedInSuns = await contract.getTotalClaimed().call();
+                document.getElementById('totalDonated').innerText = `Total Donated: ${tronWeb.fromSun(totalDonatedInSuns)} TRX`;
+                document.getElementById('totalClaimed').innerText = `Total Claimed: ${tronWeb.fromSun(totalClaimedInSuns)} TRX`;
+            } catch (error) {
+                console.error("Donation Stats Update Error: ", error.message);
+            }
+        }
+
+        document.getElementById('connectWallet').addEventListener('click', init);
+        document.getElementById('claimTRX').addEventListener('click', claimTRX);
+        document.getElementById('donateTRX').addEventListener('click', donateTRX);
     </script>
 </body>
 </html>
