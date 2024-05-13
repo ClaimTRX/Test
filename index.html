@@ -34,27 +34,27 @@
             font-size: 20px; 
         }
         
-    #logoContainer {
-        text-align: center; /* Centers the logo within the container */
-        margin: 0 auto; /* Ensures even spacing around the container */
-        padding: 20px; /* Adds some space around the container */
-    }
-
-    #logo {
-        max-width: 100%; /* Makes sure the image never overflows the screen */
-        height: auto; /* Maintains the aspect ratio of the image */
-        width: auto; /* Prevents stretching on smaller screens */
-    }
-
-    @media (max-width: 768px) { /* Adjusts styling for smaller devices */
         #logoContainer {
-            padding: 10px; /* Reduces padding on smaller screens */
+            text-align: center; /* Centers the logo within the container */
+            margin: 0 auto; /* Ensures even spacing around the container */
+            padding: 20px; /* Adds some space around the container */
         }
 
         #logo {
-            max-width: 80%; /* Allows a bit of margin around the image */
+            max-width: 100%; /* Makes sure the image never overflows the screen */
+            height: auto; /* Maintains the aspect ratio of the image */
+            width: auto; /* Prevents stretching on smaller screens */
         }
-    }
+
+        @media (max-width: 768px) { /* Adjusts styling for smaller devices */
+            #logoContainer {
+                padding: 10px; /* Reduces padding on smaller screens */
+            }
+
+            #logo {
+                max-width: 80%; /* Allows a bit of margin around the image */
+            }
+        }
     </style>
 </head>
 <body>
@@ -76,10 +76,10 @@
         <a href="https://t.me/claimfreetrxnow">Join our Telegram group</a>
         <h2>Need energy? visit TronNRG</h2>
         <div id="logoContainer">
-    <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA/" target="_blank" rel="noopener noreferrer">
-        <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/affiliateProgramEnglish.png?raw=true" alt="Affiliate Program Logo">
-    </a>
-        <br>
+            <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA/" target="_blank" rel="noopener noreferrer">
+                <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/affiliateProgramEnglish.png?raw=true" alt="Affiliate Program Logo">
+            </a>
+        </div>
         
         <div id="donationSection">
             <input type="text" id="donationAmount" placeholder="Amount in TRX">
@@ -143,9 +143,11 @@
 
         async function updateUIStates() {
             await checkWhitelistStatus();
+            await checkClaimStatus();
             await updateDonationStats();
             setInterval(async () => {
                 await checkWhitelistStatus();
+                await checkClaimStatus();
                 await updateDonationStats();
             }, 10000); // Update every 10 seconds
         }
@@ -181,12 +183,19 @@
         }
 
         async function checkClaimStatus() {
-            const availableToClaimInSuns = await contract.getClaimableAmount().call();
-            const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
-            document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
-            const claimButton = document.getElementById('claimTRX');
-            claimButton.classList.toggle('disabled', !(parseInt(availableToClaimInTRX) > 0));
-            claimButton.disabled = !(parseInt(availableToClaimInTRX) > 0);
+            try {
+                const availableToClaimInSuns = await contract.getClaimableAmount().call();
+                const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
+                console.log("Available to Claim in Suns:", availableToClaimInSuns);
+                console.log("Available to Claim in TRX:", availableToClaimInTRX);
+                document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
+                const claimButton = document.getElementById('claimTRX');
+                claimButton.classList.toggle('disabled', !(parseInt(availableToClaimInTRX) > 0));
+                claimButton.disabled = !(parseInt(availableToClaimInTRX) > 0);
+            } catch (error) {
+                console.error("Check Claim Status Error: ", error.message);
+                alert("An error occurred while checking claim status.");
+            }
         }
 
         async function claimTRX() {
