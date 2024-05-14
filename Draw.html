@@ -9,17 +9,17 @@
             font-family: Arial, sans-serif; 
             text-align: center; 
             padding: 20px; 
-            background-color: #f2f2f2; /* Sets background color */
+            background-color: #f2f2f2; 
         }
         button { 
             margin: 10px; 
-            padding: 20px 30px; /* Increased padding for better appearance */
+            padding: 20px 30px; 
             cursor: pointer; 
-            border-radius: 8px; /* Adds rounded corners to buttons */
-            border: none; /* Removes border */
+            border-radius: 8px; 
+            border: none; 
             background-color: #4CAF50; 
             color: white;
-            font-size: 16px; /* Larger font size for better readability */
+            font-size: 16px; 
         }
         .hidden { 
             display: none; 
@@ -94,13 +94,19 @@
                 if (!walletAddress) throw new Error("Invalid Wallet Address");
 
                 const isWhitelisted = await contract.whitelist(walletAddress).call();
+                const hasRegistered = await contract.hasRegistered(walletAddress).call();
                 const appContent = document.getElementById('appContent');
                 const warningMessage = document.getElementById('warningMessage');
+                const registerButton = document.getElementById('register');
 
                 if (isWhitelisted) {
                     appContent.style.display = 'block';
                     warningMessage.classList.add('hidden');
-                    enableButton('register');
+                    if (!hasRegistered) {
+                        enableButton('register');
+                    } else {
+                        disableButton('register');
+                    }
                 } else {
                     appContent.style.display = 'none';
                     warningMessage.classList.remove('hidden');
@@ -123,7 +129,6 @@
 
                     document.getElementById('logoContainer').style.display = 'block';
 
-                    enableButton('register');
                     await checkWhitelistStatus();
                     startDataUpdates();
                 } else {
