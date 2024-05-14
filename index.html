@@ -9,43 +9,27 @@
             font-family: Arial, sans-serif; 
             text-align: center; 
             padding: 20px; 
-            background-color: #f2f2f2; /* Sets background color */
+            background-color: #f2f2f2;
         }
         button { 
-    margin: 10px; 
-    padding: 20px 30px; /* Increased padding for better appearance */
-    cursor: pointer; 
-    border-radius: 8px; /* Adds rounded corners to buttons */
-    border: none; /* Removes border */
-    background-color: #4CAF50; 
-    color: white;
-    font-size: 16px; /* Larger font size for better readability */
-}
-
-input[type="text"] { /* Styles specifically for text input fields */
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: 1px solid #ccc; /* Adds a light grey border */
-    color: black; /* Text color black for better readability */
-    background-color: #fff; /* Sets the background color to white */
-    margin: 10px;
-    font-size: 16px;
-}
-
-.hidden { 
-    display: none; 
-}
-
-.connected, button:not(.disabled) { 
-    background-color: #4CAF50; 
-    color: white; 
-}
-
-.disabled { 
-    background-color: #ccc; 
-    color: #666;
-}
-
+            margin: 10px; 
+            padding: 20px 30px;
+            cursor: pointer; 
+            border-radius: 8px;
+            border: none;
+            background-color: #4CAF50; 
+            color: white;
+            font-size: 16px;
+        }
+        input[type="text"] {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            color: black;
+            background-color: #fff;
+            margin: 10px;
+            font-size: 16px;
+        }
         .hidden { 
             display: none; 
         }
@@ -55,35 +39,32 @@ input[type="text"] { /* Styles specifically for text input fields */
         }
         .disabled { 
             background-color: #ccc; 
-            color: #666; 
-        }
-        #claimStatus, #claimAmount, #donationStatus { 
-            margin-top: 20px; 
+            color: #666;
+            cursor: not-allowed;
         }
         .warning { 
             color: red; 
             font-size: 20px; 
         }
-        
+        #claimStatus, #claimAmount, #donationStatus { 
+            margin-top: 20px; 
+        }
         #logoContainer {
-            text-align: center; /* Centers the logo within the container */
-            margin: 0 auto; /* Ensures even spacing around the container */
-            padding: 20px; /* Adds some space around the container */
+            text-align: center;
+            margin: 0 auto;
+            padding: 20px;
         }
-
         #logo {
-            max-width: 100%; /* Makes sure the image never overflows the screen */
-            height: auto; /* Maintains the aspect ratio of the image */
-            width: auto; /* Prevents stretching on smaller screens */
+            max-width: 100%;
+            height: auto;
+            width: auto;
         }
-
-        @media (max-width: 768px) { /* Adjusts styling for smaller devices */
+        @media (max-width: 768px) {
             #logoContainer {
-                padding: 10px; /* Reduces padding on smaller screens */
+                padding: 10px;
             }
-
             #logo {
-                max-width: 80%; /* Allows a bit of margin around the image */
+                max-width: 80%;
             }
         }
     </style>
@@ -97,7 +78,6 @@ input[type="text"] { /* Styles specifically for text input fields */
             Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.
         </div>
     </div>
-
     <div id="claimSection" class="hidden">
         <button id="claimTRX" class="disabled" disabled>Claim TRX</button>
         <div id="claimAmount">0 TRX available to claim</div>
@@ -111,7 +91,6 @@ input[type="text"] { /* Styles specifically for text input fields */
                 <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/affiliateProgramEnglish.png?raw=true" alt="Affiliate Program Logo">
             </a>
         </div>
-        
         <div id="donationSection">
             <input type="text" id="donationAmount" placeholder="Amount in TRX">
             <button id="donateTRX" class="disabled" disabled>Donate TRX</button>
@@ -119,7 +98,6 @@ input[type="text"] { /* Styles specifically for text input fields */
         <div id="totalDonated">Total Donated: 0 TRX</div>
         <div id="totalClaimed">Total Claimed: 0 TRX</div>
     </div>
-    
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
         const contractAddress = 'TXp11vVghc8WN8MxKdw2bVDDigZxcpzJW9'; // Replace with your contract's address
@@ -134,11 +112,11 @@ input[type="text"] { /* Styles specifically for text input fields */
                 const isWhitelisted = await contract.whitelist(walletAddress).call();
                 const claimSection = document.getElementById('claimSection');
                 const whitelistSection = document.getElementById('whitelistSection');
-                const warningMessage = document.getElementById('warningMessage');
 
                 if (isWhitelisted) {
                     whitelistSection.style.display = 'none';
                     claimSection.classList.remove('hidden');
+                    enableButton('claimTRX');
                 } else {
                     whitelistSection.style.display = 'block';
                     claimSection.classList.add('hidden');
@@ -154,18 +132,22 @@ input[type="text"] { /* Styles specifically for text input fields */
 
         async function init() {
             try {
-                if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                    tronWeb = window.tronWeb;
-                    contract = await tronWeb.contract().at(contractAddress);
-
-                    const connectButton = document.getElementById('connectWallet');
-                    connectButton.classList.add('connected');
-                    connectButton.textContent = 'Wallet Connected';
-
-                    enableDonateButton(); // Always enable donate button once wallet is connected
-                    await updateUIStates();
-                } else {
+                if (!window.tronWeb || !window.tronWeb.defaultAddress.base58) {
                     alert("Please install TronLink.");
+                    return;
+                }
+
+                tronWeb = window.tronWeb;
+                contract = await tronWeb.contract().at(contractAddress);
+                
+                const connectButton = document.getElementById('connectWallet');
+                connectButton.classList.add('connected');
+                connectButton.textContent = 'Wallet Connected';
+
+                const isWhitelisted = await checkWhitelistStatus();
+                enableDonateButton(); // Always enable donate button once wallet is connected
+                if (isWhitelisted) {
+                    await updateUIStates();
                 }
             } catch (error) {
                 console.error("Initialization Error: ", error.message);
@@ -174,14 +156,8 @@ input[type="text"] { /* Styles specifically for text input fields */
         }
 
         async function updateUIStates() {
-            const isWhitelisted = await checkWhitelistStatus();
-            await checkClaimStatus(isWhitelisted);
+            await checkClaimStatus();
             await updateDonationStats();
-            setInterval(async () => {
-                const isWhitelisted = await checkWhitelistStatus();
-                await checkClaimStatus(isWhitelisted);
-                await updateDonationStats();
-            }, 10000); // Update every 10 seconds
         }
 
         function enableDonateButton() {
@@ -190,38 +166,14 @@ input[type="text"] { /* Styles specifically for text input fields */
             button.disabled = false;
         }
 
-        function disableDonateButton(temporarily) {
-            const button = document.getElementById('donateTRX');
-            button.classList.add('disabled');
-            button.disabled = true;
-            if (temporarily) {
-                setTimeout(() => {
-                    button.classList.remove('disabled');
-                    button.disabled = false;
-                }, 10000); // Re-enable after 10 seconds
-            }
-        }
-
-        function enableButton(buttonId) {
-            const button = document.getElementById(buttonId);
-            button.disabled = false;
-            button.classList.remove('disabled');
-        }
-
-        function disableButton(buttonId) {
-            const button = document.getElementById(buttonId);
-            button.disabled = true;
-            button.classList.add('disabled');
-        }
-
-        async function checkClaimStatus(isWhitelisted) {
+        async function checkClaimStatus() {
             try {
                 const availableToClaimInSuns = await contract.getClaimableAmount().call();
                 const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
                 document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
                 
                 const claimButton = document.getElementById('claimTRX');
-                if (parseFloat(availableToClaimInTRX) > 0 && isWhitelisted) {
+                if (parseFloat(availableToClaimInTRX) > 0) {
                     enableButton('claimTRX');
                 } else {
                     disableButton('claimTRX');
@@ -248,7 +200,6 @@ input[type="text"] { /* Styles specifically for text input fields */
                 await contract.donate().send({ callValue: amountToDonate });
                 alert('Thank you for your donation!');
                 await updateDonationStats();
-                disableDonateButton(true);
             } catch (error) {
                 alert('Error: ' + error.message);
             }
