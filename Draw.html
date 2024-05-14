@@ -27,6 +27,7 @@
         .disabled { 
             background-color: #ccc; 
             color: #666;
+            cursor: not-allowed;
         }
         .warning { 
             color: red; 
@@ -59,6 +60,7 @@
     <div id="warningMessage" class="hidden warning">
         Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.
     </div>
+    <div id="statusMessage" class="warning hidden"></div>
     <div id="appContent">
         <button id="register" class="disabled" disabled>Register</button>
         <button id="draw" class="disabled" disabled>Draw Winner</button>
@@ -102,15 +104,18 @@
                 }
             } catch (error) {
                 console.error("Whitelist Check Error: ", error.message);
-                alert("An error occurred while checking whitelist status.");
+                document.getElementById('statusMessage').textContent = "An error occurred while checking whitelist status.";
             }
         }
 
         async function checkRegistrationStatus(walletAddress) {
             const isRegistered = await contract.hasRegistered(walletAddress).call();
+            const registerButton = document.getElementById('register');
             if (isRegistered) {
+                registerButton.textContent = 'Registered';
                 disableButton('register');
             } else {
+                registerButton.textContent = 'Register';
                 enableButton('register');
             }
         }
@@ -130,11 +135,11 @@
                     await checkWhitelistStatus();
                     startDataUpdates();
                 } else {
-                    alert("Please install TronLink or open in a supported browser.");
+                    document.getElementById('statusMessage').textContent = "Please install TronLink or open in a supported browser.";
                 }
             } catch (error) {
                 console.error("Initialization Error: ", error.message);
-                alert("An error occurred while initializing the wallet connection.");
+                document.getElementById('statusMessage').textContent = "An error occurred while initializing the wallet connection.";
             }
         }
 
@@ -149,7 +154,7 @@
                 await updateRegistrationDetails();
             } catch (error) {
                 console.error("Data Updates Error: ", error.message);
-                alert("An error occurred while updating data.");
+                document.getElementById('statusMessage').textContent = "An error occurred while updating data.";
             }
         }
 
@@ -231,21 +236,26 @@
                 if (!isWhitelisted) throw new Error("You are not whitelisted!");
 
                 await contract.register().send();
-                alert('Successfully registered for the draw!');
                 disableButton('register');
+                document.getElementById('register').textContent = 'Registered';
+                document.getElementById('statusMessage').textContent = 'Successfully registered for the draw!';
+                document.getElementById('statusMessage').classList.remove('hidden');
             } catch (error) {
                 console.error("Registration Error: ", error.message);
-                alert('Error: ' + error.message);
+                document.getElementById('statusMessage').textContent = 'Error: ' + error.message;
+                document.getElementById('statusMessage').classList.remove('hidden');
             }
         }
 
         async function drawWinner() {
             try {
                 await contract.draw().send();
-                alert('Winner has been drawn!');
+                document.getElementById('statusMessage').textContent = 'Winner has been drawn!';
+                document.getElementById('statusMessage').classList.remove('hidden');
             } catch (error) {
                 console.error("Draw Winner Error: ", error.message);
-                alert('Error: ' + error.message);
+                document.getElementById('statusMessage').textContent = 'Error: ' + error.message;
+                document.getElementById('statusMessage').classList.remove('hidden');
             }
         }
 
