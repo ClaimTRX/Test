@@ -96,7 +96,7 @@
                     appContent.style.display = 'block';
                     warningMessage.classList.add('hidden');
                     enableButton('register');
-                    checkRegistrationStatus(walletAddress);
+                    checkRegistrationStatus(walletAddress); // Re-check registration status
                 } else {
                     appContent.style.display = 'none';
                     warningMessage.classList.remove('hidden');
@@ -134,6 +134,7 @@
                     document.getElementById('logoContainer').style.display = 'block';
 
                     await checkWhitelistStatus();
+                    checkRegistrationStatus(tronWeb.defaultAddress.base58); // Ensure registration status is checked on init
                     startDataUpdates();
                 } else {
                     document.getElementById('statusMessage').textContent = "Please install TronLink or open in a supported browser.";
