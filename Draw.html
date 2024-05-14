@@ -9,20 +9,20 @@
             font-family: Arial, sans-serif; 
             text-align: center; 
             padding: 20px; 
-            background-color: #f2f2f2; 
+            background-color: #f2f2f2;
         }
         button { 
             margin: 10px; 
-            padding: 20px 30px; 
+            padding: 20px 30px;
             cursor: pointer; 
-            border-radius: 8px; 
-            border: none; 
+            border-radius: 8px;
+            border: none;
             background-color: #4CAF50; 
             color: white;
-            font-size: 16px; 
+            font-size: 16px;
         }
         .hidden { 
-            display: none; 
+            display: none;
         }
         .disabled { 
             background-color: #ccc; 
@@ -49,12 +49,8 @@
             font-size: 18px;
             margin-bottom: 10px;
         }
-        iframe {
-            margin-top: 20px;
-        }
     </style>
 </head>
-
 <body>
     <a href="index.html">Go to claim Page</a>
     <a href="TRC20.html">Go to TRC20 Page</a>
@@ -63,7 +59,6 @@
     <div id="warningMessage" class="hidden warning">
         Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.
     </div>
-
     <div id="appContent">
         <button id="register" class="disabled" disabled>Register</button>
         <button id="draw" class="disabled" disabled>Draw Winner</button>
@@ -74,14 +69,12 @@
         <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> TRX every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
         <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
     </div>
-
     <div id="logoContainer">
         <p id="visitText">Visit the new Just.Money Explorer</p>
         <a href="https://explorer.just.money/" target="_blank" rel="noopener noreferrer">
             <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/JustMoneyLogo.jpg?raw=true" alt="Just Money Logo">
         </a>
     </div>
-
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
         const contractAddress = 'TUqbswAsECqi87mf1sRAoFe96WV6UVCyQF';
@@ -94,19 +87,13 @@
                 if (!walletAddress) throw new Error("Invalid Wallet Address");
 
                 const isWhitelisted = await contract.whitelist(walletAddress).call();
-                const hasRegistered = await contract.hasRegistered(walletAddress).call();
                 const appContent = document.getElementById('appContent');
                 const warningMessage = document.getElementById('warningMessage');
-                const registerButton = document.getElementById('register');
 
                 if (isWhitelisted) {
                     appContent.style.display = 'block';
                     warningMessage.classList.add('hidden');
-                    if (!hasRegistered) {
-                        enableButton('register');
-                    } else {
-                        disableButton('register');
-                    }
+                    enableButton('register');
                 } else {
                     appContent.style.display = 'none';
                     warningMessage.classList.remove('hidden');
@@ -146,7 +133,7 @@
                     updateTimer();
                     updatePrizeAmount();
                     updateLastWinner();
-                }, 1000); // Adjust interval as needed
+                }, 1000);
 
                 await updateRegistrationDetails();
             } catch (error) {
@@ -228,6 +215,10 @@
 
         async function registerForDraw() {
             try {
+                const walletAddress = tronWeb.defaultAddress.base58;
+                const isWhitelisted = await contract.whitelist(walletAddress).call();
+                if (!isWhitelisted) throw new Error("You are not whitelisted!");
+
                 await contract.register().send();
                 alert('Successfully registered for the draw!');
                 disableButton('register');
