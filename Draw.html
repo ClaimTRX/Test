@@ -33,7 +33,7 @@
             color: red; 
             font-size: 20px;
         }
-        #appContent, #logoContainer, #energyWarning {
+        #appContent, #logoContainer, #energyWarning, #participantsCount {
             display: none;
             margin-top: 40px;
         }
@@ -63,7 +63,7 @@
     <div id="appContent">
         <button id="register" class="disabled" disabled>Register</button>
         <button id="draw" class="disabled" disabled>Draw Winner</button>
-        
+        <div id="participantsCount">Participants: --</div>
         <div id="timer">Next draw in: --:--:--</div>
         <div id="prizeAmount">Current prize: 0 TRX</div>
         <div id="lastWinner">Last winner: None</div>
@@ -78,7 +78,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
-        const contractAddress = 'TVHKzE54md38r2yLEJ9qxfaHtA51J3XgBw';
+        const contractAddress = 'TWGfcMPsN3yPdeV3seUvXfizcBdAxzQaaS';
         let tronWeb;
         let contract;
 
@@ -96,6 +96,8 @@
                     warningMessage.classList.add('hidden');
                     enableButton('register');
                     checkRegistrationStatus(walletAddress);
+                    document.getElementById('participantsCount').style.display = 'block';
+                    updateParticipantsCount();
                 } else {
                     appContent.style.display = 'none';
                     warningMessage.classList.remove('hidden');
@@ -108,51 +110,60 @@
             }
         }
 
-        
         async function init() {
-    try {
-        if (window.tronWeb && window.tronWeb.ready) {
-            tronWeb = window.tronWeb;
-            contract = await tronWeb.contract().at(contractAddress);
+            try {
+                if (window.tronWeb && window.tronWeb.ready) {
+                    tronWeb = window.tronWeb;
+                    contract = await tronWeb.contract().at(contractAddress);
 
-            const connectButton = document.getElementById('connectWallet');
-            connectButton.classList.add('connected');
-            connectButton.textContent = 'Wallet Connected';
+                    const connectButton = document.getElementById('connectWallet');
+                    connectButton.classList.add('connected');
+                    connectButton.textContent = 'Wallet Connected';
 
-            document.getElementById('logoContainer').style.display = 'block';
+                    document.getElementById('logoContainer').style.display = 'block';
 
-            const walletAddress = tronWeb.defaultAddress.base58;
-            await checkWhitelistStatus();
-            checkRegistrationStatus(walletAddress); // Check if already registered
-            startDataUpdates();
-        } else {
-            document.getElementById('statusMessage').textContent = "Please install TronLink or open in a supported browser.";
-            document.getElementById('statusMessage').classList.remove('hidden');
+                    const walletAddress = tronWeb.defaultAddress.base58;
+                    await checkWhitelistStatus();
+                    checkRegistrationStatus(walletAddress); // Check if already registered
+                    startDataUpdates();
+                } else {
+                    document.getElementById('statusMessage').textContent = "Please install TronLink or open in a supported browser.";
+                    document.getElementById('statusMessage').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error("Initialization Error: ", error.message);
+                document.getElementById('statusMessage').textContent = "An error occurred while initializing the wallet connection.";
+                document.getElementById('statusMessage').classList.remove('hidden');
+            }
         }
-    } catch (error) {
-        console.error("Initialization Error: ", error.message);
-        document.getElementById('statusMessage').textContent = "An error occurred while initializing the wallet connection.";
-        document.getElementById('statusMessage').classList.remove('hidden');
-    }
-}
+
+        async function updateParticipantsCount() {
+            try {
+                const participantsArray = await contract.methods.participants().call();
+                document.getElementById('participantsCount').innerText = `Participants: ${participantsArray.length}`;
+            } catch (error) {
+                console.error("Participants Count Error: ", error.message);
+                document.getElementById('participantsCount').innerText = "Participants: Error";
+            }
+        }
+
         async function checkRegistrationStatus(walletAddress) {
-    try {
-        const isRegistered = await contract.hasRegistered(walletAddress).call();
-        const registerButton = document.getElementById('register');
-        if (isRegistered) {
-            registerButton.textContent = 'Already Registered';
-            disableButton('register');
-        } else {
-            registerButton.textContent = 'Register';
-            enableButton('register');
+            try {
+                const isRegistered = await contract.hasRegistered(walletAddress).call();
+                const registerButton = document.getElementById('register');
+                if (isRegistered) {
+                    registerButton.textContent = 'Already Registered';
+                    disableButton('register');
+                } else {
+                    registerButton.textContent = 'Register';
+                    enableButton('register');
+                }
+            } catch (error) {
+                console.error("Registration Status Error: ", error.message);
+                document.getElementById('statusMessage').textContent = 'Error checking registration status: ' + error.message;
+                document.getElementById('statusMessage').classList.remove('hidden');
+            }
         }
-    } catch (error) {
-        console.error("Registration Status Error: ", error.message);
-        document.getElementById('statusMessage').textContent = 'Error checking registration status: ' + error.message;
-        document.getElementById('statusMessage').classList.remove('hidden');
-    }
-}
-
 
         async function startDataUpdates() {
             try {
@@ -264,6 +275,7 @@
                 await contract.draw().send();
                 document.getElementById('statusMessage').textContent = 'Winner has been drawn!';
                 document.getElementById('statusMessage').classList.remove('hidden');
+                updateParticipantsCount(); // Update after drawing to reset the count
             } catch (error) {
                 console.error("Draw Winner Error: ", error.message);
                 document.getElementById('statusMessage').textContent = 'Error: ' + error.message;
