@@ -81,12 +81,12 @@
         <div>
             <p id="token1Name">Token 1:</p>
             <p id="claimableAmount1">Claimable Amount: 0</p>
-            <button id="claimToken1" onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim Token 1</button>
+            <button id="claimToken1" onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim</button>
         </div>
         <div>
             <p id="token2Name">Token 2:</p>
             <p id="claimableAmount2">Claimable Amount: 0</p>
-            <button id="claimToken2" onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim Token 2</button>
+            <button id="claimToken2" onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim</button>
         </div>
         <p id="cooldownTimer"></p>
     </div>
@@ -161,11 +161,11 @@
         }
 
         async function fetchTokenNames() {
-            for (const [address, nameElementId] of Object.entries(tokenAddresses)) {
+            for (const [address, buttonId] of Object.entries(tokenAddresses)) {
                 try {
                     const tokenContract = await tronWeb.contract(contractABI, address);
                     const tokenName = await tokenContract.name().call();
-                    document.getElementById(`token${Object.keys(tokenAddresses).indexOf(address) + 1}Name`).innerText = `Token: ${tokenName}`;
+                    document.getElementById(buttonId).innerText = `Claim ${tokenName}`;
                 } catch (error) {
                     console.error(`Error fetching name for token ${address}:`, error);
                 }
