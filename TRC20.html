@@ -217,7 +217,7 @@
                     const tokenContract = await tronWeb.contract().at(address);
                     const decimals = await tokenContract.decimals().call();
                     const amount = await contract.viewAccumulatedAmount(address).call();
-                    const formattedAmount = tronWeb.toBigNumber(amount).div(tronWeb.toBigNumber(10).pow(decimals)).toFixed(decimals);
+                    const formattedAmount = Math.floor(tronWeb.toBigNumber(amount).div(tronWeb.toBigNumber(10).pow(decimals))); // Remove decimals by rounding down
                     document.getElementById(`claimableAmount${Object.keys(tokenAddresses).indexOf(address) + 1}`).innerText = 'Claimable Amount: ' + formattedAmount;
                 } catch (error) {
                     console.error(`Error fetching amount for token ${address}:`, error);
