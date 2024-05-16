@@ -134,7 +134,7 @@
             {"constant": false,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "claimTokens","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},
             {"constant": true,"inputs": [{"name": "account", "type": "address"}],"name": "isWhitelisted","outputs": [{"name": "", "type": "bool"}],"payable": false,"stateMutability": "view","type": "function"},
             {"constant": true,"inputs": [],"name": "claimCooldown","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}, {"name": "account", "type": "address"}],"name": "lastUserClaimTime","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "lastClaimTimePerToken","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
             {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "accumulationRatePerMinute","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
             {"constant": true,"inputs": [],"name": "decimals","outputs": [{"name": "", "type": "uint8"}],"payable": false,"stateMutability": "view","type": "function"},
             {"constant": true,"inputs": [],"name": "name","outputs": [{"name": "", "type": "string"}],"payable": false,"stateMutability": "view","type": "function"}
@@ -227,13 +227,13 @@
 
         async function updateCooldownTimers() {
             const contract = await tronWeb.contract(contractABI, contractAddress);
-            const cooldownTime = 86400; // 24 hours in seconds
+            const cooldownTime = (await contract.claimCooldown().call()).toNumber();
             const address = tronWeb.defaultAddress.base58;
 
             let latestClaimTime = 0;
             for (const tokenAddress of Object.keys(tokenAddresses)) {
                 try {
-                    const lastClaimTime = (await contract.lastUserClaimTime(tokenAddress, address).call()).toNumber();
+                    const lastClaimTime = (await contract.lastClaimTimePerToken(tokenAddress, address).call()).toNumber();
                     if (lastClaimTime > latestClaimTime) {
                         latestClaimTime = lastClaimTime;
                     }
