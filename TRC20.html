@@ -51,6 +51,9 @@
             color: red;
             font-size: 20px;
         }
+        .hidden { 
+            display: none; 
+        }
         @media (max-width: 768px) {
             p {
                 font-size: 14px;
@@ -63,19 +66,15 @@
     </style>
 </head>
 <body>
-    <a href="index.html">Go to claim Page</a>
-    <a href="Draw.html">Go to Draw Page</a>
     <h1>TRC20 Token Claimer</h1>
 
-    <p>Claim TRC20 tokens once every 24 hours. Energy is consumed from users addresses, so make sure the claimable amount is worth claiming. Tokens accumulate every minute. Will you claim now or risk someone else claiming before you? If you need Energy, you can <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA" target="_blank">rent it from TronNRG</a>.</p>
-
-    <button id="connectWallet">Connect TronLink Wallet</button>
-
-    <div id="whitelistMessage" class="hidden">
+    <div id="whitelistMessage">
         <p>Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.</p>
     </div>
 
-    <div id="tokens">
+    <button id="connectWallet">Connect TronLink Wallet</button>
+
+    <div id="tokens" class="hidden">
         <div>
             <p id="token1Name">Token 1:</p>
             <p id="claimableAmount1">Claimable Amount: 0</p>
@@ -148,24 +147,14 @@
             'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb': 'claimToken2'
         };
 
-        window.addEventListener('load', function() {
-            if (typeof window.tronWeb === 'undefined') {
-                console.log("Waiting for TronLink...");
-                setTimeout(startApp, 1000);
-            } else {
-                startApp();
-            }
-        });
-
-        async function startApp() {
+        document.getElementById('connectWallet').addEventListener('click', async function() {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 tronWeb = window.tronWeb;
-                console.log('TronLink connected. Wallet Address:', tronWeb.defaultAddress.base58);
-                checkWhitelistStatus();
+                await checkWhitelistStatus();
             } else {
-                console.log('Please log in to TronLink.');
+                alert('Please install TronLink or log in.');
             }
-        }
+        });
 
         async function checkWhitelistStatus() {
             const contract = await tronWeb.contract(claimerABI, contractAddress);
@@ -175,7 +164,7 @@
                 const isWhitelisted = await contract.whitelist(walletAddress).call();
                 if (isWhitelisted) {
                     document.getElementById('whitelistMessage').classList.add('hidden');
-                    document.getElementById('tokens').style.display = 'block';
+                    document.getElementById('tokens').classList.remove('hidden');
                     document.getElementById('connectWallet').innerText = 'Connected';
                     fetchTokenNames();
                     updateClaimableAmounts();
@@ -183,20 +172,12 @@
                     setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
                 } else {
                     document.getElementById('whitelistMessage').classList.remove('hidden');
-                    document.getElementById('tokens').style.display = 'none';
+                    document.getElementById('tokens').classList.add('hidden');
                 }
             } catch (error) {
                 console.error('Error checking whitelist status:', error);
             }
         }
-
-        document.getElementById('connectWallet').addEventListener('click', async function() {
-            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                await startApp();
-            } else {
-                alert('Please install TronLink or log in.');
-            }
-        });
 
         async function fetchTokenNames() {
             for (const [address, buttonId] of Object.entries(tokenAddresses)) {
