@@ -135,7 +135,9 @@
             {"constant": true,"inputs": [{"name": "account", "type": "address"}],"name": "isWhitelisted","outputs": [{"name": "", "type": "bool"}],"payable": false,"stateMutability": "view","type": "function"},
             {"constant": true,"inputs": [],"name": "claimCooldown","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
             {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "lastClaimTimePerToken","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "accumulationRatePerMinute","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"}
+            {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "accumulationRatePerMinute","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": true,"inputs": [],"name": "decimals","outputs": [{"name": "", "type": "uint8"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": true,"inputs": [],"name": "name","outputs": [{"name": "", "type": "string"}],"payable": false,"stateMutability": "view","type": "function"}
         ];
 
         const tokenAddresses = {
@@ -199,7 +201,7 @@
         async function fetchTokenNames() {
             for (const [address, buttonId] of Object.entries(tokenAddresses)) {
                 try {
-                    const tokenContract = await tronWeb.contract(contractABI, address);
+                    const tokenContract = await tronWeb.contract().at(address);
                     const tokenName = await tokenContract.name().call();
                     document.getElementById(buttonId).innerText = `Claim ${tokenName}`;
                 } catch (error) {
@@ -209,11 +211,12 @@
         }
 
         async function updateClaimableAmounts() {
+            const contract = await tronWeb.contract(contractABI, contractAddress);
             for (const [address, buttonId] of Object.entries(tokenAddresses)) {
                 try {
-                    const tokenContract = await tronWeb.contract(contractABI, address);
+                    const tokenContract = await tronWeb.contract().at(address);
                     const decimals = await tokenContract.decimals().call();
-                    const amount = await tronWeb.contract(contractABI, contractAddress).viewAccumulatedAmount(address).call();
+                    const amount = await contract.viewAccumulatedAmount(address).call();
                     const formattedAmount = tronWeb.toBigNumber(amount).div(tronWeb.toBigNumber(10).pow(decimals)).toFixed(decimals);
                     document.getElementById(`claimableAmount${Object.keys(tokenAddresses).indexOf(address) + 1}`).innerText = 'Claimable Amount: ' + formattedAmount;
                 } catch (error) {
@@ -272,8 +275,8 @@
 
                 console.log('Claim transaction result:', result);
                 alert('Claim successful! Transaction ID: ' + result);
-                updateCooldownTimers();  // Apply cooldown only after a successful claim
-                updateClaimableAmounts();
+                await updateCooldownTimers();  // Apply cooldown only after a successful claim
+                await updateClaimableAmounts();
             } catch (error) {
                 console.error('Claim failed:', error);
                 alert('Claim failed: ' + error.message);
