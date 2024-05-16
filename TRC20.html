@@ -82,14 +82,13 @@
             <p id="token1Name">Token 1:</p>
             <p id="claimableAmount1">Claimable Amount: 0</p>
             <button id="claimToken1" onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim Token 1</button>
-            <p id="cooldownTimer1" class="cooldownTimer"></p>
         </div>
         <div>
             <p id="token2Name">Token 2:</p>
             <p id="claimableAmount2">Claimable Amount: 0</p>
             <button id="claimToken2" onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim Token 2</button>
-            <p id="cooldownTimer2" class="cooldownTimer"></p>
         </div>
+        <p id="cooldownTimer"></p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
@@ -190,30 +189,39 @@
             const contract = await tronWeb.contract(contractABI, contractAddress);
             const cooldownTime = (await contract.claimCooldown().call()).toNumber();
 
-            for (const [address, buttonId] of Object.entries(tokenAddresses)) {
+            let latestClaimTime = 0;
+            for (const address of Object.keys(tokenAddresses)) {
                 try {
                     const lastClaimTime = (await contract.lastClaimTimePerToken(address).call()).toNumber();
-                    const now = Math.floor(Date.now() / 1000);
-                    const timeLeft = (lastClaimTime + cooldownTime) - now;
-
-                    const cooldownTimer = document.getElementById(`cooldownTimer${Object.keys(tokenAddresses).indexOf(address) + 1}`);
-                    const claimButton = document.getElementById(buttonId);
-
-                    if (timeLeft > 0) {
-                        const hours = Math.floor(timeLeft / 3600);
-                        const minutes = Math.floor((timeLeft % 3600) / 60);
-                        const seconds = timeLeft % 60;
-                        cooldownTimer.innerText = `Cooldown: ${hours}h ${minutes}m ${seconds}s`;
-                        claimButton.classList.add('disabled');
-                        claimButton.disabled = true;
-                    } else {
-                        cooldownTimer.innerText = '';
-                        claimButton.classList.remove('disabled');
-                        claimButton.disabled = false;
+                    if (lastClaimTime > latestClaimTime) {
+                        latestClaimTime = lastClaimTime;
                     }
                 } catch (error) {
-                    console.error(`Error updating cooldown timer for token ${address}:`, error);
+                    console.error(`Error fetching last claim time for token ${address}:`, error);
                 }
+            }
+
+            const now = Math.floor(Date.now() / 1000);
+            const timeLeft = (latestClaimTime + cooldownTime) - now;
+
+            const cooldownTimer = document.getElementById('cooldownTimer');
+            const claimButtons = document.querySelectorAll('button[id^="claimToken"]');
+
+            if (timeLeft > 0) {
+                const hours = Math.floor(timeLeft / 3600);
+                const minutes = Math.floor((timeLeft % 3600) / 60);
+                const seconds = timeLeft % 60;
+                cooldownTimer.innerText = `Cooldown: ${hours}h ${minutes}m ${seconds}s`;
+                claimButtons.forEach(button => {
+                    button.classList.add('disabled');
+                    button.disabled = true;
+                });
+            } else {
+                cooldownTimer.innerText = '';
+                claimButtons.forEach(button => {
+                    button.classList.remove('disabled');
+                    button.disabled = false;
+                });
             }
         }
 
@@ -228,6 +236,7 @@
                 console.log('Claim transaction result:', result);
                 alert('Claim successful! Transaction ID: ' + result);
                 updateCooldownTimers();
+                updateClaimableAmounts();
             } catch (error) {
                 console.error('Claim failed:', error);
                 alert('Claim failed: ' + error.message);
