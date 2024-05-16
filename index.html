@@ -3,276 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRX Claimer</title>
+    <title>TRC20 Token Claimer</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 
             text-align: center; 
             padding: 20px; 
-            background-color: #f2f2f2; /* Sets background color */
+            background-color: #f2f2f2;
         }
-        button { 
-    margin: 10px; 
-    padding: 20px 30px; /* Increased padding for better appearance */
-    cursor: pointer; 
-    border-radius: 8px; /* Adds rounded corners to buttons */
-    border: none; /* Removes border */
-    background-color: #4CAF50; 
-    color: white;
-    font-size: 16px; /* Larger font size for better readability */
-}
-
-input[type="text"] { /* Styles specifically for text input fields */
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: 1px solid #ccc; /* Adds a light grey border */
-    color: black; /* Text color black for better readability */
-    background-color: #fff; /* Sets the background color to white */
-    margin: 10px;
-    font-size: 16px;
-}
-
-.hidden { 
-    display: none; 
-}
-
-.connected, button:not(.disabled) { 
-    background-color: #4CAF50; 
-    color: white; 
-}
-
-.disabled { 
-    background-color: #ccc; 
-    color: #666;
-}
-
-        .hidden { 
-            display: none; 
+        h1 {
+            margin-bottom: 0;
         }
-        .connected, button:not(.disabled) { 
+        p {
+            font-size: 16px;
+            margin: 20px auto;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+        a:hover, a:focus {
+            text-decoration: underline;
+        }
+        button, input { 
+            margin: 10px; 
+            padding: 20px 30px;
+            cursor: pointer; 
+            border-radius: 8px;
+            border: none;
+        }
+        button:not(.disabled) { 
             background-color: #4CAF50; 
-            color: white; 
+            color: white;
         }
         .disabled { 
             background-color: #ccc; 
-            color: #666; 
+            color: #666;
+            cursor: not-allowed;
         }
-        #claimStatus, #claimAmount, #donationStatus { 
-            margin-top: 20px; 
+        #tokens { 
+            display: none;
         }
-        .warning { 
-            color: red; 
-            font-size: 20px; 
-        }
-        
         #logoContainer {
-            text-align: center; /* Centers the logo within the container */
-            margin: 0 auto; /* Ensures even spacing around the container */
-            padding: 20px; /* Adds some space around the container */
+            text-align: center;
+            margin: 0 auto;
+            padding: 20px;
         }
 
         #logo {
-            max-width: 100%; /* Makes sure the image never overflows the screen */
-            height: auto; /* Maintains the aspect ratio of the image */
-            width: auto; /* Prevents stretching on smaller screens */
+            max-width: 100%;
+            height: auto;
+            width: auto;
         }
 
-        @media (max-width: 768px) { /* Adjusts styling for smaller devices */
+        @media (max-width: 768px) {
             #logoContainer {
-                padding: 10px; /* Reduces padding on smaller screens */
+                padding: 10px;
             }
 
             #logo {
-                max-width: 80%; /* Allows a bit of margin around the image */
+                max-width: 80%;
             }
+        }
+    
+        #whitelistMessage {
+            display: none;
+            color: red;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        #cooldownTimer {
+            color: red;
+            font-size: 18px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <a href="Draw.html">Go to Draw Page</a>
-    <a href="TRC20.html">Go to TRC20 Page</a>
-    <h1>TRX Claimer</h1>
-    <button id="connectWallet">Connect Wallet</button>
-    <div id="whitelistSection">
-        <div id="warningMessage" class="warning">
-            Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.
+    <h1>TRC20 Token Claimer</h1>
+
+    <p>Claim TRC20 tokens once every 24 hours. Energy is consumed from users addresses, so make sure the claimable amount is worth claiming. Tokens accumulate every minute. Will you claim now or risk someone else claiming before you? If you need Energy, you can <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA" target="_blank">rent it from TronNRG</a>.</p>
+
+    <button id="connectWallet">Connect TronLink Wallet</button>
+
+    <p id="whitelistMessage">Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.</p>
+    <h2>Need energy? visit TronNRG</h2>
+    <div id="logoContainer">
+        <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA/" target="_blank" rel="noopener noreferrer">
+            <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/affiliateProgramEnglish.png?raw=true" alt="Affiliate Program Logo">
+        </a>
+    </div>
+    <div id="tokens">
+        <div>
+            <p id="token1Name">Token 1:</p>
+            <p id="claimableAmount1">Claimable Amount: 0</p>
+            <button id="claimToken1" onclick="claimToken('TVHH59uHVpHzLDMFFpUgCx2dNAQqCzPhcR')">Claim</button>
         </div>
+        <div>
+            <p id="token2Name">Token 2:</p>
+            <p id="claimableAmount2">Claimable Amount: 0</p>
+            <button id="claimToken2" onclick="claimToken('THvr8Jw1PqFSXAhYQgQSuGfqr3nWGy334j')">Claim</button>
+        </div>
+        <div>
+            <p id="token3Name">Token 3:</p>
+            <p id="claimableAmount3">Claimable Amount: 0</p>
+            <button id="claimToken3" onclick="claimToken('TRv9ipj4kKAZqQggQ7ceJpe5ERD1ZShpgs')">Claim</button>
+        </div>
+        <div>
+            <p id="token4Name">Token 4:</p>
+            <p id="claimableAmount4">Claimable Amount: 0</p>
+            <button id="claimToken4" onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim</button>
+        </div>
+        <div>
+            <p id="token5Name">Token 5:</p>
+            <p id="claimableAmount5">Claimable Amount: 0</p>
+            <button id="claimToken5" onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim</button>
+        </div>
+        <p id="cooldownTimer"></p>
     </div>
 
-    <div id="claimSection" class="hidden">
-        <button id="claimTRX" class="disabled" disabled>Claim TRX</button>
-        <div id="claimAmount">0 TRX available to claim</div>
-        <div id="claimStatus"></div>
-        <div><p>TRX is made available for claim at random times through the day</p></div>
-        <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
-        <a href="https://t.me/claimfreetrxnow">Join our Telegram group</a>
-        <h2>Need energy? visit TronNRG</h2>
-        <div id="logoContainer">
-            <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA/" target="_blank" rel="noopener noreferrer">
-                <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/affiliateProgramEnglish.png?raw=true" alt="Affiliate Program Logo">
-            </a>
-        </div>
-        
-        <div id="donationSection">
-            <input type="text" id="donationAmount" placeholder="Amount in TRX">
-            <button id="donateTRX" class="disabled" disabled>Donate TRX</button>
-        </div>
-        <div id="totalDonated">Total Donated: 0 TRX</div>
-        <div id="totalClaimed">Total Claimed: 0 TRX</div>
-    </div>
-    
-    <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
     <script>
-        const contractAddress = 'TXp11vVghc8WN8MxKdw2bVDDigZxcpzJW9'; // Replace with your contract's address
         let tronWeb;
-        let contract;
+        const contractAddress = "TSsvi9EBkf876eqvZKumF4FqvpuvvvwfUR";
+        const contractABI = [
+            {"constant": true,"inputs": [],"name": "owner","outputs": [{"name": "", "type": "address"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "viewAccumulatedAmount","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": false,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "claimTokens","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},
+            {"constant": true,"inputs": [{"name": "account", "type": "address"}],"name": "isWhitelisted","outputs": [{"name": "", "type": "bool"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": true,"inputs": [],"name": "claimCooldown","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "lastClaimTimePerToken","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "accumulationRatePerMinute","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": true,"inputs": [],"name": "decimals","outputs": [{"name": "", "type": "uint8"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": true,"inputs": [],"name": "name","outputs": [{"name": "", "type": "string"}],"payable": false,"stateMutability": "view","type": "function"}
+        ];
 
-        async function checkWhitelistStatus() {
+        const tokenAddresses = {
+            'TVHH59uHVpHzLDMFFpUgCx2dNAQqCzPhcR': 'claimToken1',
+            'THvr8Jw1PqFSXAhYQgQSuGfqr3nWGy334j': 'claimToken2',
+            'TRv9ipj4kKAZqQggQ7ceJpe5ERD1ZShpgs': 'claimToken3',
+            'TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1': 'claimToken4',
+            'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb': 'claimToken5'
+        };
+
+        window.addEventListener('load', function() {
+            if (typeof window.tronWeb === 'undefined') {
+                console.log("Waiting for TronLink...");
+                setTimeout(startApp, 1000);
+            } else {
+                startApp();
+            }
+        });
+
+        function startApp() {
+            tronWeb = window.tronWeb;
+            if (!tronWeb.defaultAddress.base58) {
+                console.log('Please log in to TronLink.');
+                return;
+            }
+            console.log('TronLink connected. Wallet Address:', tronWeb.defaultAddress.base58);
+            checkWhitelist(tronWeb.defaultAddress.base58);
+        }
+
+        document.getElementById('connectWallet').addEventListener('click', function() {
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                alert('Wallet connected: ' + tronWeb.defaultAddress.base58);
+                checkWhitelist(tronWeb.defaultAddress.base58);
+            } else {
+                alert('Please install TronLink or log in.');
+            }
+        });
+
+        async function checkWhitelist(address) {
             try {
-                const walletAddress = tronWeb.defaultAddress.base58;
-                if (!walletAddress) throw new Error("Invalid Wallet Address");
-
-                const isWhitelisted = await contract.whitelist(walletAddress).call();
-                const claimSection = document.getElementById('claimSection');
-                const whitelistSection = document.getElementById('whitelistSection');
-                const warningMessage = document.getElementById('warningMessage');
-
+                const contract = await tronWeb.contract(contractABI, contractAddress);
+                const isWhitelisted = await contract.isWhitelisted(address).call();
                 if (isWhitelisted) {
-                    whitelistSection.style.display = 'none';
-                    claimSection.classList.remove('hidden');
+                    document.getElementById('tokens').style.display = 'block';
+                    document.getElementById('connectWallet').innerText = 'Connected';
+                    document.getElementById('whitelistMessage').style.display = 'none';
+                    fetchTokenNames();
+                    updateClaimableAmounts();
+                    updateCooldownTimers();
+                    setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
+                    setInterval(updateCooldownTimers, 1000); // Updates every second
                 } else {
-                    whitelistSection.style.display = 'block';
-                    claimSection.classList.add('hidden');
-                    disableButton('claimTRX');
+                    document.getElementById('tokens').style.display = 'none';
+                    document.getElementById('whitelistMessage').style.display = 'block';
                 }
-                return isWhitelisted;
             } catch (error) {
-                console.error("Whitelist Check Error: ", error.message);
-                alert("An error occurred while checking whitelist status.");
-                return false;
+                console.error('Error checking whitelist status:', error);
             }
         }
 
-        async function init() {
-            try {
-                if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                    tronWeb = window.tronWeb;
-                    contract = await tronWeb.contract().at(contractAddress);
-
-                    const connectButton = document.getElementById('connectWallet');
-                    connectButton.classList.add('connected');
-                    connectButton.textContent = 'Wallet Connected';
-
-                    enableDonateButton(); // Always enable donate button once wallet is connected
-                    await updateUIStates();
-                } else {
-                    alert("Please install TronLink.");
+        async function fetchTokenNames() {
+            const tokenPromises = Object.entries(tokenAddresses).map(async ([address, buttonId]) => {
+                try {
+                    const tokenContract = await tronWeb.contract().at(address);
+                    const tokenName = await tokenContract.name().call();
+                    document.getElementById(buttonId).innerText = `Claim ${tokenName}`;
+                } catch (error) {
+                    console.error(`Error fetching name for token ${address}:`, error);
                 }
-            } catch (error) {
-                console.error("Initialization Error: ", error.message);
-                alert("An error occurred while initializing the wallet connection.");
-            }
+            });
+            await Promise.all(tokenPromises);
         }
 
-        async function updateUIStates() {
-            const isWhitelisted = await checkWhitelistStatus();
-            await checkClaimStatus(isWhitelisted);
-            await updateDonationStats();
-            setInterval(async () => {
-                const isWhitelisted = await checkWhitelistStatus();
-                await checkClaimStatus(isWhitelisted);
-                await updateDonationStats();
-            }, 10000); // Update every 10 seconds
+        async function updateClaimableAmounts() {
+            const contract = await tronWeb.contract(contractABI, contractAddress);
+            const amountPromises = Object.entries(tokenAddresses).map(async ([address, buttonId]) => {
+                try {
+                    const tokenContract = await tronWeb.contract().at(address);
+                    const decimals = await tokenContract.decimals().call();
+                    const amount = await contract.viewAccumulatedAmount(address).call();
+                    const formattedAmount = Math.floor(tronWeb.toBigNumber(amount).div(tronWeb.toBigNumber(10).pow(decimals))); // Remove decimals by rounding down
+                    document.getElementById(`claimableAmount${Object.keys(tokenAddresses).indexOf(address) + 1}`).innerText = 'Claimable Amount: ' + formattedAmount;
+                } catch (error) {
+                    console.error(`Error fetching amount for token ${address}:`, error);
+                }
+            });
+            await Promise.all(amountPromises);
         }
 
-        function enableDonateButton() {
-            const button = document.getElementById('donateTRX');
-            button.classList.remove('disabled');
-            button.disabled = false;
-        }
+        async function updateCooldownTimers() {
+            const contract = await tronWeb.contract(contractABI, contractAddress);
+            const cooldownTime = (await contract.claimCooldown().call()).toNumber();
+            const address = tronWeb.defaultAddress.base58;
 
-        function disableDonateButton(temporarily) {
-            const button = document.getElementById('donateTRX');
-            button.classList.add('disabled');
-            button.disabled = true;
-            if (temporarily) {
-                setTimeout(() => {
+            let latestClaimTime = 0;
+            const lastClaimTimePromises = Object.keys(tokenAddresses).map(async tokenAddress => {
+                try {
+                    const lastClaimTime = (await contract.lastClaimTimePerToken(tokenAddress, address).call()).toNumber();
+                    if (lastClaimTime > latestClaimTime) {
+                        latestClaimTime = lastClaimTime;
+                    }
+                } catch (error) {
+                    console.error(`Error fetching last claim time for token ${tokenAddress}:`, error);
+                }
+            });
+            await Promise.all(lastClaimTimePromises);
+
+            const now = Math.floor(Date.now() / 1000);
+            const timeLeft = (latestClaimTime + cooldownTime) - now;
+
+            const cooldownTimer = document.getElementById('cooldownTimer');
+            const claimButtons = document.querySelectorAll('button[id^="claimToken"]');
+
+            if (timeLeft > 0) {
+                const hours = Math.floor(timeLeft / 3600);
+                const minutes = Math.floor((timeLeft % 3600) / 60);
+                const seconds = timeLeft % 60;
+                cooldownTimer.innerText = `Cooldown: ${hours}h ${minutes}m ${seconds}s`;
+                claimButtons.forEach(button => {
+                    button.classList.add('disabled');
+                    button.disabled = true;
+                });
+            } else {
+                cooldownTimer.innerText = '';
+                claimButtons.forEach(button => {
                     button.classList.remove('disabled');
                     button.disabled = false;
-                }, 10000); // Re-enable after 10 seconds
+                });
             }
         }
 
-        function enableButton(buttonId) {
-            const button = document.getElementById(buttonId);
-            button.disabled = false;
-            button.classList.remove('disabled');
-        }
-
-        function disableButton(buttonId) {
-            const button = document.getElementById(buttonId);
-            button.disabled = true;
-            button.classList.add('disabled');
-        }
-
-        async function checkClaimStatus(isWhitelisted) {
+        async function claimToken(tokenAddress) {
             try {
-                const availableToClaimInSuns = await contract.getClaimableAmount().call();
-                const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
-                document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
-                
-                const claimButton = document.getElementById('claimTRX');
-                if (parseFloat(availableToClaimInTRX) > 0 && isWhitelisted) {
-                    enableButton('claimTRX');
-                } else {
-                    disableButton('claimTRX');
-                }
+                const contract = await tronWeb.contract(contractABI, contractAddress);
+                console.log('Claiming tokens for address:', tokenAddress);
+                const result = await contract.claimTokens(tokenAddress).send({
+                    from: tronWeb.defaultAddress.base58
+                });
+
+                console.log('Claim transaction result:', result);
+                alert('Claim successful! Transaction ID: ' + result);
+                await updateCooldownTimers();  // Apply cooldown only after a successful claim
+                await updateClaimableAmounts();
             } catch (error) {
-                console.error("Claim Status Check Error: ", error.message);
-                alert("An error occurred while checking claim status.");
+                console.error('Claim failed:', error);
+                alert('Claim failed: ' + error.message);
             }
         }
-
-       async function claimTRX() {
-    try {
-        await contract.claimTRX().send();
-        // No feedback provided
-        await updateUIStates();
-    } catch (error) {
-        console.error('Error: ' + error.message); // Use console.log for error debugging
-    }
-}
-
-
-        async function donateTRX() {
-            const amountToDonate = tronWeb.toSun(document.getElementById('donationAmount').value);
-            try {
-                await contract.donate().send({ callValue: amountToDonate });
-                alert('Thank you for your donation!');
-                await updateDonationStats();
-                disableDonateButton(true);
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-        }
-
-        async function updateDonationStats() {
-            try {
-                const totalDonatedInSuns = await contract.getTotalDonated().call();
-                const totalClaimedInSuns = await contract.getTotalClaimed().call();
-                const totalDonatedInTRX = tronWeb.fromSun(totalDonatedInSuns);
-                const totalClaimedInTRX = tronWeb.fromSun(totalClaimedInSuns);
-                document.getElementById('totalDonated').innerText = `Total Donated: ${totalDonatedInTRX} TRX`;
-                document.getElementById('totalClaimed').innerText = `Total Claimed: ${totalClaimedInTRX} TRX`;
-            } catch (error) {
-                console.error("Donation Stats Update Error: ", error.message);
-                alert("An error occurred while updating donation stats.");
-            }
-        }
-
-        document.getElementById('connectWallet').addEventListener('click', init);
-        document.getElementById('claimTRX').addEventListener('click', claimTRX);
-        document.getElementById('donateTRX').addEventListener('click', donateTRX);
     </script>
 </body>
 </html>
