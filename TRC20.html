@@ -55,6 +55,12 @@
                 padding: 15px 20px;
             }
         }
+        #whitelistMessage {
+            display: none;
+            color: red;
+            font-size: 18px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -63,6 +69,8 @@
     <p>Claim TRC20 tokens once every 24 hours. Energy is consumed from users addresses, so make sure the claimable amount is worth claiming. Tokens accumulate every minute. Will you claim now or risk someone else claiming before you? If you need Energy, you can <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA" target="_blank">rent it from TronNRG</a>.</p>
 
     <button id="connectWallet">Connect TronLink Wallet</button>
+
+    <p id="whitelistMessage">Contact Stian_86 on Telegram to be whitelisted for this page.</p>
 
     <div id="tokens">
         <div>
@@ -81,46 +89,14 @@
     <script>
         let tronWeb;
         const contractAddress = "TDz3ou9AzJZL4W8if5rMP5pqkqeDqbfGJX";
-        const claimerABI = [
-            {
-                "constant": true,
-                "inputs": [{"name": "_tokenAddr", "type": "address"}],
-                "name": "viewAccumulatedAmount",
-                "outputs": [{"name": "", "type": "uint256"}],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "constant": false,
-                "inputs": [{"name": "_tokenAddr", "type": "address"}],
-                "name": "claimTokens",
-                "outputs": [],
-                "payable": false,
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [{"name": "_tokenAddr", "type": "address"}],
-                "name": "isCooldownActive",
-                "outputs": [{"name": "", "type": "bool"}],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            }
-        ];
-
-        const trc20ABI = [
-            {
-                "constant": true,
-                "inputs": [],
-                "name": "name",
-                "outputs": [{"name": "", "type": "string"}],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            }
+        const contractABI = [
+            {"constant": true,"inputs": [],"name": "owner","outputs": [{"name": "", "type": "address"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "viewAccumulatedAmount","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": false,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "claimTokens","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},
+            {"constant": true,"inputs": [{"name": "account", "type": "address"}],"name": "isWhitelisted","outputs": [{"name": "", "type": "bool"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": true,"inputs": [],"name": "claimCooldown","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "lastClaimTimePerToken","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "accumulationRatePerMinute","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"}
         ];
 
         const tokenAddresses = {
@@ -144,33 +120,42 @@
                 return;
             }
             console.log('TronLink connected. Wallet Address:', tronWeb.defaultAddress.base58);
-            document.getElementById('connectWallet').innerText = 'Connected';
-            document.getElementById('tokens').style.display = 'block';
-
-            fetchTokenNames();
-            updateClaimableAmounts();
-            checkCooldowns();
-            setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
+            checkWhitelist(tronWeb.defaultAddress.base58);
         }
 
         document.getElementById('connectWallet').addEventListener('click', function() {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 alert('Wallet connected: ' + tronWeb.defaultAddress.base58);
-                document.getElementById('tokens').style.display = 'block';
-                document.getElementById('connectWallet').innerText = 'Connected';
-                fetchTokenNames();
-                updateClaimableAmounts();
-                checkCooldowns();
-                setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
+                checkWhitelist(tronWeb.defaultAddress.base58);
             } else {
                 alert('Please install TronLink or log in.');
             }
         });
 
+        async function checkWhitelist(address) {
+            try {
+                const contract = await tronWeb.contract(contractABI, contractAddress);
+                const isWhitelisted = await contract.isWhitelisted(address).call();
+                if (isWhitelisted) {
+                    document.getElementById('tokens').style.display = 'block';
+                    document.getElementById('connectWallet').innerText = 'Connected';
+                    document.getElementById('whitelistMessage').style.display = 'none';
+                    fetchTokenNames();
+                    updateClaimableAmounts();
+                    setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
+                } else {
+                    document.getElementById('tokens').style.display = 'none';
+                    document.getElementById('whitelistMessage').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error checking whitelist status:', error);
+            }
+        }
+
         async function fetchTokenNames() {
             for (const [address, nameElementId] of Object.entries(tokenAddresses)) {
                 try {
-                    const tokenContract = await tronWeb.contract(trc20ABI, address);
+                    const tokenContract = await tronWeb.contract(contractABI, address);
                     const tokenName = await tokenContract.name().call();
                     document.getElementById(`token${Object.keys(tokenAddresses).indexOf(address) + 1}Name`).innerText = `Token: ${tokenName}`;
                 } catch (error) {
@@ -180,7 +165,7 @@
         }
 
         async function updateClaimableAmounts() {
-            const contract = await tronWeb.contract(claimerABI, contractAddress);
+            const contract = await tronWeb.contract(contractABI, contractAddress);
             for (const [address, amountElementId] of Object.entries(tokenAddresses)) {
                 try {
                     const amount = await contract.viewAccumulatedAmount(address).call();
@@ -192,35 +177,9 @@
             }
         }
 
-        async function checkCooldowns() {
-            const contract = await tronWeb.contract(claimerABI, contractAddress);
-            for (const [address, buttonId] of Object.entries(tokenAddresses)) {
-                try {
-                    const isCooldownActive = await contract.isCooldownActive(address).call();
-                    const button = document.getElementById(buttonId);
-                    if (isCooldownActive) {
-                        button.classList.add("disabled");
-                        button.setAttribute("disabled", true);
-                    } else {
-                        button.classList.remove("disabled");
-                        button.removeAttribute("disabled");
-                    }
-                } catch (error) {
-                    console.error(`Error checking cooldown for token ${address}:`, error);
-                }
-            }
-        }
-
         async function claimToken(tokenAddress) {
             try {
-                const contract = await tronWeb.contract(claimerABI, contractAddress);
-                const isCooldownActive = await contract.isCooldownActive(tokenAddress).call();
-
-                if (isCooldownActive) {
-                    alert('This token is still on cooldown. Please wait before claiming again.');
-                    return;
-                }
-
+                const contract = await tronWeb.contract(contractABI, contractAddress);
                 console.log('Claiming tokens for address:', tokenAddress);
                 const result = await contract.claimTokens(tokenAddress).send({
                     from: tronWeb.defaultAddress.base58
@@ -228,7 +187,6 @@
 
                 console.log('Claim transaction result:', result);
                 alert('Claim successful! Transaction ID: ' + result);
-                checkCooldowns();
             } catch (error) {
                 console.error('Claim failed:', error);
                 alert('Claim failed: ' + error.message);
