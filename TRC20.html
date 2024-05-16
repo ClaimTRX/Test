@@ -81,12 +81,27 @@
         <div>
             <p id="token1Name">Token 1:</p>
             <p id="claimableAmount1">Claimable Amount: 0</p>
-            <button id="claimToken1" onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim</button>
+            <button id="claimToken1" onclick="claimToken('TVHH59uHVpHzLDMFFpUgCx2dNAQqCzPhcR')">Claim</button>
         </div>
         <div>
             <p id="token2Name">Token 2:</p>
             <p id="claimableAmount2">Claimable Amount: 0</p>
-            <button id="claimToken2" onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim</button>
+            <button id="claimToken2" onclick="claimToken('THvr8Jw1PqFSXAhYQgQSuGfqr3nWGy334j')">Claim</button>
+        </div>
+        <div>
+            <p id="token3Name">Token 3:</p>
+            <p id="claimableAmount3">Claimable Amount: 0</p>
+            <button id="claimToken3" onclick="claimToken('TRv9ipj4kKAZqQggQ7ceJpe5ERD1ZShpgs')">Claim</button>
+        </div>
+        <div>
+            <p id="token4Name">Token 4:</p>
+            <p id="claimableAmount4">Claimable Amount: 0</p>
+            <button id="claimToken4" onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim</button>
+        </div>
+        <div>
+            <p id="token5Name">Token 5:</p>
+            <p id="claimableAmount5">Claimable Amount: 0</p>
+            <button id="claimToken5" onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim</button>
         </div>
         <p id="cooldownTimer"></p>
     </div>
@@ -94,7 +109,7 @@
     <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
     <script>
         let tronWeb;
-        const contractAddress = "TDz3ou9AzJZL4W8if5rMP5pqkqeDqbfGJX";
+        const contractAddress = "TSsvi9EBkf876eqvZKumF4FqvpuvvvwfUR";
         const contractABI = [
             {"constant": true,"inputs": [],"name": "owner","outputs": [{"name": "", "type": "address"}],"payable": false,"stateMutability": "view","type": "function"},
             {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "viewAccumulatedAmount","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
@@ -106,8 +121,11 @@
         ];
 
         const tokenAddresses = {
-            'TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1': 'claimToken1',
-            'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb': 'claimToken2'
+            'TVHH59uHVpHzLDMFFpUgCx2dNAQqCzPhcR': 'claimToken1',
+            'THvr8Jw1PqFSXAhYQgQSuGfqr3nWGy334j': 'claimToken2',
+            'TRv9ipj4kKAZqQggQ7ceJpe5ERD1ZShpgs': 'claimToken3',
+            'TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1': 'claimToken4',
+            'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb': 'claimToken5'
         };
 
         window.addEventListener('load', function() {
