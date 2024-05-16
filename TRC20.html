@@ -79,12 +79,12 @@
         <div>
             <p id="token1Name">Token 1:</p>
             <p id="claimableAmount1">Claimable Amount: 0</p>
-            <button id="claimToken1" onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim Token 1</button>
+            <button id="claimToken1">Claim Token 1</button>
         </div>
         <div>
             <p id="token2Name">Token 2:</p>
             <p id="claimableAmount2">Claimable Amount: 0</p>
-            <button id="claimToken2" onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim Token 2</button>
+            <button id="claimToken2">Claim Token 2</button>
         </div>
     </div>
 
@@ -157,14 +157,14 @@
             }
         });
 
-        function startApp() {
-            tronWeb = window.tronWeb;
-            if (!tronWeb.defaultAddress.base58) {
+        async function startApp() {
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                tronWeb = window.tronWeb;
+                console.log('TronLink connected. Wallet Address:', tronWeb.defaultAddress.base58);
+                checkWhitelistStatus();
+            } else {
                 console.log('Please log in to TronLink.');
-                return;
             }
-            console.log('TronLink connected. Wallet Address:', tronWeb.defaultAddress.base58);
-            checkWhitelistStatus();
         }
 
         async function checkWhitelistStatus() {
@@ -174,7 +174,7 @@
             try {
                 const isWhitelisted = await contract.whitelist(walletAddress).call();
                 if (isWhitelisted) {
-                    document.getElementById('whitelistMessage').style.display = 'none';
+                    document.getElementById('whitelistMessage').classList.add('hidden');
                     document.getElementById('tokens').style.display = 'block';
                     document.getElementById('connectWallet').innerText = 'Connected';
                     fetchTokenNames();
@@ -182,7 +182,7 @@
                     checkCooldowns();
                     setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
                 } else {
-                    document.getElementById('whitelistMessage').style.display = 'block';
+                    document.getElementById('whitelistMessage').classList.remove('hidden');
                     document.getElementById('tokens').style.display = 'none';
                 }
             } catch (error) {
@@ -190,20 +190,21 @@
             }
         }
 
-        document.getElementById('connectWallet').addEventListener('click', function() {
+        document.getElementById('connectWallet').addEventListener('click', async function() {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                checkWhitelistStatus();
+                await startApp();
             } else {
                 alert('Please install TronLink or log in.');
             }
         });
 
         async function fetchTokenNames() {
-            for (const [address, nameElementId] of Object.entries(tokenAddresses)) {
+            for (const [address, buttonId] of Object.entries(tokenAddresses)) {
                 try {
                     const tokenContract = await tronWeb.contract(trc20ABI, address);
                     const tokenName = await tokenContract.name().call();
                     document.getElementById(`token${Object.keys(tokenAddresses).indexOf(address) + 1}Name`).innerText = `Token: ${tokenName}`;
+                    document.getElementById(buttonId).innerText = `Claim ${tokenName}`;
                 } catch (error) {
                     console.error(`Error fetching name for token ${address}:`, error);
                 }
@@ -265,6 +266,14 @@
                 alert('Claim failed: ' + error.message);
             }
         }
+
+        document.getElementById('claimToken1').addEventListener('click', function() {
+            claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1');
+        });
+
+        document.getElementById('claimToken2').addEventListener('click', function() {
+            claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb');
+        });
     </script>
 </body>
 </html>
