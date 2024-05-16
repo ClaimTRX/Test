@@ -162,8 +162,14 @@
         });
 
         async function checkWhitelistStatus() {
-            const contract = await tronWeb.contract(claimerABI, contractAddress);
+            if (!tronWeb || !tronWeb.defaultAddress.base58) {
+                console.error('TronLink is not connected.');
+                return;
+            }
+
             const walletAddress = tronWeb.defaultAddress.base58;
+            console.log('Connected wallet address:', walletAddress);
+            const contract = await tronWeb.contract(claimerABI, contractAddress);
 
             try {
                 const isWhitelisted = await contract.whitelist(walletAddress).call();
