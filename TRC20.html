@@ -61,6 +61,11 @@
             font-size: 18px;
             margin-top: 20px;
         }
+        #cooldownTimer {
+            color: red;
+            font-size: 18px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -77,11 +82,13 @@
             <p id="token1Name">Token 1:</p>
             <p id="claimableAmount1">Claimable Amount: 0</p>
             <button id="claimToken1" onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim Token 1</button>
+            <p id="cooldownTimer1" class="cooldownTimer"></p>
         </div>
         <div>
             <p id="token2Name">Token 2:</p>
             <p id="claimableAmount2">Claimable Amount: 0</p>
             <button id="claimToken2" onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim Token 2</button>
+            <p id="cooldownTimer2" class="cooldownTimer"></p>
         </div>
     </div>
 
@@ -142,7 +149,9 @@
                     document.getElementById('whitelistMessage').style.display = 'none';
                     fetchTokenNames();
                     updateClaimableAmounts();
+                    updateCooldownTimers();
                     setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
+                    setInterval(updateCooldownTimers, 1000); // Updates every second
                 } else {
                     document.getElementById('tokens').style.display = 'none';
                     document.getElementById('whitelistMessage').style.display = 'block';
@@ -177,6 +186,37 @@
             }
         }
 
+        async function updateCooldownTimers() {
+            const contract = await tronWeb.contract(contractABI, contractAddress);
+            const cooldownTime = (await contract.claimCooldown().call()).toNumber();
+
+            for (const [address, buttonId] of Object.entries(tokenAddresses)) {
+                try {
+                    const lastClaimTime = (await contract.lastClaimTimePerToken(address).call()).toNumber();
+                    const now = Math.floor(Date.now() / 1000);
+                    const timeLeft = (lastClaimTime + cooldownTime) - now;
+
+                    const cooldownTimer = document.getElementById(`cooldownTimer${Object.keys(tokenAddresses).indexOf(address) + 1}`);
+                    const claimButton = document.getElementById(buttonId);
+
+                    if (timeLeft > 0) {
+                        const hours = Math.floor(timeLeft / 3600);
+                        const minutes = Math.floor((timeLeft % 3600) / 60);
+                        const seconds = timeLeft % 60;
+                        cooldownTimer.innerText = `Cooldown: ${hours}h ${minutes}m ${seconds}s`;
+                        claimButton.classList.add('disabled');
+                        claimButton.disabled = true;
+                    } else {
+                        cooldownTimer.innerText = '';
+                        claimButton.classList.remove('disabled');
+                        claimButton.disabled = false;
+                    }
+                } catch (error) {
+                    console.error(`Error updating cooldown timer for token ${address}:`, error);
+                }
+            }
+        }
+
         async function claimToken(tokenAddress) {
             try {
                 const contract = await tronWeb.contract(contractABI, contractAddress);
@@ -187,6 +227,7 @@
 
                 console.log('Claim transaction result:', result);
                 alert('Claim successful! Transaction ID: ' + result);
+                updateCooldownTimers();
             } catch (error) {
                 console.error('Claim failed:', error);
                 alert('Claim failed: ' + error.message);
