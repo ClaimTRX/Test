@@ -178,7 +178,7 @@
                     fetchTokenNames();
                     updateClaimableAmounts();
                     updateCooldownTimers();
-                    setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
+                    setInterval(updateClaimableAmounts, 1000); // Updates every second
                     setInterval(updateCooldownTimers, 1000); // Updates every second
                 } else {
                     document.getElementById('tokens').style.display = 'none';
