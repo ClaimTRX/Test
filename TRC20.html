@@ -187,7 +187,7 @@
                     fetchTokenNames();
                     updateClaimableAmounts();
                     updateCooldownTimers();
-                    setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
+                    setInterval(updateClaimableAmounts, 1000); // Updates every second
                     setInterval(updateCooldownTimers, 1000); // Updates every second
                 } else {
                     document.getElementById('tokens').style.display = 'none';
@@ -203,6 +203,7 @@
                 try {
                     const tokenContract = await tronWeb.contract().at(address);
                     const tokenName = await tokenContract.name().call();
+                    console.log(`Fetched name for token ${address}: ${tokenName}`);
                     document.getElementById(buttonId).innerText = `Claim ${tokenName}`;
                 } catch (error) {
                     console.error(`Error fetching name for token ${address}:`, error);
@@ -218,6 +219,7 @@
                     const decimals = await tokenContract.decimals().call();
                     const amount = await contract.viewAccumulatedAmount(address).call();
                     const formattedAmount = Math.floor(tronWeb.toBigNumber(amount).div(tronWeb.toBigNumber(10).pow(decimals))); // Remove decimals by rounding down
+                    console.log(`Fetched amount for token ${address}: ${formattedAmount}`);
                     document.getElementById(`claimableAmount${Object.keys(tokenAddresses).indexOf(address) + 1}`).innerText = 'Claimable Amount: ' + formattedAmount;
                 } catch (error) {
                     console.error(`Error fetching amount for token ${address}:`, error);
