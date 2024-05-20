@@ -134,7 +134,7 @@
             {"constant": false,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "claimTokens","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},
             {"constant": true,"inputs": [{"name": "account", "type": "address"}],"name": "isWhitelisted","outputs": [{"name": "", "type": "bool"}],"payable": false,"stateMutability": "view","type": "function"},
             {"constant": true,"inputs": [],"name": "claimCooldown","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}, {"name": "account", "type": "address"}],"name": "lastUserClaimTime","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": true,"inputs": [{"name": "account", "type": "address"}],"name": "lastUserClaimTime","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
             {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "accumulationRatePerMinute","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
             {"constant": true,"inputs": [],"name": "decimals","outputs": [{"name": "", "type": "uint8"}],"payable": false,"stateMutability": "view","type": "function"},
             {"constant": true,"inputs": [],"name": "name","outputs": [{"name": "", "type": "string"}],"payable": false,"stateMutability": "view","type": "function"}
@@ -215,10 +215,9 @@
             const contract = await tronWeb.contract(contractABI, contractAddress);
             for (const [address, buttonId] of Object.entries(tokenAddresses)) {
                 try {
-                    const tokenContract = await tronWeb.contract().at(address);
-                    const decimals = await tokenContract.decimals().call();
+                    const decimals = await contract.decimals().call();
                     const amount = await contract.viewAccumulatedAmount(address).call();
-                    const formattedAmount = Math.floor(tronWeb.toBigNumber(amount).div(tronWeb.toBigNumber(10).pow(decimals))); // Remove decimals by rounding down
+                    const formattedAmount = tronWeb.toBigNumber(amount).div(tronWeb.toBigNumber(10).pow(decimals)).toNumber(); // Convert to readable amount
                     console.log(`Fetched amount for token ${address}: ${formattedAmount}`);
                     document.getElementById(`claimableAmount${Object.keys(tokenAddresses).indexOf(address) + 1}`).innerText = 'Claimable Amount: ' + formattedAmount;
                 } catch (error) {
@@ -232,39 +231,32 @@
             const cooldownTime = 86400; // 24 hours in seconds
             const address = tronWeb.defaultAddress.base58;
 
-            let latestClaimTime = 0;
-            for (const tokenAddress of Object.keys(tokenAddresses)) {
-                try {
-                    const lastClaimTime = (await contract.lastUserClaimTime(tokenAddress, address).call()).toNumber();
-                    if (lastClaimTime > latestClaimTime) {
-                        latestClaimTime = lastClaimTime;
-                    }
-                } catch (error) {
-                    console.error(`Error fetching last claim time for token ${tokenAddress}:`, error);
+            try {
+                const lastClaimTime = (await contract.lastUserClaimTime(address).call()).toNumber();
+                const now = Math.floor(Date.now() / 1000);
+                const timeLeft = (lastClaimTime + cooldownTime) - now;
+
+                const cooldownTimer = document.getElementById('cooldownTimer');
+                const claimButtons = document.querySelectorAll('button[id^="claimToken"]');
+
+                if (timeLeft > 0) {
+                    const hours = Math.floor(timeLeft / 3600);
+                    const minutes = Math.floor((timeLeft % 3600) / 60);
+                    const seconds = timeLeft % 60;
+                    cooldownTimer.innerText = `Cooldown: ${hours}h ${minutes}m ${seconds}s`;
+                    claimButtons.forEach(button => {
+                        button.classList.add('disabled');
+                        button.disabled = true;
+                    });
+                } else {
+                    cooldownTimer.innerText = '';
+                    claimButtons.forEach(button => {
+                        button.classList.remove('disabled');
+                        button.disabled = false;
+                    });
                 }
-            }
-
-            const now = Math.floor(Date.now() / 1000);
-            const timeLeft = (latestClaimTime + cooldownTime) - now;
-
-            const cooldownTimer = document.getElementById('cooldownTimer');
-            const claimButtons = document.querySelectorAll('button[id^="claimToken"]');
-
-            if (timeLeft > 0) {
-                const hours = Math.floor(timeLeft / 3600);
-                const minutes = Math.floor((timeLeft % 3600) / 60);
-                const seconds = timeLeft % 60;
-                cooldownTimer.innerText = `Cooldown: ${hours}h ${minutes}m ${seconds}s`;
-                claimButtons.forEach(button => {
-                    button.classList.add('disabled');
-                    button.disabled = true;
-                });
-            } else {
-                cooldownTimer.innerText = '';
-                claimButtons.forEach(button => {
-                    button.classList.remove('disabled');
-                    button.disabled = false;
-                });
+            } catch (error) {
+                console.error('Error fetching last claim time:', error);
             }
         }
 
