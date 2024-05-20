@@ -215,8 +215,8 @@
             const contract = await tronWeb.contract(contractABI, contractAddress);
             for (const [address, buttonId] of Object.entries(tokenAddresses)) {
                 try {
-                    const decimals = await contract.decimals().call();
                     const amount = await contract.viewAccumulatedAmount(address).call();
+                    const decimals = await contract.decimals().call();
                     const formattedAmount = tronWeb.toBigNumber(amount).div(tronWeb.toBigNumber(10).pow(decimals)).toNumber(); // Convert to readable amount
                     console.log(`Fetched amount for token ${address}: ${formattedAmount}`);
                     document.getElementById(`claimableAmount${Object.keys(tokenAddresses).indexOf(address) + 1}`).innerText = 'Claimable Amount: ' + formattedAmount;
@@ -252,7 +252,7 @@
                     cooldownTimer.innerText = '';
                     claimButtons.forEach(button => {
                         button.classList.remove('disabled');
-                        button.disabled = false;
+                        button.disabled = false);
                     });
                 }
             } catch (error) {
