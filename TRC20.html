@@ -130,18 +130,21 @@
         const shastaSolidityNode = "https://api.shasta.trongrid.io";
         const shastaEventServer = "https://api.shasta.trongrid.io";
 
-        const privateKey = ''; // Optional: if you need a specific account, otherwise, TronLink will be used
         let tronWeb;
 
-        if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-            tronWeb = window.tronWeb;
-        } else {
-            tronWeb = new TronWeb(
-                shastaFullNode,
-                shastaSolidityNode,
-                shastaEventServer,
-                privateKey
-            );
+        async function initializeTronWeb() {
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                tronWeb = window.tronWeb;
+            } else {
+                tronWeb = new TronWeb(
+                    shastaFullNode,
+                    shastaSolidityNode,
+                    shastaEventServer
+                );
+            }
+            await tronWeb.setAddress(tronWeb.defaultAddress.base58);
+            console.log("TronWeb initialized");
+            startApp();
         }
 
         const contractAddress = "TK3LrdFCHe5ue3LzVsGxFGFXxofoQcB9US";
@@ -168,15 +171,14 @@
         window.addEventListener('load', function() {
             if (typeof window.tronWeb === 'undefined') {
                 console.log("Waiting for TronLink...");
-                setTimeout(startApp, 1000);
+                setTimeout(initializeTronWeb, 1000);
             } else {
                 startApp();
             }
         });
 
         function startApp() {
-            tronWeb = window.tronWeb;
-            if (!tronWeb.defaultAddress.base58) {
+            if (!tronWeb || !tronWeb.defaultAddress.base58) {
                 console.log('Please log in to TronLink.');
                 return;
             }
