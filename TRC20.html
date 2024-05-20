@@ -126,7 +126,24 @@
 
     <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
     <script>
+        const shastaFullNode = "https://api.shasta.trongrid.io";
+        const shastaSolidityNode = "https://api.shasta.trongrid.io";
+        const shastaEventServer = "https://api.shasta.trongrid.io";
+
+        const privateKey = ''; // Optional: if you need a specific account, otherwise, TronLink will be used
         let tronWeb;
+
+        if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+            tronWeb = window.tronWeb;
+        } else {
+            tronWeb = new TronWeb(
+                shastaFullNode,
+                shastaSolidityNode,
+                shastaEventServer,
+                privateKey
+            );
+        }
+
         const contractAddress = "TSsvi9EBkf876eqvZKumF4FqvpuvvvwfUR";
         const contractABI = [
             {"constant": true,"inputs": [],"name": "owner","outputs": [{"name": "", "type": "address"}],"payable": false,"stateMutability": "view","type": "function"},
@@ -252,7 +269,7 @@
                     cooldownTimer.innerText = '';
                     claimButtons.forEach(button => {
                         button.classList.remove('disabled');
-                        button.disabled = false);
+                        button.disabled = false;
                     });
                 }
             } catch (error) {
