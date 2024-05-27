@@ -448,8 +448,8 @@
                 "name": "setToken4",
                 "outputs": [],
                 "stateMutability": "nonpayable",
-                "type": "function"
-            },
+                        "type": "function"
+                    },
             {
                 "inputs": [
                     {
@@ -474,34 +474,6 @@
                     }
                 ],
                 "name": "setToken5",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "contractAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "string",
-                        "name": "name",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "ratePerMinute",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint8",
-                        "name": "decimals",
-                        "type": "uint8"
-                    }
-                ],
-                "name": "setToken",
                 "outputs": [],
                 "stateMutability": "nonpayable",
                 "type": "function"
@@ -696,9 +668,9 @@
 
         async function updateTokenInfo() {
             try {
-                for (let i = 0; i < 5; i++) {
-                    const tokenAddress = await contract.tokenAddresses(i).call();
-                    const tokenInfo = await contract.tokens(tokenAddress).call();
+                const tokenAddresses = await contract.tokenAddresses().call();
+                for (let i = 0; i < tokenAddresses.length; i++) {
+                    const tokenInfo = await contract.tokens(tokenAddresses[i]).call();
                     const tokenName = tokenInfo.name;
                     const decimals = tokenInfo.decimals;
                     document.getElementById(`token${i + 1}Name`).innerText = `Token ${i + 1}: ${tokenName}`;
@@ -710,14 +682,14 @@
 
         async function updateClaimableAmounts() {
             try {
-                for (let i = 0; i < 5; i++) {
-                    const tokenAddress = await contract.tokenAddresses(i).call();
-                    const tokenInfo = await contract.tokens(tokenAddress).call();
+                const tokenAddresses = await contract.tokenAddresses().call();
+                for (let i = 0; i < tokenAddresses.length; i++) {
+                    const tokenInfo = await contract.tokens(tokenAddresses[i]).call();
                     const decimals = tokenInfo.decimals;
                     const accumulatedTokens = (tokenInfo.accumulatedTokens / (10 ** decimals)).toFixed(decimals);
                     document.getElementById(`claimableAmount${i + 1}`).innerText = `Claimable Amount: ${accumulatedTokens}`;
 
-                    const lastClaimTime = await contract.lastClaim(userAddress, tokenAddress).call();
+                    const lastClaimTime = await contract.lastClaim(userAddress, tokenAddresses[i]).call();
                     const now = Date.now();
                     const remainingCooldown = COOLDOWN_PERIOD - (now - lastClaimTime * 1000);
                     if (remainingCooldown > 0) {
