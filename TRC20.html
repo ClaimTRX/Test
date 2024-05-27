@@ -126,9 +126,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
     <script>
-        const shastaFullNode = "https://api.shasta.trongrid.io";
-        const shastaSolidityNode = "https://api.shasta.trongrid.io";
-        const shastaEventServer = "https://api.shasta.trongrid.io";
+        const fullNode = "https://api.trongrid.io";
+        const solidityNode = "https://api.trongrid.io";
+        const eventServer = "https://api.trongrid.io";
 
         let tronWeb;
 
@@ -137,9 +137,9 @@
                 tronWeb = window.tronWeb;
             } else {
                 tronWeb = new TronWeb(
-                    shastaFullNode,
-                    shastaSolidityNode,
-                    shastaEventServer
+                    fullNode,
+                    solidityNode,
+                    eventServer
                 );
             }
             await tronWeb.setAddress(tronWeb.defaultAddress.base58);
@@ -147,7 +147,7 @@
             startApp();
         }
 
-        const contractAddress = "TRhA6Vq4CCj8EEKtiW96a2SgzmsKUm7K4p";
+        const contractAddress = "TU3tmsdoNGdbtrfBndHoSQRAoEQsET4NTD";
         const contractABI = [
             {"constant": true,"inputs": [],"name": "owner","outputs": [{"name": "", "type": "address"}],"payable": false,"stateMutability": "view","type": "function"},
             {"constant": true,"inputs": [{"name": "index", "type": "uint8"}],"name": "viewAccumulatedAmount","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
@@ -271,8 +271,5 @@
             }
         }
     </script>
-</body>
-</html>
-
 </body>
 </html>
