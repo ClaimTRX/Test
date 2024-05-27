@@ -126,9 +126,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
     <script>
-        const fullNode = "https://api.trongrid.io";
-        const solidityNode = "https://api.trongrid.io";
-        const eventServer = "https://api.trongrid.io";
+        const shastaFullNode = "https://api.shasta.trongrid.io";
+        const shastaSolidityNode = "https://api.shasta.trongrid.io";
+        const shastaEventServer = "https://api.shasta.trongrid.io";
 
         let tronWeb;
 
@@ -137,9 +137,9 @@
                 tronWeb = window.tronWeb;
             } else {
                 tronWeb = new TronWeb(
-                    fullNode,
-                    solidityNode,
-                    eventServer
+                    shastaFullNode,
+                    shastaSolidityNode,
+                    shastaEventServer
                 );
             }
             await tronWeb.setAddress(tronWeb.defaultAddress.base58);
@@ -197,7 +197,7 @@
 
         async function checkWhitelist(address) {
             try {
-                const contract = await tronWeb.contract(contractABI, contractAddress);
+                const contract = await tronWeb.contract().at(contractAddress);
                 const isWhitelisted = await contract.isWhitelisted(address).call();
                 if (isWhitelisted) {
                     document.getElementById('tokens').style.display = 'block';
@@ -213,12 +213,12 @@
                 }
             } catch (error) {
                 console.error('Error checking whitelist status:', error);
-                alert('Error checking whitelist status. Ensure the smart contract is deployed correctly.');
+                alert('Error checking whitelist status. Ensure the smart contract is deployed correctly on the Shasta testnet.');
             }
         }
 
         async function updateClaimableAmounts() {
-            const contract = await tronWeb.contract(contractABI, contractAddress);
+            const contract = await tronWeb.contract().at(contractAddress);
             for (let i = 0; i < 5; i++) {
                 try {
                     const amount = await contract.viewAccumulatedAmount(i).call();
@@ -232,7 +232,7 @@
         }
 
         async function updateCooldownTimers() {
-            const contract = await tronWeb.contract(contractABI, contractAddress);
+            const contract = await tronWeb.contract().at(contractAddress);
             const address = tronWeb.defaultAddress.base58;
 
             try {
@@ -267,7 +267,7 @@
 
         async function claimToken(index) {
             try {
-                const contract = await tronWeb.contract(contractABI, contractAddress);
+                const contract = await tronWeb.contract().at(contractAddress);
                 console.log('Claiming tokens for index:', index);
                 const result = await contract.claimTokens(index).send({
                     from: tronWeb.defaultAddress.base58
