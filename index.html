@@ -82,10 +82,10 @@
     </style>
 </head>
 <body>
-     <a href="TRC20.html">Go to TRC20 Page</a>
+    <a href="index.html">Go to claim Page</a>
     <h1>TRC20 Token Claimer</h1>
 
-    <p>Claim TRC20 tokens once every 24 hours. Energy is consumed from users addresses, so make sure the claimable amount is worth claiming. Tokens accumulate every minute. Will you claim now or risk someone else claiming before you? If you need Energy, you can <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA" target="_blank">rent it from TronNRG</a>.</p>
+    <p>Claim TRC20 tokens once every 72 hours. Energy is consumed from users addresses, so make sure the claimable amount is worth claiming. Tokens accumulate every minute. Will you claim now or risk someone else claiming before you? If you need Energy, you can <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA" target="_blank">rent it from TronNRG</a>.</p>
 
     <button id="connectWallet">Connect TronLink Wallet</button>
 
@@ -100,191 +100,189 @@
         <div>
             <p id="token1Name">Token 1:</p>
             <p id="claimableAmount1">Claimable Amount: 0</p>
-            <button id="claimToken1" onclick="claimToken('TVHH59uHVpHzLDMFFpUgCx2dNAQqCzPhcR')">Claim</button>
+            <button id="claimToken1" onclick="claimToken(0)">Claim</button>
         </div>
         <div>
             <p id="token2Name">Token 2:</p>
             <p id="claimableAmount2">Claimable Amount: 0</p>
-            <button id="claimToken2" onclick="claimToken('THvr8Jw1PqFSXAhYQgQSuGfqr3nWGy334j')">Claim</button>
+            <button id="claimToken2" onclick="claimToken(1)">Claim</button>
         </div>
         <div>
             <p id="token3Name">Token 3:</p>
             <p id="claimableAmount3">Claimable Amount: 0</p>
-            <button id="claimToken3" onclick="claimToken('TRv9ipj4kKAZqQggQ7ceJpe5ERD1ZShpgs')">Claim</button>
+            <button id="claimToken3" onclick="claimToken(2)">Claim</button>
         </div>
         <div>
             <p id="token4Name">Token 4:</p>
             <p id="claimableAmount4">Claimable Amount: 0</p>
-            <button id="claimToken4" onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim</button>
+            <button id="claimToken4" onclick="claimToken(3)">Claim</button>
         </div>
         <div>
             <p id="token5Name">Token 5:</p>
             <p id="claimableAmount5">Claimable Amount: 0</p>
-            <button id="claimToken5" onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim</button>
+            <button id="claimToken5" onclick="claimToken(4)">Claim</button>
         </div>
         <p id="cooldownTimer"></p>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tronweb3/tronweb@1.3.3/dist/TronWeb.min.js"></script>
     <script>
-        let tronWeb;
-        const contractAddress = "TSsvi9EBkf876eqvZKumF4FqvpuvvvwfUR";
-        const contractABI = [
-            {"constant": true,"inputs": [],"name": "owner","outputs": [{"name": "", "type": "address"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "viewAccumulatedAmount","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": false,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "claimTokens","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},
-            {"constant": true,"inputs": [{"name": "account", "type": "address"}],"name": "isWhitelisted","outputs": [{"name": "", "type": "bool"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [],"name": "claimCooldown","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "lastClaimTimePerToken","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "accumulationRatePerMinute","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [],"name": "decimals","outputs": [{"name": "", "type": "uint8"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [],"name": "name","outputs": [{"name": "", "type": "string"}],"payable": false,"stateMutability": "view","type": "function"}
+        const contractAddress = 'TZ8rNVgWKCb456zyWJ6mmPpo8992jn78oo';
+        const abi = [
+            {
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    }
+                ],
+                "name": "whitelistUser",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint8",
+                        "name": "tokenIndex",
+                        "type": "uint8"
+                    }
+                ],
+                "name": "claim",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint8",
+                        "name": "index",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "contractAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "ratePerMinute",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setToken",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint8",
+                        "name": "",
+                        "type": "uint8"
+                    }
+                ],
+                "name": "tokens",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "contractAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "ratePerMinute",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "accumulatedTokens",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
         ];
 
-        const tokenAddresses = {
-            'TVHH59uHVpHzLDMFFpUgCx2dNAQqCzPhcR': 'claimToken1',
-            'THvr8Jw1PqFSXAhYQgQSuGfqr3nWGy334j': 'claimToken2',
-            'TRv9ipj4kKAZqQggQ7ceJpe5ERD1ZShpgs': 'claimToken3',
-            'TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1': 'claimToken4',
-            'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb': 'claimToken5'
-        };
+        let tronWeb;
+        let contract;
+        let userAddress;
 
-        window.addEventListener('load', function() {
-            if (typeof window.tronWeb === 'undefined') {
-                console.log("Waiting for TronLink...");
-                setTimeout(startApp, 1000);
-            } else {
-                startApp();
-            }
-        });
-
-        function startApp() {
-            tronWeb = window.tronWeb;
-            if (!tronWeb.defaultAddress.base58) {
-                console.log('Please log in to TronLink.');
-                return;
-            }
-            console.log('TronLink connected. Wallet Address:', tronWeb.defaultAddress.base58);
-            checkWhitelist(tronWeb.defaultAddress.base58);
-        }
-
-        document.getElementById('connectWallet').addEventListener('click', function() {
+        document.getElementById('connectWallet').addEventListener('click', async () => {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                alert('Wallet connected: ' + tronWeb.defaultAddress.base58);
-                checkWhitelist(tronWeb.defaultAddress.base58);
+                tronWeb = window.tronWeb;
+                userAddress = tronWeb.defaultAddress.base58;
+                document.getElementById('connectWallet').innerText = 'Connected';
+                contract = await tronWeb.contract(abi, contractAddress);
+                checkWhitelist();
             } else {
-                alert('Please install TronLink or log in.');
+                alert('Please install TronLink wallet.');
             }
         });
 
-        async function checkWhitelist(address) {
+        async function checkWhitelist() {
             try {
-                const contract = await tronWeb.contract(contractABI, contractAddress);
-                const isWhitelisted = await contract.isWhitelisted(address).call();
+                const isWhitelisted = await contract.whitelist(userAddress).call();
                 if (isWhitelisted) {
-                    document.getElementById('tokens').style.display = 'block';
-                    document.getElementById('connectWallet').innerText = 'Connected';
                     document.getElementById('whitelistMessage').style.display = 'none';
-                    fetchTokenNames();
+                    document.getElementById('tokens').style.display = 'block';
                     updateClaimableAmounts();
-                    updateCooldownTimers();
-                    setInterval(updateClaimableAmounts, 10000); // Updates every 10 seconds
-                    setInterval(updateCooldownTimers, 1000); // Updates every second
                 } else {
-                    document.getElementById('tokens').style.display = 'none';
                     document.getElementById('whitelistMessage').style.display = 'block';
+                    document.getElementById('tokens').style.display = 'none';
                 }
             } catch (error) {
-                console.error('Error checking whitelist status:', error);
+                console.error('Error checking whitelist:', error);
             }
-        }
-
-        async function fetchTokenNames() {
-            const tokenPromises = Object.entries(tokenAddresses).map(async ([address, buttonId]) => {
-                try {
-                    const tokenContract = await tronWeb.contract().at(address);
-                    const tokenName = await tokenContract.name().call();
-                    document.getElementById(buttonId).innerText = `Claim ${tokenName}`;
-                } catch (error) {
-                    console.error(`Error fetching name for token ${address}:`, error);
-                }
-            });
-            await Promise.all(tokenPromises);
         }
 
         async function updateClaimableAmounts() {
-            const contract = await tronWeb.contract(contractABI, contractAddress);
-            const amountPromises = Object.entries(tokenAddresses).map(async ([address, buttonId]) => {
-                try {
-                    const tokenContract = await tronWeb.contract().at(address);
-                    const decimals = await tokenContract.decimals().call();
-                    const amount = await contract.viewAccumulatedAmount(address).call();
-                    const formattedAmount = Math.floor(tronWeb.toBigNumber(amount).div(tronWeb.toBigNumber(10).pow(decimals))); // Remove decimals by rounding down
-                    document.getElementById(`claimableAmount${Object.keys(tokenAddresses).indexOf(address) + 1}`).innerText = 'Claimable Amount: ' + formattedAmount;
-                } catch (error) {
-                    console.error(`Error fetching amount for token ${address}:`, error);
+            try {
+                for (let i = 0; i < 5; i++) {
+                    const tokenInfo = await contract.tokens(i).call();
+                    const accumulatedTokens = tokenInfo.accumulatedTokens.toString();
+                    document.getElementById(`claimableAmount${i + 1}`).innerText = `Claimable Amount: ${accumulatedTokens}`;
                 }
-            });
-            await Promise.all(amountPromises);
-        }
-
-        async function updateCooldownTimers() {
-            const contract = await tronWeb.contract(contractABI, contractAddress);
-            const cooldownTime = (await contract.claimCooldown().call()).toNumber();
-            const address = tronWeb.defaultAddress.base58;
-
-            let latestClaimTime = 0;
-            const lastClaimTimePromises = Object.keys(tokenAddresses).map(async tokenAddress => {
-                try {
-                    const lastClaimTime = (await contract.lastClaimTimePerToken(tokenAddress, address).call()).toNumber();
-                    if (lastClaimTime > latestClaimTime) {
-                        latestClaimTime = lastClaimTime;
-                    }
-                } catch (error) {
-                    console.error(`Error fetching last claim time for token ${tokenAddress}:`, error);
-                }
-            });
-            await Promise.all(lastClaimTimePromises);
-
-            const now = Math.floor(Date.now() / 1000);
-            const timeLeft = (latestClaimTime + cooldownTime) - now;
-
-            const cooldownTimer = document.getElementById('cooldownTimer');
-            const claimButtons = document.querySelectorAll('button[id^="claimToken"]');
-
-            if (timeLeft > 0) {
-                const hours = Math.floor(timeLeft / 3600);
-                const minutes = Math.floor((timeLeft % 3600) / 60);
-                const seconds = timeLeft % 60;
-                cooldownTimer.innerText = `Cooldown: ${hours}h ${minutes}m ${seconds}s`;
-                claimButtons.forEach(button => {
-                    button.classList.add('disabled');
-                    button.disabled = true;
-                });
-            } else {
-                cooldownTimer.innerText = '';
-                claimButtons.forEach(button => {
-                    button.classList.remove('disabled');
-                    button.disabled = false;
-                });
+            } catch (error) {
+                console.error('Error updating claimable amounts:', error);
             }
         }
 
-        async function claimToken(tokenAddress) {
-            try {
-                const contract = await tronWeb.contract(contractABI, contractAddress);
-                console.log('Claiming tokens for address:', tokenAddress);
-                const result = await contract.claimTokens(tokenAddress).send({
-                    from: tronWeb.defaultAddress.base58
-                });
+        async function claimToken(tokenIndex) {
+            if (!contract) {
+                alert('Please connect your wallet first.');
+                return;
+            }
 
-                console.log('Claim transaction result:', result);
-                alert('Claim successful! Transaction ID: ' + result);
-                await updateCooldownTimers();  // Apply cooldown only after a successful claim
-                await updateClaimableAmounts();
+            try {
+                await contract.claim(tokenIndex).send({
+                    from: userAddress
+                });
+                document.getElementById('status').innerText = 'Tokens claimed successfully!';
+                updateClaimableAmounts();
             } catch (error) {
-                console.error('Claim failed:', error);
-                alert('Claim failed: ' + error.message);
+                console.error(error);
+                document.getElementById('status').innerText = 'Error claiming tokens.';
             }
         }
     </script>
