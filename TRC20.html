@@ -126,116 +126,71 @@
 
     <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
     <script>
-        const shastaFullNode = "https://api.shasta.trongrid.io";
-        const shastaSolidityNode = "https://api.shasta.trongrid.io";
-        const shastaEventServer = "https://api.shasta.trongrid.io";
-
+        const contractAddress = 'TU3tmsdoNGdbtrfBndHoSQRAoEQsET4NTD';
         let tronWeb;
+        let contract;
 
-        async function initializeTronWeb() {
-            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                tronWeb = window.tronWeb;
-            } else {
-                tronWeb = new TronWeb(
-                    shastaFullNode,
-                    shastaSolidityNode,
-                    shastaEventServer
-                );
-            }
-            await tronWeb.setAddress(tronWeb.defaultAddress.base58);
-            console.log("TronWeb initialized");
-            startApp();
-        }
-
-        const contractAddress = "TU3tmsdoNGdbtrfBndHoSQRAoEQsET4NTD";
-        const contractABI = [
-            {"constant": true,"inputs": [],"name": "owner","outputs": [{"name": "", "type": "address"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [{"name": "index", "type": "uint8"}],"name": "viewAccumulatedAmount","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": false,"inputs": [{"name": "index", "type": "uint8"}],"name": "claimTokens","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},
-            {"constant": true,"inputs": [{"name": "account", "type": "address"}],"name": "isWhitelisted","outputs": [{"name": "", "type": "bool"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [],"name": "claimCooldown","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [{"name": "account", "type": "address"}],"name": "lastUserClaimTime","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"}
-        ];
-
-        window.addEventListener('load', function() {
-            if (typeof window.tronWeb === 'undefined') {
-                console.log("Waiting for TronLink...");
-                setTimeout(initializeTronWeb, 1000);
-            } else {
-                startApp();
-            }
-        });
-
-        async function startApp() {
+        async function checkWhitelistStatus() {
             try {
-                await window.tronLink.request({ method: 'tron_requestAccounts' });
-                if (!tronWeb || !tronWeb.defaultAddress.base58) {
-                    console.log('Please log in to TronLink.');
-                    return;
-                }
-                console.log('TronLink connected. Wallet Address:', tronWeb.defaultAddress.base58);
-                checkWhitelist(tronWeb.defaultAddress.base58);
-            } catch (error) {
-                console.error('Error connecting to TronLink:', error);
-            }
-        }
+                const walletAddress = tronWeb.defaultAddress.base58;
+                if (!walletAddress) throw new Error("Invalid Wallet Address");
 
-        document.getElementById('connectWallet').addEventListener('click', async function() {
-            try {
-                await window.tronLink.request({ method: 'tron_requestAccounts' });
-                if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                    alert('Wallet connected: ' + tronWeb.defaultAddress.base58);
-                    checkWhitelist(tronWeb.defaultAddress.base58);
-                } else {
-                    alert('Please install TronLink or log in.');
-                }
-            } catch (error) {
-                console.error('Error connecting to TronLink:', error);
-                alert('Please install TronLink or log in.');
-            }
-        });
+                const isWhitelisted = await contract.isWhitelisted(walletAddress).call();
+                const appContent = document.getElementById('tokens');
+                const warningMessage = document.getElementById('whitelistMessage');
 
-        async function checkWhitelist(address) {
-            try {
-                const contract = await tronWeb.contract().at(contractAddress);
-                const isWhitelisted = await contract.isWhitelisted(address).call();
                 if (isWhitelisted) {
-                    document.getElementById('tokens').style.display = 'block';
-                    document.getElementById('connectWallet').innerText = 'Connected';
-                    document.getElementById('whitelistMessage').style.display = 'none';
+                    appContent.style.display = 'block';
+                    warningMessage.style.display = 'none';
                     updateClaimableAmounts();
                     updateCooldownTimers();
                     setInterval(updateClaimableAmounts, 1000); // Updates every second
                     setInterval(updateCooldownTimers, 1000); // Updates every second
                 } else {
-                    document.getElementById('tokens').style.display = 'none';
-                    document.getElementById('whitelistMessage').style.display = 'block';
+                    appContent.style.display = 'none';
+                    warningMessage.style.display = 'block';
                 }
             } catch (error) {
-                console.error('Error checking whitelist status:', error);
-                alert('Error checking whitelist status. Ensure the smart contract is deployed correctly on the Shasta testnet.');
+                console.error("Whitelist Check Error: ", error.message);
+                alert("An error occurred while checking whitelist status.");
+            }
+        }
+
+        async function init() {
+            try {
+                if (window.tronWeb && window.tronWeb.ready) {
+                    tronWeb = window.tronWeb;
+                    contract = await tronWeb.contract().at(contractAddress);
+
+                    const connectButton = document.getElementById('connectWallet');
+                    connectButton.classList.add('connected');
+                    connectButton.textContent = 'Wallet Connected';
+
+                    await checkWhitelistStatus();
+                } else {
+                    alert("Please install TronLink or open in a supported browser.");
+                }
+            } catch (error) {
+                console.error("Initialization Error: ", error.message);
+                alert("An error occurred while initializing the wallet connection.");
             }
         }
 
         async function updateClaimableAmounts() {
-            const contract = await tronWeb.contract().at(contractAddress);
-            for (let i = 0; i < 5; i++) {
-                try {
+            try {
+                for (let i = 0; i < 5; i++) {
                     const amount = await contract.viewAccumulatedAmount(i).call();
                     const formattedAmount = tronWeb.toBigNumber(amount).div(tronWeb.toBigNumber(10).pow(6)).toNumber(); // Adjust decimals as needed
-                    console.log(`Fetched amount for token ${i}: ${formattedAmount}`);
                     document.getElementById(`claimableAmount${i + 1}`).innerText = 'Claimable Amount: ' + formattedAmount;
-                } catch (error) {
-                    console.error(`Error fetching amount for token ${i}:`, error);
                 }
+            } catch (error) {
+                console.error("Error fetching claimable amounts: ", error.message);
             }
         }
 
         async function updateCooldownTimers() {
-            const contract = await tronWeb.contract().at(contractAddress);
-            const address = tronWeb.defaultAddress.base58;
-
             try {
+                const address = tronWeb.defaultAddress.base58;
                 const lastClaimTime = (await contract.lastUserClaimTime(address).call()).toNumber();
                 const cooldownPeriod = (await contract.claimCooldown().call()).toNumber();
                 const now = Math.floor(Date.now() / 1000);
@@ -261,14 +216,12 @@
                     });
                 }
             } catch (error) {
-                console.error('Error fetching last claim time:', error);
+                console.error("Error fetching last claim time: ", error.message);
             }
         }
 
         async function claimToken(index) {
             try {
-                const contract = await tronWeb.contract().at(contractAddress);
-                console.log('Claiming tokens for index:', index);
                 const result = await contract.claimTokens(index).send({
                     from: tronWeb.defaultAddress.base58
                 });
@@ -282,6 +235,10 @@
                 alert('Claim failed: ' + error.message);
             }
         }
+
+        window.addEventListener('load', () => {
+            document.getElementById('connectWallet').addEventListener('click', init);
+        });
     </script>
 </body>
 </html>
