@@ -221,20 +221,61 @@
                 ],
                 "stateMutability": "view",
                 "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "whitelist",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "lastClaim",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
             }
         ];
 
         let tronWeb;
         let contract;
         let userAddress;
+        const COOLDOWN_PERIOD = 72 * 60 * 60 * 1000; // 72 hours in milliseconds
 
         document.getElementById('connectWallet').addEventListener('click', async () => {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 tronWeb = window.tronWeb;
                 userAddress = tronWeb.defaultAddress.base58;
                 document.getElementById('connectWallet').innerText = 'Connected';
-                contract = await tronWeb.contract(abi, contractAddress);
+                contract = await tronWeb.contract().at(contractAddress);
                 checkWhitelist();
+                updateClaimableAmounts();
+                setInterval(updateClaimableAmounts, 60000); // Update every minute
             } else {
                 alert('Please install TronLink wallet.');
             }
@@ -246,7 +287,6 @@
                 if (isWhitelisted) {
                     document.getElementById('whitelistMessage').style.display = 'none';
                     document.getElementById('tokens').style.display = 'block';
-                    updateClaimableAmounts();
                 } else {
                     document.getElementById('whitelistMessage').style.display = 'block';
                     document.getElementById('tokens').style.display = 'none';
@@ -258,6 +298,17 @@
 
         async function updateClaimableAmounts() {
             try {
+                const lastClaimTime = await contract.lastClaim(userAddress).call();
+                const now = Date.now();
+                const remainingCooldown = COOLDOWN_PERIOD - (now - lastClaimTime * 1000);
+                if (remainingCooldown > 0) {
+                    document.getElementById('cooldownTimer').innerText = `Cooldown remaining: ${Math.ceil(remainingCooldown / 1000 / 60)} minutes`;
+                    disableButtons(true);
+                } else {
+                    document.getElementById('cooldownTimer').innerText = '';
+                    disableButtons(false);
+                }
+
                 for (let i = 0; i < 5; i++) {
                     const tokenInfo = await contract.tokens(i).call();
                     const accumulatedTokens = tokenInfo.accumulatedTokens.toString();
@@ -283,6 +334,17 @@
             } catch (error) {
                 console.error(error);
                 document.getElementById('status').innerText = 'Error claiming tokens.';
+            }
+        }
+
+        function disableButtons(disable) {
+            for (let i = 0; i < 5; i++) {
+                document.getElementById(`claimToken${i + 1}`).disabled = disable;
+                if (disable) {
+                    document.getElementById(`claimToken${i + 1}`).classList.add('disabled');
+                } else {
+                    document.getElementById(`claimToken${i + 1}`).classList.remove('disabled');
+                }
             }
         }
     </script>
