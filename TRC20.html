@@ -84,7 +84,7 @@
 <body>
     <h1>TRC20 Token Claimer</h1>
 
-    <p>Claim TRC20 tokens once every 24 hours. Energy is consumed from users addresses, so make sure the claimable amount is worth claiming. Tokens accumulate every minute. Will you claim now or risk someone else claiming before you? If you need Energy, you can <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA" target="_blank">rent it from TronNRG</a>.</p>
+    <p>Claim TRC20 tokens once every 72 hours. Energy is consumed from users addresses, so make sure the claimable amount is worth claiming. Tokens accumulate every minute. Will you claim now or risk someone else claiming before you? If you need Energy, you can <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA" target="_blank">rent it from TronNRG</a>.</p>
 
     <button id="connectWallet">Connect TronLink Wallet</button>
 
@@ -99,27 +99,27 @@
         <div>
             <p id="token1Name">Token 1:</p>
             <p id="claimableAmount1">Claimable Amount: 0</p>
-            <button id="claimToken1" onclick="claimToken('TVHH59uHVpHzLDMFFpUgCx2dNAQqCzPhcR')">Claim</button>
+            <button id="claimToken1" onclick="claimToken(0)">Claim</button>
         </div>
         <div>
             <p id="token2Name">Token 2:</p>
             <p id="claimableAmount2">Claimable Amount: 0</p>
-            <button id="claimToken2" onclick="claimToken('THvr8Jw1PqFSXAhYQgQSuGfqr3nWGy334j')">Claim</button>
+            <button id="claimToken2" onclick="claimToken(1)">Claim</button>
         </div>
         <div>
             <p id="token3Name">Token 3:</p>
             <p id="claimableAmount3">Claimable Amount: 0</p>
-            <button id="claimToken3" onclick="claimToken('TRv9ipj4kKAZqQggQ7ceJpe5ERD1ZShpgs')">Claim</button>
+            <button id="claimToken3" onclick="claimToken(2)">Claim</button>
         </div>
         <div>
             <p id="token4Name">Token 4:</p>
             <p id="claimableAmount4">Claimable Amount: 0</p>
-            <button id="claimToken4" onclick="claimToken('TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1')">Claim</button>
+            <button id="claimToken4" onclick="claimToken(3)">Claim</button>
         </div>
         <div>
             <p id="token5Name">Token 5:</p>
             <p id="claimableAmount5">Claimable Amount: 0</p>
-            <button id="claimToken5" onclick="claimToken('TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb')">Claim</button>
+            <button id="claimToken5" onclick="claimToken(4)">Claim</button>
         </div>
         <p id="cooldownTimer"></p>
     </div>
@@ -147,26 +147,15 @@
             startApp();
         }
 
-        const contractAddress = "TK3LrdFCHe5ue3LzVsGxFGFXxofoQcB9US";
+        const contractAddress = "YOUR_CONTRACT_ADDRESS";
         const contractABI = [
             {"constant": true,"inputs": [],"name": "owner","outputs": [{"name": "", "type": "address"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "viewAccumulatedAmount","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": false,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "claimTokens","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},
+            {"constant": true,"inputs": [{"name": "index", "type": "uint8"}],"name": "viewAccumulatedAmount","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
+            {"constant": false,"inputs": [{"name": "index", "type": "uint8"}],"name": "claimTokens","outputs": [],"payable": false,"stateMutability": "nonpayable","type": "function"},
             {"constant": true,"inputs": [{"name": "account", "type": "address"}],"name": "isWhitelisted","outputs": [{"name": "", "type": "bool"}],"payable": false,"stateMutability": "view","type": "function"},
             {"constant": true,"inputs": [],"name": "claimCooldown","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [{"name": "account", "type": "address"}],"name": "lastUserClaimTime","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [{"name": "_tokenAddr", "type": "address"}],"name": "accumulationRatePerMinute","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [],"name": "decimals","outputs": [{"name": "", "type": "uint8"}],"payable": false,"stateMutability": "view","type": "function"},
-            {"constant": true,"inputs": [],"name": "name","outputs": [{"name": "", "type": "string"}],"payable": false,"stateMutability": "view","type": "function"}
+            {"constant": true,"inputs": [{"name": "account", "type": "address"}],"name": "lastUserClaimTime","outputs": [{"name": "", "type": "uint256"}],"payable": false,"stateMutability": "view","type": "function"}
         ];
-
-        const tokenAddresses = {
-            'TVHH59uHVpHzLDMFFpUgCx2dNAQqCzPhcR': 'claimToken1',
-            'THvr8Jw1PqFSXAhYQgQSuGfqr3nWGy334j': 'claimToken2',
-            'TRv9ipj4kKAZqQggQ7ceJpe5ERD1ZShpgs': 'claimToken3',
-            'TSknFHj7ej6qP86dJFYkGVxVeH5x1CM6D1': 'claimToken4',
-            'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb': 'claimToken5'
-        };
 
         window.addEventListener('load', function() {
             if (typeof window.tronWeb === 'undefined') {
@@ -203,7 +192,6 @@
                     document.getElementById('tokens').style.display = 'block';
                     document.getElementById('connectWallet').innerText = 'Connected';
                     document.getElementById('whitelistMessage').style.display = 'none';
-                    fetchTokenNames();
                     updateClaimableAmounts();
                     updateCooldownTimers();
                     setInterval(updateClaimableAmounts, 1000); // Updates every second
@@ -217,43 +205,29 @@
             }
         }
 
-        async function fetchTokenNames() {
-            for (const [address, buttonId] of Object.entries(tokenAddresses)) {
-                try {
-                    const tokenContract = await tronWeb.contract().at(address);
-                    const tokenName = await tokenContract.name().call();
-                    console.log(`Fetched name for token ${address}: ${tokenName}`);
-                    document.getElementById(buttonId).innerText = `Claim ${tokenName}`;
-                } catch (error) {
-                    console.error(`Error fetching name for token ${address}:`, error);
-                }
-            }
-        }
-
         async function updateClaimableAmounts() {
             const contract = await tronWeb.contract(contractABI, contractAddress);
-            for (const [address, buttonId] of Object.entries(tokenAddresses)) {
+            for (let i = 0; i < 5; i++) {
                 try {
-                    const amount = await contract.viewAccumulatedAmount(address).call();
-                    const decimals = await contract.decimals().call();
-                    const formattedAmount = tronWeb.toBigNumber(amount).div(tronWeb.toBigNumber(10).pow(decimals)).toNumber(); // Convert to readable amount
-                    console.log(`Fetched amount for token ${address}: ${formattedAmount}`);
-                    document.getElementById(`claimableAmount${Object.keys(tokenAddresses).indexOf(address) + 1}`).innerText = 'Claimable Amount: ' + formattedAmount;
+                    const amount = await contract.viewAccumulatedAmount(i).call();
+                    const formattedAmount = tronWeb.toBigNumber(amount).div(tronWeb.toBigNumber(10).pow(6)).toNumber(); // Adjust decimals as needed
+                    console.log(`Fetched amount for token ${i}: ${formattedAmount}`);
+                    document.getElementById(`claimableAmount${i + 1}`).innerText = 'Claimable Amount: ' + formattedAmount;
                 } catch (error) {
-                    console.error(`Error fetching amount for token ${address}:`, error);
+                    console.error(`Error fetching amount for token ${i}:`, error);
                 }
             }
         }
 
         async function updateCooldownTimers() {
             const contract = await tronWeb.contract(contractABI, contractAddress);
-            const cooldownTime = 86400; // 24 hours in seconds
             const address = tronWeb.defaultAddress.base58;
 
             try {
                 const lastClaimTime = (await contract.lastUserClaimTime(address).call()).toNumber();
+                const cooldownPeriod = (await contract.claimCooldown().call()).toNumber();
                 const now = Math.floor(Date.now() / 1000);
-                const timeLeft = (lastClaimTime + cooldownTime) - now;
+                const timeLeft = (lastClaimTime + cooldownPeriod) - now;
 
                 const cooldownTimer = document.getElementById('cooldownTimer');
                 const claimButtons = document.querySelectorAll('button[id^="claimToken"]');
@@ -279,11 +253,11 @@
             }
         }
 
-        async function claimToken(tokenAddress) {
+        async function claimToken(index) {
             try {
                 const contract = await tronWeb.contract(contractABI, contractAddress);
-                console.log('Claiming tokens for address:', tokenAddress);
-                const result = await contract.claimTokens(tokenAddress).send({
+                console.log('Claiming tokens for index:', index);
+                const result = await contract.claimTokens(index).send({
                     from: tronWeb.defaultAddress.base58
                 });
 
@@ -297,5 +271,8 @@
             }
         }
     </script>
+</body>
+</html>
+
 </body>
 </html>
