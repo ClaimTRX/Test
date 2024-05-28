@@ -551,7 +551,9 @@
 
         async function updateCooldownTimer() {
             try {
-                const onCooldown = await contract.lastClaim(userAddress).call();
+                console.log('Checking cooldown status...');
+                const onCooldown = await contract.isOnCooldown(userAddress).call();
+                console.log(`User on cooldown: ${onCooldown}`);
 
                 if (onCooldown) {
                     const lastClaimTime = await contract.lastClaim(userAddress).call();
