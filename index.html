@@ -486,7 +486,7 @@
                 checkWhitelist();
                 updateTokenInfo();
                 setInterval(updateClaimableAmounts, 60000); // Update every minute
-                setInterval(updateCooldownTimer, 1000); // Update cooldown timer every second
+                setInterval(updateCooldownTimer, 5000); // Update cooldown timer every 5 seconds
             } else {
                 alert('Please install TronLink wallet.');
             }
@@ -552,11 +552,12 @@
         async function updateCooldownTimer() {
             try {
                 const onCooldown = await contract.isOnCooldown(userAddress).call();
-                const now = Date.now();
 
                 if (onCooldown) {
                     const lastClaimTime = await contract.lastClaim(userAddress).call();
+                    const now = Date.now();
                     const remainingCooldown = COOLDOWN_PERIOD - (now - lastClaimTime * 1000);
+
                     const hours = Math.floor(remainingCooldown / (1000 * 60 * 60));
                     const minutes = Math.floor((remainingCooldown % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((remainingCooldown % (1000 * 60)) / 1000);
