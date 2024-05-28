@@ -34,7 +34,7 @@
         }
         button, input { 
             margin: 10px; 
-            padding: 20px 30px;
+            padding: 10px 20px;
             cursor: pointer; 
             border-radius: 8px;
             border: none;
@@ -97,9 +97,10 @@
     <div id="tokens">
         <!-- Dynamic Token Content Will Be Added Here -->
     </div>
+    <div id="cooldownTimer"></div>
     <script src="https://cdn.jsdelivr.net/npm/@tronweb3/tronweb@1.3.3/dist/TronWeb.min.js"></script>
     <script>
-        const contractAddress = 'TVvDxgYyviGnQjDPfyeWUGNAs7GxBnp1TE';  // Updated contract address
+        const contractAddress = 'TJ4kSzztJdMBVg71Jur6jtEEQXBPDRtX7h';  // Updated contract address
         const abi = [
             {
                 "inputs": [],
@@ -540,20 +541,29 @@
                     const decimals = tokenInfo.decimals;
                     const accumulatedTokens = (claimableAmount / (10 ** decimals)).toFixed(0); // Show whole number
                     document.getElementById(`claimableAmount${i}`).innerText = `Claimable Amount: ${accumulatedTokens}`;
-
-                    const lastClaimTime = await contract.lastClaim(userAddress).call();
-                    const now = Date.now();
-                    const remainingCooldown = COOLDOWN_PERIOD - (now - lastClaimTime * 1000);
-                    if (remainingCooldown > 0) {
-                        document.getElementById('cooldownTimer').innerText = `Cooldown remaining: ${Math.ceil(remainingCooldown / 1000 / 60)} minutes`;
-                        disableButtons(true);
-                    } else {
-                        document.getElementById('cooldownTimer').innerText = '';
-                        disableButtons(false);
-                    }
                 }
+
+                updateCooldownTimer();
             } catch (error) {
                 console.error('Error updating claimable amounts:', error);
+            }
+        }
+
+        async function updateCooldownTimer() {
+            try {
+                const lastClaimTime = await contract.lastClaim(userAddress).call();
+                const now = Date.now();
+                const remainingCooldown = COOLDOWN_PERIOD - (now - lastClaimTime * 1000);
+
+                if (remainingCooldown > 0) {
+                    document.getElementById('cooldownTimer').innerText = `Cooldown remaining: ${Math.ceil(remainingCooldown / 1000 / 60)} minutes`;
+                    disableButtons(true);
+                } else {
+                    document.getElementById('cooldownTimer').innerText = '';
+                    disableButtons(false);
+                }
+            } catch (error) {
+                console.error('Error updating cooldown timer:', error);
             }
         }
 
