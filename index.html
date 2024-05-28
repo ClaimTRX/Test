@@ -97,37 +97,12 @@
         </a>
     </div>
     <div id="tokens">
-        <div>
-            <p id="token1Name">Token 1:</p>
-            <p id="claimableAmount1">Claimable Amount: 0</p>
-            <button id="claimToken1" onclick="claimToken(0)">Claim</button>
-        </div>
-        <div>
-            <p id="token2Name">Token 2:</p>
-            <p id="claimableAmount2">Claimable Amount: 0</p>
-            <button id="claimToken2" onclick="claimToken(1)">Claim</button>
-        </div>
-        <div>
-            <p id="token3Name">Token 3:</p>
-            <p id="claimableAmount3">Claimable Amount: 0</p>
-            <button id="claimToken3" onclick="claimToken(2)">Claim</button>
-        </div>
-        <div>
-            <p id="token4Name">Token 4:</p>
-            <p id="claimableAmount4">Claimable Amount: 0</p>
-            <button id="claimToken4" onclick="claimToken(3)">Claim</button>
-        </div>
-        <div>
-            <p id="token5Name">Token 5:</p>
-            <p id="claimableAmount5">Claimable Amount: 0</p>
-            <button id="claimToken5" onclick="claimToken(4)">Claim</button>
-        </div>
-        <p id="cooldownTimer"></p>
+        <!-- Dynamic Token Content Will Be Added Here -->
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@tronweb3/tronweb@1.3.3/dist/TronWeb.min.js"></script>
     <script>
-        const contractAddress = 'TEVtN25bzkHFEC8QwBm2j74FjFJtQgaBXM';  // Updated contract address
+        const contractAddress = 'TRe77xcUBGDnGLYDjq2FZ4QnW98BQMqvB1';  // Updated contract address
         const abi = [
             {
                 "inputs": [],
@@ -346,146 +321,6 @@
                         "type": "address"
                     },
                     {
-                        "internalType": "string",
-                        "name": "name",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "ratePerMinute",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint8",
-                        "name": "decimals",
-                        "type": "uint8"
-                    }
-                ],
-                "name": "setToken1",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "contractAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "string",
-                        "name": "name",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "ratePerMinute",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint8",
-                        "name": "decimals",
-                        "type": "uint8"
-                    }
-                ],
-                "name": "setToken2",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "contractAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "string",
-                        "name": "name",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "ratePerMinute",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint8",
-                        "name": "decimals",
-                        "type": "uint8"
-                    }
-                ],
-                "name": "setToken3",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "contractAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "string",
-                        "name": "name",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "ratePerMinute",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint8",
-                        "name": "decimals",
-                        "type": "uint8"
-                    }
-                ],
-                "name": "setToken4",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                        "type": "function"
-                    },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "contractAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "string",
-                        "name": "name",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "ratePerMinute",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint8",
-                        "name": "decimals",
-                        "type": "uint8"
-                    }
-                ],
-                "name": "setToken5",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "contractAddress",
-                        "type": "address"
-                    },
-                    {
                         "internalType": "uint256",
                         "name": "amount",
                         "type": "uint256"
@@ -628,6 +463,19 @@
                 ],
                 "stateMutability": "view",
                 "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getTokenAddresses",
+                "outputs": [
+                    {
+                        "internalType": "address[]",
+                        "name": "",
+                        "type": "address[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
             }
         ];
 
@@ -644,7 +492,6 @@
                 contract = await tronWeb.contract(abi, contractAddress);
                 checkWhitelist();
                 updateTokenInfo();
-                updateClaimableAmounts();
                 setInterval(updateClaimableAmounts, 60000); // Update every minute
             } else {
                 alert('Please install TronLink wallet.');
@@ -668,13 +515,24 @@
 
         async function updateTokenInfo() {
             try {
-                const tokenAddresses = await contract.tokenAddresses().call();
+                const tokenAddresses = await contract.getTokenAddresses().call();
+                const tokensDiv = document.getElementById('tokens');
+                tokensDiv.innerHTML = ''; // Clear existing content
+
                 for (let i = 0; i < tokenAddresses.length; i++) {
                     const tokenInfo = await contract.tokens(tokenAddresses[i]).call();
                     const tokenName = tokenInfo.name;
-                    const decimals = tokenInfo.decimals;
-                    document.getElementById(`token${i + 1}Name`).innerText = `Token ${i + 1}: ${tokenName}`;
+                    const tokenHtml = `
+                        <div>
+                            <p id="token${i}Name">${tokenName}</p>
+                            <p id="claimableAmount${i}">Claimable Amount: 0</p>
+                            <button id="claimToken${i}" onclick="claimToken(${i})">Claim</button>
+                        </div>
+                    `;
+                    tokensDiv.insertAdjacentHTML('beforeend', tokenHtml);
                 }
+
+                updateClaimableAmounts();
             } catch (error) {
                 console.error('Error updating token info:', error);
             }
@@ -682,14 +540,16 @@
 
         async function updateClaimableAmounts() {
             try {
-                const tokenAddresses = await contract.tokenAddresses().call();
+                const tokenAddresses = await contract.getTokenAddresses().call();
+
                 for (let i = 0; i < tokenAddresses.length; i++) {
+                    const claimableAmount = await contract.getClaimableAmount(tokenAddresses[i]).call();
                     const tokenInfo = await contract.tokens(tokenAddresses[i]).call();
                     const decimals = tokenInfo.decimals;
-                    const accumulatedTokens = (tokenInfo.accumulatedTokens / (10 ** decimals)).toFixed(decimals);
-                    document.getElementById(`claimableAmount${i + 1}`).innerText = `Claimable Amount: ${accumulatedTokens}`;
+                    const accumulatedTokens = (claimableAmount / (10 ** decimals)).toFixed(decimals);
+                    document.getElementById(`claimableAmount${i}`).innerText = `Claimable Amount: ${accumulatedTokens}`;
 
-                    const lastClaimTime = await contract.lastClaim(userAddress, tokenAddresses[i]).call();
+                    const lastClaimTime = await contract.lastClaim(userAddress).call();
                     const now = Date.now();
                     const remainingCooldown = COOLDOWN_PERIOD - (now - lastClaimTime * 1000);
                     if (remainingCooldown > 0) {
@@ -712,7 +572,8 @@
             }
 
             try {
-                const tokenAddress = await contract.tokenAddresses(tokenIndex).call();
+                const tokenAddresses = await contract.getTokenAddresses().call();
+                const tokenAddress = tokenAddresses[tokenIndex];
                 await contract.claim(tokenAddress).send({
                     from: userAddress
                 });
@@ -725,14 +586,15 @@
         }
 
         function disableButtons(disable) {
-            for (let i = 0; i < 5; i++) {
-                document.getElementById(`claimToken${i + 1}`).disabled = disable;
+            const tokenButtons = document.querySelectorAll('[id^=claimToken]');
+            tokenButtons.forEach(button => {
+                button.disabled = disable;
                 if (disable) {
-                    document.getElementById(`claimToken${i + 1}`).classList.add('disabled');
+                    button.classList.add('disabled');
                 } else {
-                    document.getElementById(`claimToken${i + 1}`).classList.remove('disabled');
+                    button.classList.remove('disabled');
                 }
-            }
+            });
         }
     </script>
 </body>
