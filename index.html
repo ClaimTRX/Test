@@ -551,7 +551,7 @@
 
         async function updateCooldownTimer() {
             try {
-                const onCooldown = await contract.isOnCooldown(userAddress).call();
+                const onCooldown = await contract.lastClaim(userAddress).call();
 
                 if (onCooldown) {
                     const lastClaimTime = await contract.lastClaim(userAddress).call();
