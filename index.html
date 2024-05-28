@@ -516,29 +516,20 @@
         async function updateTokenInfo() {
             try {
                 const tokenAddresses = await contract.getTokenAddresses().call();
-                const uniqueTokens = new Set();
                 const tokensDiv = document.getElementById('tokens');
                 tokensDiv.innerHTML = ''; // Clear existing content
 
                 for (let i = 0; i < tokenAddresses.length; i++) {
-                    if (!uniqueTokens.has(tokenAddresses[i])) {
-                        uniqueTokens.add(tokenAddresses[i]);
-
-                        const claimableAmount = await contract.getClaimableAmount(tokenAddresses[i]).call();
-                        const tokenInfo = await contract.tokens(tokenAddresses[i]).call();
-
-                        if (claimableAmount > 0) {
-                            const tokenName = tokenInfo.name;
-                            const tokenHtml = `
-                                <div id="tokenContainer${i}">
-                                    <p id="token${i}Name">${tokenName}</p>
-                                    <p id="claimableAmount${i}">Claimable Amount: 0</p>
-                                    <button id="claimToken${i}" onclick="claimToken(${i})">Claim</button>
-                                </div>
-                            `;
-                            tokensDiv.insertAdjacentHTML('beforeend', tokenHtml);
-                        }
-                    }
+                    const tokenInfo = await contract.tokens(tokenAddresses[i]).call();
+                    const tokenName = tokenInfo.name;
+                    const tokenHtml = `
+                        <div>
+                            <p id="token${i}Name">${tokenName}</p>
+                            <p id="claimableAmount${i}">Claimable Amount: 0</p>
+                            <button id="claimToken${i}" onclick="claimToken(${i})">Claim</button>
+                        </div>
+                    `;
+                    tokensDiv.insertAdjacentHTML('beforeend', tokenHtml);
                 }
 
                 updateClaimableAmounts();
@@ -557,17 +548,7 @@
                     const tokenInfo = await contract.tokens(tokenAddresses[i]).call();
                     const decimals = tokenInfo.decimals;
                     const accumulatedTokens = (claimableAmount / (10 ** decimals)).toFixed(0); // Show whole number
-
-                    const claimableAmountElement = document.getElementById(`claimableAmount${i}`);
-                    const tokenContainer = document.getElementById(`tokenContainer${i}`);
-
-                    if (claimableAmountElement) {
-                        claimableAmountElement.innerText = `Claimable Amount: ${accumulatedTokens}`;
-                    }
-
-                    if (claimableAmount <= 0 && tokenContainer) {
-                        tokenContainer.style.display = 'none';
-                    }
+                    document.getElementById(`claimableAmount${i}`).innerText = `Claimable Amount: ${accumulatedTokens}`;
                 }
             } catch (error) {
                 console.error('Error updating claimable amounts:', error);
