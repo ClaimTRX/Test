@@ -1,291 +1,370 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRC20 Token Claimer</title>
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            text-align: center; 
-            padding: 20px; 
-            background-color: #f2f2f2;
-        }
-        h1 {
-            margin-bottom: 0;
-        }
-        p {
-            font-size: 16px;
-            margin: 20px auto;
-            max-width: 600px;
-            line-height: 1.6;
-        }
-        a {
-            color: #007BFF;
-            text-decoration: none;
-        }
-        a:hover, a:focus {
-            text-decoration: underline;
-        }
-        button, input { 
-            margin: 10px; 
-            padding: 20px 30px;
-            cursor: pointer; 
-            border-radius: 8px;
-            border: none;
-        }
-        button:not(.disabled) { 
-            background-color: #4CAF50; 
-            color: white;
-        }
-        .disabled { 
-            background-color: #ccc; 
-            color: #666;
-            cursor: not-allowed;
-        }
-        #tokens { 
-            display: none;
-        }
-        #logoContainer {
-            text-align: center;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        #logo {
-            max-width: 100%;
-            height: auto;
-            width: auto;
-        }
-
-        @media (max-width: 768px) {
-            #logoContainer {
-                padding: 10px;
-            }
-
-            #logo {
-                max-width: 80%;
-            }
-        }
-    
-        #whitelistMessage {
-            display: none;
-            color: red;
-            font-size: 18px;
-            margin-top: 20px;
-        }
-        #cooldownTimer {
-            color: red;
-            font-size: 18px;
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-    <a href="index.html">Go to claim Page</a>
-    <h1>TRC20 Token Claimer</h1>
-
-    <p>Claim TRC20 tokens once every 72 hours. Energy is consumed from users addresses, so make sure the claimable amount is worth claiming. Tokens accumulate every minute. Will you claim now or risk someone else claiming before you? If you need Energy, you can <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA" target="_blank">rent it from TronNRG</a>.</p>
-
-    <button id="connectWallet">Connect TronLink Wallet</button>
-
-    <p id="whitelistMessage">Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.</p>
-    <h2>Need energy? visit TronNRG</h2>
-    <div id="logoContainer">
-        <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA/" target="_blank" rel="noopener noreferrer">
-            <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/affiliateProgramEnglish.png?raw=true" alt="Affiliate Program Logo">
-        </a>
-    </div>
-    <div id="tokens">
-        <div>
-            <p id="token1Name">Token 1:</p>
-            <p id="claimableAmount1">Claimable Amount: 0</p>
-            <button id="claimToken1" onclick="claimToken(0)">Claim</button>
-        </div>
-        <div>
-            <p id="token2Name">Token 2:</p>
-            <p id="claimableAmount2">Claimable Amount: 0</p>
-            <button id="claimToken2" onclick="claimToken(1)">Claim</button>
-        </div>
-        <div>
-            <p id="token3Name">Token 3:</p>
-            <p id="claimableAmount3">Claimable Amount: 0</p>
-            <button id="claimToken3" onclick="claimToken(2)">Claim</button>
-        </div>
-        <div>
-            <p id="token4Name">Token 4:</p>
-            <p id="claimableAmount4">Claimable Amount: 0</p>
-            <button id="claimToken4" onclick="claimToken(3)">Claim</button>
-        </div>
-        <div>
-            <p id="token5Name">Token 5:</p>
-            <p id="claimableAmount5">Claimable Amount: 0</p>
-            <button id="claimToken5" onclick="claimToken(4)">Claim</button>
-        </div>
-        <p id="cooldownTimer"></p>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@tronweb3/tronweb@1.3.3/dist/TronWeb.min.js"></script>
-    <script src="app.js"></script>
-</body>
-</html>
-const contractAddress = 'TZ8rNVgWKCb456zyWJ6mmPpo8992jn78oo';
-const abi = [
-    // Add the ABI definition here
-    {
-        "inputs": [],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-    },
-    {
-        "inputs": [
+[
             {
-                "internalType": "address",
-                "name": "user",
-                "type": "address"
-            }
-        ],
-        "name": "whitelistUser",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint8",
-                "name": "tokenIndex",
-                "type": "uint8"
-            }
-        ],
-        "name": "claim",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint8",
-                "name": "index",
-                "type": "uint8"
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
             },
             {
-                "internalType": "address",
-                "name": "contractAddress",
-                "type": "address"
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "contractAddress",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "string",
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "ratePerMinute",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint8",
+                        "name": "decimals",
+                        "type": "uint8"
+                    }
+                ],
+                "name": "TokenSet",
+                "type": "event"
             },
             {
-                "internalType": "string",
-                "name": "name",
-                "type": "string"
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "tokenAddress",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Claimed",
+                "type": "event"
             },
             {
-                "internalType": "uint256",
-                "name": "ratePerMinute",
-                "type": "uint256"
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "tokenAddress",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Deposited",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "tokenAddress",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Withdrawn",
+                "type": "event"
+            },
+            {
+                "inputs": [],
+                "name": "COOLDOWN",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "tokenAddress",
+                        "type": "address"
+                    }
+                ],
+                "name": "accumulateTokens",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "tokenAddress",
+                        "type": "address"
+                    }
+                ],
+                "name": "claim",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    }
+                ],
+                "name": "removeWhitelistUser",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "contractAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "depositToken",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "contractAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "ratePerMinute",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setToken",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "contractAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "withdrawToken",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "tokenAddress",
+                        "type": "address"
+                    }
+                ],
+                "name": "getClaimableAmount",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    }
+                ],
+                "name": "whitelist",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "tokenAddress",
+                        "type": "address"
+                    }
+                ],
+                "name": "tokens",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "contractAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "ratePerMinute",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "accumulatedTokens",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint8",
+                        "name": "decimals",
+                        "type": "uint8"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "lastClaim",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "lastAccumulated",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getTokenAddresses",
+                "outputs": [
+                    {
+                        "internalType": "address[]",
+                        "name": "",
+                        "type": "address[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
             }
-        ],
-        "name": "setToken",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint8",
-                "name": "",
-                "type": "uint8"
-            }
-        ],
-        "name": "tokens",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "contractAddress",
-                "type": "address"
-            },
-            {
-                "internalType": "string",
-                "name": "name",
-                "type": "string"
-            },
-            {
-                "internalType": "uint256",
-                "name": "ratePerMinute",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "accumulatedTokens",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    }
-];
-
-let tronWeb;
-let contract;
-let userAddress;
-
-document.getElementById('connectWallet').addEventListener('click', async () => {
-    if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-        tronWeb = window.tronWeb;
-        userAddress = tronWeb.defaultAddress.base58;
-        document.getElementById('connectWallet').innerText = 'Connected';
-        document.getElementById('userAddress').innerText = `Connected: ${userAddress}`;
-        contract = await tronWeb.contract(abi, contractAddress);
-        checkWhitelist();
-    } else {
-        alert('Please install TronLink wallet.');
-    }
-});
-
-async function checkWhitelist() {
-    try {
-        const isWhitelisted = await contract.whitelist(userAddress).call();
-        if (isWhitelisted) {
-            document.getElementById('whitelistMessage').style.display = 'none';
-            document.getElementById('tokens').style.display = 'block';
-            updateClaimableAmounts();
-        } else {
-            document.getElementById('whitelistMessage').style.display = 'block';
-            document.getElementById('tokens').style.display = 'none';
-        }
-    } catch (error) {
-        console.error('Error checking whitelist:', error);
-    }
-}
-
-async function updateClaimableAmounts() {
-    try {
-        for (let i = 0; i < 5; i++) {
-            const tokenInfo = await contract.tokens(i).call();
-            const accumulatedTokens = tokenInfo.accumulatedTokens.toString();
-            document.getElementById(`claimableAmount${i + 1}`).innerText = `Claimable Amount: ${accumulatedTokens}`;
-        }
-    } catch (error) {
-        console.error('Error updating claimable amounts:', error);
-    }
-}
-
-async function claimToken(tokenIndex) {
-    if (!contract) {
-        alert('Please connect your wallet first.');
-        return;
-    }
-
-    try {
-        await contract.claim(tokenIndex).send({
-            from: userAddress
-        });
-        document.getElementById('status').innerText = 'Tokens claimed successfully!';
-        updateClaimableAmounts();
-    } catch (error) {
-        console.error(error);
-        document.getElementById('status').innerText = 'Error claiming tokens.';
-    }
-}
+        ];
