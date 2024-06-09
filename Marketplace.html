@@ -6,7 +6,7 @@
     <title>TRC20 Token Marketplace</title>
 </head>
 <body>
-  <a href="index.html">Go to claim Page</a>
+    <a href="index.html">Go to claim Page</a>
     <h1>TRC20 Token Marketplace</h1>
     <div>
         <h2>List Tokens for Sale</h2>
@@ -23,66 +23,73 @@
         <ul id="listings"></ul>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@tronweb3/tronweb"></script>
-    <script src="marketplace.js"></script>
+    <script>
+        const CONTRACT_ADDRESS = 'TU9WB1bWN3kVecbfekaAsKgfE3aBC2Khop';
+        const TOKEN_ADDRESS = 'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb';
+
+        const tronWeb = new TronWeb({
+            fullHost: 'https://api.trongrid.io'
+        });
+
+        async function initContract() {
+            const contract = await tronWeb.contract().at(CONTRACT_ADDRESS);
+            return contract;
+        }
+
+        async function listToken(event) {
+            event.preventDefault();
+            const amount = document.getElementById('amount').value;
+            const price = document.getElementById('price').value;
+
+            const userAddress = tronWeb.defaultAddress.base58;
+            const tokenContract = await tronWeb.contract().at(TOKEN_ADDRESS);
+
+            // Approve the marketplace contract to transfer tokens on behalf of the user
+            await tokenContract.approve(CONTRACT_ADDRESS, amount).send({ from: userAddress });
+
+            const contract = await initContract();
+            
+            // List tokens for sale
+            await contract.listToken(amount, price).send({ from: userAddress });
+
+            alert('Tokens listed for sale!');
+            loadListings();
+        }
+
+        async function buyToken(seller, amount) {
+            const contract = await initContract();
+            const listing = await contract.listings(seller, amount).call();
+            const price = listing.price;
+
+            const userAddress = tronWeb.defaultAddress.base58;
+            await contract.buyToken(seller, amount).send({ from: userAddress, callValue: price });
+
+            alert('Tokens bought successfully!');
+            loadListings();
+        }
+
+        async function loadListings() {
+            const listings = document.getElementById('listings');
+            listings.innerHTML = '';
+
+            const contract = await initContract();
+
+            // Assuming we have a way to get all listed tokens
+            const allListings = await contract.getAllListings().call();
+
+            allListings.forEach(listing => {
+                const li = document.createElement('li');
+                li.innerHTML = `Seller: ${listing.seller}, Amount: ${listing.amount}, Price: ${listing.price} TRX 
+                <button onclick="buyToken('${listing.seller}', '${listing.amount}')">Buy</button>`;
+                listings.appendChild(li);
+            });
+        }
+
+        document.getElementById('listTokenForm').addEventListener('submit', listToken);
+
+        window.onload = function() {
+            loadListings();
+        }
+    </script>
 </body>
 </html>
-// marketplace.js
-
-const CONTRACT_ADDRESS = 'TU9WB1bWN3kVecbfekaAsKgfE3aBC2Khop';
-const TOKEN_ADDRESS = 'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb';
-
-const tronWeb = new TronWeb({
-    fullHost: 'https://api.trongrid.io'
-});
-
-const contract = tronWeb.contract().at(CONTRACT_ADDRESS);
-
-async function listToken(event) {
-    event.preventDefault();
-    const amount = document.getElementById('amount').value;
-    const price = document.getElementById('price').value;
-
-    const userAddress = tronWeb.defaultAddress.base58;
-    const tokenContract = await tronWeb.contract().at(TOKEN_ADDRESS);
-
-    // Approve the marketplace contract to transfer tokens on behalf of the user
-    await tokenContract.approve(CONTRACT_ADDRESS, amount).send({ from: userAddress });
-
-    // List tokens for sale
-    await contract.listToken(amount, price).send({ from: userAddress });
-
-    alert('Tokens listed for sale!');
-    loadListings();
-}
-
-async function buyToken(seller, amount) {
-    const listing = await contract.listings(seller, amount).call();
-    const price = listing.price;
-
-    const userAddress = tronWeb.defaultAddress.base58;
-    await contract.buyToken(seller, amount).send({ from: userAddress, callValue: price });
-
-    alert('Tokens bought successfully!');
-    loadListings();
-}
-
-async function loadListings() {
-    const listings = document.getElementById('listings');
-    listings.innerHTML = '';
-
-    // Assuming we have a way to get all listed tokens
-    const allListings = await contract.getAllListings().call();
-
-    allListings.forEach(listing => {
-        const li = document.createElement('li');
-        li.innerHTML = `Seller: ${listing.seller}, Amount: ${listing.amount}, Price: ${listing.price} TRX 
-        <button onclick="buyToken('${listing.seller}', '${listing.amount}')">Buy</button>`;
-        listings.appendChild(li);
-    });
-}
-
-document.getElementById('listTokenForm').addEventListener('submit', listToken);
-
-window.onload = function() {
-    loadListings();
-}
