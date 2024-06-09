@@ -32,11 +32,12 @@
         let contract;
 
         async function connectToTronLink() {
-            if (window.tronLink && window.tronLink.tronWeb) {
-                tronWeb = window.tronLink.tronWeb;
+            if (window.tronLink && window.tronLink.ready) {
                 await window.tronLink.request({ method: 'tron_requestAccounts' });
+                tronWeb = window.tronWeb;
                 return true;
             } else {
+                console.error('TronLink wallet not found or not ready.');
                 alert('TronLink wallet not found. Please install TronLink.');
                 return false;
             }
@@ -93,14 +94,14 @@
 
         document.getElementById('listTokenForm').addEventListener('submit', listToken);
 
-        window.onload = async function() {
+        window.addEventListener('load', async () => {
             const connected = await connectToTronLink();
             if (connected) {
                 await initContract();
                 loadListings();
                 setInterval(loadListings, 5000); // Refresh listings every 5 seconds
             }
-        }
+        });
     </script>
 </body>
 </html>
