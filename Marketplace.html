@@ -47,7 +47,12 @@
         }
 
         async function initContract() {
-            contract = await tronWeb.contract().at(CONTRACT_ADDRESS);
+            try {
+                contract = await tronWeb.contract().at(CONTRACT_ADDRESS);
+            } catch (error) {
+                console.error('Failed to initialize contract:', error);
+                alert('Failed to initialize contract. Please try again.');
+            }
         }
 
         async function listToken(event) {
@@ -59,25 +64,35 @@
             const userAddress = tronWeb.defaultAddress.base58;
             const tokenContract = await tronWeb.contract().at(TOKEN_ADDRESS);
 
-            // Approve the marketplace contract to transfer tokens on behalf of the user
-            await tokenContract.approve(CONTRACT_ADDRESS, adjustedAmount).send({ from: userAddress });
+            try {
+                // Approve the marketplace contract to transfer tokens on behalf of the user
+                await tokenContract.approve(CONTRACT_ADDRESS, adjustedAmount).send({ from: userAddress });
 
-            // List tokens for sale
-            await contract.listToken(adjustedAmount, price).send({ from: userAddress });
+                // List tokens for sale
+                await contract.listToken(adjustedAmount, price).send({ from: userAddress });
 
-            alert('Tokens listed for sale!');
-            loadListings();
+                alert('Tokens listed for sale!');
+                loadListings();
+            } catch (error) {
+                console.error('Failed to list tokens:', error);
+                alert('Failed to list tokens. Please try again.');
+            }
         }
 
         async function buyToken(seller, amount) {
-            const listing = await contract.listings(seller, amount).call();
-            const price = listing.price;
+            try {
+                const listing = await contract.listings(seller, amount).call();
+                const price = listing.price;
 
-            const userAddress = tronWeb.defaultAddress.base58;
-            await contract.buyToken(seller, amount).send({ from: userAddress, callValue: price });
+                const userAddress = tronWeb.defaultAddress.base58;
+                await contract.buyToken(seller, amount).send({ from: userAddress, callValue: price });
 
-            alert('Tokens bought successfully!');
-            loadListings();
+                alert('Tokens bought successfully!');
+                loadListings();
+            } catch (error) {
+                console.error('Failed to buy tokens:', error);
+                alert('Failed to buy tokens. Please try again.');
+            }
         }
 
         async function loadListings() {
@@ -96,6 +111,7 @@
                 });
             } catch (error) {
                 console.error('Error fetching listings:', error);
+                alert('Error fetching listings. Please try again.');
             }
         }
 
