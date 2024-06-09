@@ -27,13 +27,22 @@
         const CONTRACT_ADDRESS = 'TU9WB1bWN3kVecbfekaAsKgfE3aBC2Khop';
         const TOKEN_ADDRESS = 'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb';
 
-        const tronWeb = new TronWeb({
-            fullHost: 'https://api.trongrid.io'
-        });
+        let tronWeb;
+        let contract;
+
+        async function connectToTronLink() {
+            if (window.tronLink && window.tronLink.tronWeb) {
+                tronWeb = window.tronLink.tronWeb;
+                await window.tronLink.request({ method: 'tron_requestAccounts' });
+                return true;
+            } else {
+                alert('TronLink wallet not found. Please install TronLink.');
+                return false;
+            }
+        }
 
         async function initContract() {
-            const contract = await tronWeb.contract().at(CONTRACT_ADDRESS);
-            return contract;
+            contract = await tronWeb.contract().at(CONTRACT_ADDRESS);
         }
 
         async function listToken(event) {
@@ -47,8 +56,6 @@
             // Approve the marketplace contract to transfer tokens on behalf of the user
             await tokenContract.approve(CONTRACT_ADDRESS, amount).send({ from: userAddress });
 
-            const contract = await initContract();
-            
             // List tokens for sale
             await contract.listToken(amount, price).send({ from: userAddress });
 
@@ -57,7 +64,6 @@
         }
 
         async function buyToken(seller, amount) {
-            const contract = await initContract();
             const listing = await contract.listings(seller, amount).call();
             const price = listing.price;
 
@@ -72,8 +78,6 @@
             const listings = document.getElementById('listings');
             listings.innerHTML = '';
 
-            const contract = await initContract();
-
             // Assuming we have a way to get all listed tokens
             const allListings = await contract.getAllListings().call();
 
@@ -87,8 +91,12 @@
 
         document.getElementById('listTokenForm').addEventListener('submit', listToken);
 
-        window.onload = function() {
-            loadListings();
+        window.onload = async function() {
+            const connected = await connectToTronLink();
+            if (connected) {
+                await initContract();
+                loadListings();
+            }
         }
     </script>
 </body>
