@@ -36,6 +36,9 @@
                 await window.tronLink.request({ method: 'tron_requestAccounts' });
                 tronWeb = window.tronWeb;
                 return true;
+            } else if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                tronWeb = window.tronWeb;
+                return true;
             } else {
                 console.error('TronLink wallet not found or not ready.');
                 alert('TronLink wallet not found. Please install TronLink.');
