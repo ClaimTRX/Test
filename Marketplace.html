@@ -26,6 +26,7 @@
     <script>
         const CONTRACT_ADDRESS = 'TU9WB1bWN3kVecbfekaAsKgfE3aBC2Khop';
         const TOKEN_ADDRESS = 'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb';
+        const TOKEN_DECIMALS = 6; // Adjust this to your token's decimals
 
         let tronWeb;
         let contract;
@@ -50,14 +51,15 @@
             const amount = document.getElementById('amount').value;
             const price = document.getElementById('price').value;
 
+            const adjustedAmount = amount * (10 ** TOKEN_DECIMALS); // Adjust for token decimals
             const userAddress = tronWeb.defaultAddress.base58;
             const tokenContract = await tronWeb.contract().at(TOKEN_ADDRESS);
 
             // Approve the marketplace contract to transfer tokens on behalf of the user
-            await tokenContract.approve(CONTRACT_ADDRESS, amount).send({ from: userAddress });
+            await tokenContract.approve(CONTRACT_ADDRESS, adjustedAmount).send({ from: userAddress });
 
             // List tokens for sale
-            await contract.listToken(amount, price).send({ from: userAddress });
+            await contract.listToken(adjustedAmount, price).send({ from: userAddress });
 
             alert('Tokens listed for sale!');
             loadListings();
@@ -78,12 +80,12 @@
             const listings = document.getElementById('listings');
             listings.innerHTML = '';
 
-            // Assuming we have a way to get all listed tokens
             const allListings = await contract.getAllListings().call();
 
             allListings.forEach(listing => {
+                const adjustedAmount = listing.amount / (10 ** TOKEN_DECIMALS); // Adjust for token decimals
                 const li = document.createElement('li');
-                li.innerHTML = `Seller: ${listing.seller}, Amount: ${listing.amount}, Price: ${listing.price} TRX 
+                li.innerHTML = `Seller: ${listing.seller}, Amount: ${adjustedAmount}, Price: ${listing.price} TRX 
                 <button onclick="buyToken('${listing.seller}', '${listing.amount}')">Buy</button>`;
                 listings.appendChild(li);
             });
@@ -96,6 +98,7 @@
             if (connected) {
                 await initContract();
                 loadListings();
+                setInterval(loadListings, 5000); // Refresh listings every 5 seconds
             }
         }
     </script>
