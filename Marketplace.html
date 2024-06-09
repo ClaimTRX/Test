@@ -4,10 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRC20 Token Marketplace</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .wallet-status {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <a href="index.html">Go to claim Page</a>
     <h1>TRC20 Token Marketplace</h1>
+    <button id="connectWalletButton">Connect Wallet</button>
+    <div class="wallet-status" id="walletStatus">Wallet not connected</div>
     <div>
         <h2>List Tokens for Sale</h2>
         <form id="listTokenForm">
@@ -35,9 +46,11 @@
             if (window.tronLink && window.tronLink.ready) {
                 await window.tronLink.request({ method: 'tron_requestAccounts' });
                 tronWeb = window.tronWeb;
+                document.getElementById('walletStatus').innerText = `Wallet connected: ${tronWeb.defaultAddress.base58}`;
                 return true;
             } else if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 tronWeb = window.tronWeb;
+                document.getElementById('walletStatus').innerText = `Wallet connected: ${tronWeb.defaultAddress.base58}`;
                 return true;
             } else {
                 console.error('TronLink wallet not found or not ready.');
@@ -82,6 +95,7 @@
         async function buyToken(seller, amount) {
             try {
                 const listing = await contract.listings(seller, amount).call();
+                console.log('Listing fetched for buying:', listing);
                 const price = listing.price;
 
                 const userAddress = tronWeb.defaultAddress.base58;
@@ -101,6 +115,7 @@
 
             try {
                 const allListings = await contract.getAllListings().call();
+                console.log('All listings fetched:', allListings);
 
                 allListings.forEach(listing => {
                     const adjustedAmount = listing.amount / (10 ** TOKEN_DECIMALS); // Adjust for token decimals
@@ -116,6 +131,15 @@
         }
 
         document.getElementById('listTokenForm').addEventListener('submit', listToken);
+
+        document.getElementById('connectWalletButton').addEventListener('click', async () => {
+            const connected = await connectToTronLink();
+            if (connected) {
+                await initContract();
+                loadListings();
+                setInterval(loadListings, 300000); // Refresh listings every 5 minutes (300000 ms)
+            }
+        });
 
         window.addEventListener('load', async () => {
             const connected = await connectToTronLink();
