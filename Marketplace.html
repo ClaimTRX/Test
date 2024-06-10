@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRC20 Token Marketplace</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tronscan/tronweb@4.0.0/dist/TronWeb.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
     <style>
         body {
             text-align: center;
@@ -90,14 +90,18 @@
 
     <script>
         const contractAddress = 'TPwkCyrSUDV3qqv5yjTxcQCaHqiy43ceWU';
-        const tronWeb = new TronWeb({
-            fullHost: 'https://api.trongrid.io',
-            privateKey: 'your_private_key'
-        });
+        let tronWeb;
 
         $(document).ready(async function() {
-            let contract;
-            
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                tronWeb = window.tronWeb;
+            } else {
+                tronWeb = new TronWeb({
+                    fullHost: 'https://api.trongrid.io',
+                    privateKey: 'your_private_key'
+                });
+            }
+
             $('#connectWallet').click(async function() {
                 try {
                     await tronWeb.request({ method: 'tron_requestAccounts' });
