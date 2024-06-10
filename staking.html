@@ -29,6 +29,7 @@
         const contractAddress = "TU1Ct4p9VBdoqPeFy4pYVNvArtKPoPq4YV";
         const stakingTokenAddress = "TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb";
         let tronWeb;
+        let tokenDecimals;
 
         $(document).ready(async function () {
             $('#connectWallet').click(async function () {
@@ -37,7 +38,7 @@
                     $('#walletAddress').text(tronWeb.defaultAddress.base58);
                     $('#walletInfo').show();
                     $('#actions').show();
-                    await loadContractData();
+                    await initialize();
                 } else {
                     alert("Please install TronLink.");
                 }
@@ -58,6 +59,12 @@
             });
         });
 
+        async function initialize() {
+            const tokenContract = await tronWeb.contract().at(stakingTokenAddress);
+            tokenDecimals = parseInt(await tokenContract.decimals().call());
+            await loadContractData();
+        }
+
         async function loadContractData() {
             const contract = await tronWeb.contract().at(contractAddress);
             const totalStaked = await contract.totalStakedTokens().call();
@@ -65,17 +72,16 @@
             const userRewards = await contract.accumulatedRewards(tronWeb.defaultAddress.base58).call();
             const currentAPR = await contract.calculateAPR().call();
 
-            $('#totalStaked').text(tronWeb.toBigNumber(totalStaked).toString());
-            $('#userStakedBalance').text(tronWeb.toBigNumber(userStakedBalance).toString());
-            $('#userRewards').text(tronWeb.toBigNumber(userRewards).toString());
+            $('#totalStaked').text(tronWeb.toBigNumber(totalStaked).shiftedBy(-tokenDecimals).toString());
+            $('#userStakedBalance').text(tronWeb.toBigNumber(userStakedBalance).shiftedBy(-tokenDecimals).toString());
+            $('#userRewards').text(tronWeb.toBigNumber(userRewards).shiftedBy(-tokenDecimals).toString());
             $('#currentAPR').text(tronWeb.toBigNumber(currentAPR).toString());
         }
 
         async function stakeTokens(amount) {
             const contract = await tronWeb.contract().at(contractAddress);
             const tokenContract = await tronWeb.contract().at(stakingTokenAddress);
-            const decimals = await tokenContract.decimals().call();
-            const amountInWei = tronWeb.toBigNumber(amount).shiftedBy(decimals).toString();
+            const amountInWei = tronWeb.toBigNumber(amount).shiftedBy(tokenDecimals).toString();
             
             await tokenContract.approve(contractAddress, amountInWei).send();
             await contract.deposit(amountInWei).send();
@@ -84,8 +90,7 @@
 
         async function withdrawTokens(amount) {
             const contract = await tronWeb.contract().at(contractAddress);
-            const decimals = await tronWeb.contract().at(stakingTokenAddress).decimals().call();
-            const amountInWei = tronWeb.toBigNumber(amount).shiftedBy(decimals).toString();
+            const amountInWei = tronWeb.toBigNumber(amount).shiftedBy(tokenDecimals).toString();
 
             await contract.withdraw(amountInWei).send();
             await loadContractData();
