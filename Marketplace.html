@@ -91,32 +91,34 @@
     <script>
         const contractAddress = 'TPwkCyrSUDV3qqv5yjTxcQCaHqiy43ceWU';
         let tronWeb;
+        let contract;
 
         $(document).ready(async function() {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 tronWeb = window.tronWeb;
+                contract = await tronWeb.contract().at(contractAddress);
             } else {
-                tronWeb = new TronWeb({
-                    fullHost: 'https://api.trongrid.io',
-                    privateKey: 'your_private_key'
+                $('#connectWallet').click(async function() {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                        tronWeb = window.tronWeb;
+                        contract = await tronWeb.contract().at(contractAddress);
+                        initialize();
+                    } else {
+                        alert('Please install TronLink wallet.');
+                    }
                 });
             }
 
-            $('#connectWallet').click(async function() {
-                try {
-                    await tronWeb.request({ method: 'tron_requestAccounts' });
-                    const walletAddress = tronWeb.defaultAddress.base58;
-                    $('#walletAddress').text(walletAddress);
-                    $('#walletInfo').show();
-                    $('#actions').show();
-                    $('#marketplace').show();
+            function initialize() {
+                const walletAddress = tronWeb.defaultAddress.base58;
+                $('#walletAddress').text(walletAddress);
+                $('#walletInfo').show();
+                $('#actions').show();
+                $('#marketplace').show();
 
-                    contract = await tronWeb.contract().at(contractAddress);
-                    loadMarketplace();
-                } catch (error) {
-                    console.error('Error connecting wallet', error);
-                }
-            });
+                loadMarketplace();
+            }
 
             $('#listTokenButton').click(async function() {
                 const tokenAmount = $('#tokenAmount').val();
