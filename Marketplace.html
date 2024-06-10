@@ -78,7 +78,8 @@
             <h2>List Tokens for Sale</h2>
             <input type="number" id="tokenAmount" placeholder="Amount of Tokens">
             <input type="number" id="priceInTRX" placeholder="Price in TRX">
-            <button id="listTokenButton">List Tokens</button>
+            <button id="approveTokenButton">Approve Token</button>
+            <button id="listTokenButton" style="display:none;">List Tokens</button>
         </div>
         <div id="marketplace" style="display:none;">
             <h2>Marketplace</h2>
@@ -89,87 +90,265 @@
     </div>
 
     <script>
-        const contractAddress = 'TPwkCyrSUDV3qqv5yjTxcQCaHqiy43ceWU';
-        let tronWeb;
-        let contract;
-
-        $(document).ready(async function() {
-            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                tronWeb = window.tronWeb;
-                contract = await tronWeb.contract().at(contractAddress);
-            } else {
-                $('#connectWallet').click(async function() {
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                        tronWeb = window.tronWeb;
-                        contract = await tronWeb.contract().at(contractAddress);
-                        initialize();
-                    } else {
-                        alert('Please install TronLink wallet.');
+        const contractAddress = 'TQu6ucroWFkMc3JYyZ4J1gvkZLmF2dV2Cu'; // Replace with your contract address
+        const tokenAddress = 'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb'; // Token contract address
+        const abi = [
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "tokenAddress",
+                        "type": "address"
                     }
-                });
+                ],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "inputs": [],
+                "name": "activeListingIds",
+                "outputs": [
+                    {
+                        "internalType": "uint256[]",
+                        "name": "",
+                        "type": "uint256[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "listingId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "buyToken",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "start",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "end",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getActiveListings",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "seller",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "tokenAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "priceInTRX",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct TokenMarketplace.Listing[]",
+                        "name": "",
+                        "type": "tuple[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "tokenAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "priceInTRX",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "listToken",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "listings",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "seller",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "tokenAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "priceInTRX",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
             }
-
-            function initialize() {
-                const walletAddress = tronWeb.defaultAddress.base58;
-                $('#walletAddress').text(walletAddress);
-                $('#walletInfo').show();
-                $('#actions').show();
-                $('#marketplace').show();
-
-                loadMarketplace();
+        ];
+        const tokenAbi = [
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_spender",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "approve",
+                "outputs": [
+                    {
+                        "name": "success",
+                        "type": "bool"
+                    }
+                ],
+                "type": "function"
             }
-
-            $('#listTokenButton').click(async function() {
-                const tokenAmount = $('#tokenAmount').val();
-                const priceInTRX = $('#priceInTRX').val();
-
-                try {
-                    await contract.listToken(tronWeb.address.toHex(walletAddress), tokenAmount, priceInTRX).send({
-                        feeLimit: 100000000,
-                        callValue: 0,
-                        shouldPollResponse: true
-                    });
-                    alert('Tokens listed successfully!');
-                    loadMarketplace();
-                } catch (error) {
-                    console.error('Error listing tokens', error);
-                }
-            });
-
-            async function loadMarketplace() {
-                try {
-                    const listings = await contract.getListings().call();
-                    $('#listings').empty();
-                    listings.forEach((listing, index) => {
-                        $('#listings').append(`
-                            <div class="listing">
-                                <p>Seller: ${tronWeb.address.fromHex(listing.seller)}</p>
-                                <p>Token Amount: ${listing.tokenAmount}</p>
-                                <p>Price: ${listing.priceInTRX} TRX</p>
-                                <button onclick="buyToken(${index}, ${listing.priceInTRX})">Buy Tokens</button>
-                            </div>
-                        `);
-                    });
-                } catch (error) {
-                    console.error('Error loading marketplace', error);
-                }
-            }
-
-            window.buyToken = async function(listingId, priceInTRX) {
-                try {
-                    await contract.buyToken(listingId).send({
-                        feeLimit: 100000000,
-                        callValue: tronWeb.toSun(priceInTRX),
-                        shouldPollResponse: true
-                    });
-                    alert('Tokens bought successfully!');
-                    loadMarketplace();
-                } catch (error) {
-                    console.error('Error buying tokens', error);
-                }
-            }
+        ];
+        const tronWeb = new TronWeb({
+            fullHost: 'https://api.trongrid.io'
         });
+        const contract = tronWeb.contract(abi, contractAddress);
+        const tokenContract = tronWeb.contract(tokenAbi, tokenAddress);
+
+        async function connectWallet() {
+            try {
+                const walletAddress = tronWeb.defaultAddress.base58;
+                if (walletAddress) {
+                    document.getElementById('walletAddress').innerText = walletAddress;
+                    document.getElementById('walletInfo').style.display = 'block';
+                    document.getElementById('actions').style.display = 'block';
+                    document.getElementById('marketplace').style.display = 'block';
+                    fetchListings();
+                } else {
+                    alert('Please log in to TronLink.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Failed to connect to TronLink.');
+            }
+        }
+
+        async function approveTokens() {
+            const tokenAmount = document.getElementById('tokenAmount').value;
+
+            try {
+                await tokenContract.methods.approve(contractAddress, tokenAmount).send({
+                    from: tronWeb.defaultAddress.base58
+                });
+                alert('Tokens approved successfully!');
+                document.getElementById('listTokenButton').style.display = 'block';
+            } catch (error) {
+                console.error(error);
+                alert('Failed to approve tokens.');
+            }
+        }
+
+        async function listTokens() {
+            const tokenAmount = document.getElementById('tokenAmount').value;
+            const priceInTRX = document.getElementById('priceInTRX').value;
+
+            try {
+                await contract.methods.listToken(tokenAmount, priceInTRX).send({
+                    from: tronWeb.defaultAddress.base58
+                });
+                alert('Tokens listed successfully!');
+                fetchListings();
+            } catch (error) {
+                console.error(error);
+                alert('Failed to list tokens.');
+            }
+        }
+
+        async function fetchListings() {
+            try {
+                const activeListingIds = await contract.methods.activeListingIds().call();
+                const listingsContainer = document.getElementById('listings');
+                listingsContainer.innerHTML = '';
+
+                for (let i = 0; i < activeListingIds.length; i++) {
+                    const listingId = activeListingIds[i];
+                    const listing = await contract.methods.listings(listingId).call();
+
+                    const listingElement = document.createElement('div');
+                    listingElement.className = 'listing';
+                    listingElement.innerHTML = `
+                        <p>Seller: ${listing.seller}</p>
+                        <p>Token Amount: ${listing.tokenAmount}</p>
+                        <p>Price: ${listing.priceInTRX} TRX</p>
+                        <button onclick="buyToken(${listingId})">Buy</button>
+                    `;
+                    listingsContainer.appendChild(listingElement);
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Failed to fetch listings.');
+            }
+        }
+
+        async function buyToken(listingId) {
+            try {
+                const listing = await contract.methods.listings(listingId).call();
+                await contract.methods.buyToken(listingId).send({
+                    from: tronWeb.defaultAddress.base58,
+                    callValue: listing.priceInTRX
+                });
+                alert('Token purchased successfully!');
+                fetchListings();
+            } catch (error) {
+                console.error(error);
+                alert('Failed to buy tokens.');
+            }
+        }
+
+        document.getElementById('connectWallet').addEventListener('click', connectWallet);
+        document.getElementById('approveTokenButton').addEventListener('click', approveTokens);
+        document.getElementById('listTokenButton').addEventListener('click', listTokens);
+
+        window.onload = async () => {
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                await connectWallet();
+            } else {
+                window.addEventListener('tronWebInjected', connectWallet);
+            }
+        };
     </script>
 </body>
 </html>
