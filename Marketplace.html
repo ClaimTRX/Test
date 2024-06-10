@@ -296,7 +296,7 @@
             }
         }
 
-      async function fetchListings() {
+     async function fetchListings() {
     try {
         const result = await contract.methods.getActiveListings().call();
         console.log('Fetched listings:', result);
@@ -316,17 +316,25 @@
                 const listingId = listingIds[i];
                 const listing = listings[i];
 
+                console.log(`Listing ID: ${listingId}`, listing);
+
                 // Ensure listing is valid before displaying it
                 if (listing && listing.seller && listing.tokenAmount && listing.priceInTRX) {
-                    const listingElement = document.createElement('div');
-                    listingElement.className = 'listing';
-                    listingElement.innerHTML = `
-                        <p>Seller: ${listing.seller}</p>
-                        <p>Token Amount: ${listing.tokenAmount / Math.pow(10, decimals)}</p>
-                        <p>Price: ${listing.priceInTRX / Math.pow(10, decimals)} TRX</p>
-                        <button onclick="buyToken(${listingId})">Buy</button>
-                    `;
-                    listingsContainer.appendChild(listingElement);
+                    const tokenAmount = parseInt(listing.tokenAmount);
+                    const priceInTRX = parseInt(listing.priceInTRX);
+                    if (!isNaN(tokenAmount) && !isNaN(priceInTRX)) {
+                        const listingElement = document.createElement('div');
+                        listingElement.className = 'listing';
+                        listingElement.innerHTML = `
+                            <p>Seller: ${listing.seller}</p>
+                            <p>Token Amount: ${tokenAmount / Math.pow(10, decimals)}</p>
+                            <p>Price: ${priceInTRX / Math.pow(10, decimals)} TRX</p>
+                            <button onclick="buyToken(${listingId})">Buy</button>
+                        `;
+                        listingsContainer.appendChild(listingElement);
+                    } else {
+                        console.error('Invalid tokenAmount or priceInTRX:', listing);
+                    }
                 } else {
                     console.error('Invalid listing data:', listing);
                 }
@@ -340,6 +348,7 @@
         alert('Failed to fetch listings.');
     }
 }
+
 
 
 
