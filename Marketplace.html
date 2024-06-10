@@ -313,6 +313,8 @@
                         <p>Price: ${listing.priceInTRX / Math.pow(10, decimals)} TRX</p>
                         <button onclick="buyToken(${i})">Buy</button>
                     `;
+                    listingElement.querySelector('button').setAttribute('data-id', i);
+                    listingElement.querySelector('button').onclick = () => buyToken(i);
                     listingsContainer.appendChild(listingElement);
                 }
             } catch (error) {
