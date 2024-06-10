@@ -320,8 +320,9 @@
 
                 // Ensure listing is valid before displaying it
                 if (listing && listing.seller && listing.tokenAmount && listing.priceInTRX) {
-                    const tokenAmount = parseInt(listing.tokenAmount);
-                    const priceInTRX = parseInt(listing.priceInTRX);
+                    const tokenAmount = parseInt(listing.tokenAmount._hex, 16); // Convert BigNumber to integer
+                    const priceInTRX = parseInt(listing.priceInTRX._hex, 16); // Convert BigNumber to integer
+
                     if (!isNaN(tokenAmount) && !isNaN(priceInTRX)) {
                         const listingElement = document.createElement('div');
                         listingElement.className = 'listing';
@@ -348,6 +349,7 @@
         alert('Failed to fetch listings.');
     }
 }
+
 
 
         async function buyToken(listingId) {
