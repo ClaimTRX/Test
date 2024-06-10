@@ -81,81 +81,270 @@
     </div>
 
     <script>
-        const contractAddress = "TKn8MayegiTXQumMGpVmxhv8jSCwLgSKd5";
-        const stakingTokenAddress = "TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb";
+        const stakingContractAddress = 'TF2jTcuSKECtSTLAmuwM63vk8yzEf3rePV';
+        const stakingContractAbi = [
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_stakingToken",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "RewardClaimed",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Staked",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Withdrawn",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "OwnerWithdrawn",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "stake",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "withdraw",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "claimReward",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "ownerWithdraw",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "viewAPR",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "viewTotalStaked",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "account",
+                        "type": "address"
+                    }
+                ],
+                "name": "viewStakedAmount",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "account",
+                        "type": "address"
+                    }
+                ],
+                "name": "viewPendingReward",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_dailyReward",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setDailyReward",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "stateMutability": "payable",
+                "type": "receive"
+            }
+        ];
+
         let tronWeb;
-        let tokenDecimals;
+        let stakingContract;
 
-        $(document).ready(async function () {
-            $('#connectWallet').click(async function () {
-                if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                    tronWeb = window.tronWeb;
-                    $('#walletAddress').text(tronWeb.defaultAddress.base58);
-                    $('#walletInfo').show();
-                    $('#actions').show();
-                    await initialize();
-                } else {
-                    alert("Please install TronLink.");
-                }
-            });
-
-            $('#stakeButton').click(async function () {
-                const amount = $('#stakeAmount').val();
-                await stakeTokens(amount);
-            });
-
-            $('#withdrawButton').click(async function () {
-                const amount = $('#withdrawAmount').val();
-                await withdrawTokens(amount);
-            });
-
-            $('#claimRewardsButton').click(async function () {
-                await claimRewards();
-            });
-        });
-
-        async function initialize() {
-            const tokenContract = await tronWeb.contract().at(stakingTokenAddress);
-            tokenDecimals = parseInt(await tokenContract.decimals().call());
-            await loadContractData();
+        async function connectWallet() {
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                tronWeb = window.tronWeb;
+                $('#walletAddress').text(tronWeb.defaultAddress.base58);
+                stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
+                $('#walletInfo, #actions').show();
+                await updateStakingInfo();
+            } else {
+                alert('Please install TronLink and log in.');
+            }
         }
 
-        async function loadContractData() {
-            const contract = await tronWeb.contract().at(contractAddress);
-            const totalStaked = await contract.totalStakedTokens().call();
-            const userStakedBalance = await contract.stakedBalance(tronWeb.defaultAddress.base58).call();
-            const userRewards = await contract.accumulatedRewards(tronWeb.defaultAddress.base58).call();
-            const currentAPR = await contract.calculateAPR().call();
+        async function updateStakingInfo() {
+            const totalStaked = await stakingContract.methods.viewTotalStaked().call();
+            const userStakedBalance = await stakingContract.methods.viewStakedAmount(tronWeb.defaultAddress.base58).call();
+            const userRewards = await stakingContract.methods.viewPendingReward(tronWeb.defaultAddress.base58).call();
+            const currentAPR = await stakingContract.methods.viewAPR().call();
 
-            $('#totalStaked').text(tronWeb.toBigNumber(totalStaked).shiftedBy(-tokenDecimals).toString());
-            $('#userStakedBalance').text(tronWeb.toBigNumber(userStakedBalance).shiftedBy(-tokenDecimals).toString());
-            $('#userRewards').text(tronWeb.toBigNumber(userRewards).shiftedBy(-tokenDecimals).integerValue().toString());
-            $('#currentAPR').text(tronWeb.toBigNumber(currentAPR).toString());
+            $('#totalStaked').text(tronWeb.fromSun(totalStaked).toFixed(0));
+            $('#userStakedBalance').text(tronWeb.fromSun(userStakedBalance).toFixed(0));
+            $('#userRewards').text(tronWeb.fromSun(userRewards).toFixed(0));
+            $('#currentAPR').text(currentAPR / 100);
         }
 
-        async function stakeTokens(amount) {
-            const contract = await tronWeb.contract().at(contractAddress);
-            const tokenContract = await tronWeb.contract().at(stakingTokenAddress);
-            const amountInWei = tronWeb.toBigNumber(amount).shiftedBy(tokenDecimals).toString();
-            
-            await tokenContract.approve(contractAddress, amountInWei).send();
-            await contract.deposit(amountInWei).send();
-            await loadContractData();
+        async function stakeTokens() {
+            const amount = $('#stakeAmount').val();
+            if (amount <= 0) return alert('Please enter a valid amount to stake.');
+
+            await stakingContract.methods.stake(tronWeb.toSun(amount)).send();
+            await updateStakingInfo();
         }
 
-        async function withdrawTokens(amount) {
-            const contract = await tronWeb.contract().at(contractAddress);
-            const amountInWei = tronWeb.toBigNumber(amount).shiftedBy(tokenDecimals).toString();
+        async function withdrawTokens() {
+            const amount = $('#withdrawAmount').val();
+            if (amount <= 0) return alert('Please enter a valid amount to withdraw.');
 
-            await contract.withdraw(amountInWei).send();
-            await loadContractData();
+            await stakingContract.methods.withdraw(tronWeb.toSun(amount)).send();
+            await updateStakingInfo();
         }
 
         async function claimRewards() {
-            const contract = await tronWeb.contract().at(contractAddress);
-            await contract.claimReward().send();
-            await loadContractData();
+            await stakingContract.methods.claimReward().send();
+            await updateStakingInfo();
         }
+
+        $('#connectWallet').on('click', connectWallet);
+        $('#stakeButton').on('click', stakeTokens);
+        $('#withdrawButton').on('click', withdrawTokens);
+        $('#claimRewardsButton').on('click', claimRewards);
     </script>
 </body>
 </html>
