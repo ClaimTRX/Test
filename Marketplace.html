@@ -90,7 +90,7 @@
     </div>
 
     <script>
-        const contractAddress = 'TQu6ucroWFkMc3JYyZ4J1gvkZLmF2dV2Cu'; // Replace with your contract address
+        const contractAddress = 'TY4wF7nL6kEUMLAa6oYSya9VEXymjfa1Td'; // Replace with your contract address
         const tokenAddress = 'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb'; // Token contract address
         const abi = [
             {
@@ -131,18 +131,7 @@
                 "type": "function"
             },
             {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "start",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "end",
-                        "type": "uint256"
-                    }
-                ],
+                "inputs": [],
                 "name": "getActiveListings",
                 "outputs": [
                     {
@@ -308,13 +297,12 @@
 
         async function fetchListings() {
             try {
-                const activeListingIds = await contract.methods.activeListingIds().call();
+                const listings = await contract.methods.getActiveListings().call();
                 const listingsContainer = document.getElementById('listings');
                 listingsContainer.innerHTML = '';
 
-                for (let i = 0; i < activeListingIds.length; i++) {
-                    const listingId = activeListingIds[i];
-                    const listing = await contract.methods.listings(listingId).call();
+                for (let i = 0; i < listings.length; i++) {
+                    const listing = listings[i];
 
                     const listingElement = document.createElement('div');
                     listingElement.className = 'listing';
@@ -322,7 +310,7 @@
                         <p>Seller: ${listing.seller}</p>
                         <p>Token Amount: ${listing.tokenAmount / Math.pow(10, decimals)}</p>
                         <p>Price: ${listing.priceInTRX} TRX</p>
-                        <button onclick="buyToken(${listingId})">Buy</button>
+                        <button onclick="buyToken(${i})">Buy</button>
                     `;
                     listingsContainer.appendChild(listingElement);
                 }
