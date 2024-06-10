@@ -308,6 +308,7 @@
                     const listingElement = document.createElement('div');
                     listingElement.className = 'listing';
                     listingElement.innerHTML = `
+                        <p>Seller: ${listing.seller}</p>
                         <p>Token Amount: ${listing.tokenAmount / Math.pow(10, decimals)}</p>
                         <p>Price: ${listing.priceInTRX / Math.pow(10, decimals)} TRX</p>
                         <button onclick="buyToken(${i})">Buy</button>
