@@ -298,12 +298,13 @@
 
         async function fetchListings() {
             try {
-                const listings = await contract.methods.getActiveListings().call();
+                const activeListingIds = await contract.methods.activeListingIds().call();
                 const listingsContainer = document.getElementById('listings');
                 listingsContainer.innerHTML = '';
 
-                for (let i = 0; i < listings.length; i++) {
-                    const listing = listings[i];
+                for (let i = 0; i < activeListingIds.length; i++) {
+                    const listingId = activeListingIds[i];
+                    const listing = await contract.methods.listings(listingId).call();
 
                     const listingElement = document.createElement('div');
                     listingElement.className = 'listing';
@@ -311,10 +312,8 @@
                         <p>Seller: ${listing.seller}</p>
                         <p>Token Amount: ${listing.tokenAmount / Math.pow(10, decimals)}</p>
                         <p>Price: ${listing.priceInTRX / Math.pow(10, decimals)} TRX</p>
-                        <button onclick="buyToken(${i})">Buy</button>
+                        <button onclick="buyToken(${listingId})">Buy</button>
                     `;
-                    listingElement.querySelector('button').setAttribute('data-id', i);
-                    listingElement.querySelector('button').onclick = () => buyToken(i);
                     listingsContainer.appendChild(listingElement);
                 }
             } catch (error) {
@@ -324,21 +323,19 @@
         }
 
         async function buyToken(listingId) {
-    try {
-        const listing = await contract.methods.listings(listingId).call();
-        const callValue = BigInt(listing.priceInTRX) * BigInt(Math.pow(10, decimals)); // Convert TRX to SUN
-        await contract.methods.buyToken(listingId).send({
-            from: tronWeb.defaultAddress.base58,
-            callValue: callValue.toString() // Use the converted value in SUN
-        });
-        alert('Token purchased successfully!');
-        fetchListings();
-    } catch (error) {
-        console.error(error);
-        alert('Failed to buy tokens.');
-    }
-}
-
+            try {
+                const listing = await contract.methods.listings(listingId).call();
+                await contract.methods.buyToken(listingId).send({
+                    from: tronWeb.defaultAddress.base58,
+                    callValue: listing.priceInTRX
+                });
+                alert('Token purchased successfully!');
+                fetchListings();
+            } catch (error) {
+                console.error(error);
+                alert('Failed to buy tokens.');
+            }
+        }
 
         document.getElementById('connectWallet').addEventListener('click', connectWallet);
         document.getElementById('approveTokenButton').addEventListener('click', approveTokens);
