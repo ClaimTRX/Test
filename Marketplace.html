@@ -324,19 +324,21 @@
         }
 
         async function buyToken(listingId) {
-            try {
-                const listing = await contract.methods.listings(listingId).call();
-                await contract.methods.buyToken(listingId).send({
-                    from: tronWeb.defaultAddress.base58,
-                    callValue: listing.priceInTRX
-                });
-                alert('Token purchased successfully!');
-                fetchListings();
-            } catch (error) {
-                console.error(error);
-                alert('Failed to buy tokens.');
-            }
-        }
+    try {
+        const listing = await contract.methods.listings(listingId).call();
+        const callValue = BigInt(listing.priceInTRX) * BigInt(Math.pow(10, decimals)); // Convert TRX to SUN
+        await contract.methods.buyToken(listingId).send({
+            from: tronWeb.defaultAddress.base58,
+            callValue: callValue.toString() // Use the converted value in SUN
+        });
+        alert('Token purchased successfully!');
+        fetchListings();
+    } catch (error) {
+        console.error(error);
+        alert('Failed to buy tokens.');
+    }
+}
+
 
         document.getElementById('connectWallet').addEventListener('click', connectWallet);
         document.getElementById('approveTokenButton').addEventListener('click', approveTokens);
