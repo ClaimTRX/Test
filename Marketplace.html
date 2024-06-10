@@ -90,7 +90,7 @@
     </div>
 
     <script>
-        const contractAddress = 'TBcgnurKQtYzac1x6oqQnbQcYAbkESUHfq'; // Replace with your contract address
+        const contractAddress = 'TBBwYfVebTWz8KtrHQC5NbTMsCSxrkgXen'; // Replace with your contract address
         const tokenAddress = 'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb'; // Token contract address
         const abi = [
             {
@@ -298,14 +298,14 @@
 
         async function fetchListings() {
             try {
-                const activeListingIds = await contract.methods.activeListingIds().call();
+                const result = await contract.methods.getActiveListings().call();
+                const [listingIds, listings] = result;
                 const listingsContainer = document.getElementById('listings');
                 listingsContainer.innerHTML = '';
 
-                for (let i = 0; i < activeListingIds.length; i++) {
-                    const listingId = activeListingIds[i];
-                    console.log('Fetching listing ID:', listingId);
-                    const listing = await contract.methods.listings(listingId).call();
+                for (let i = 0; i < listingIds.length; i++) {
+                    const listingId = listingIds[i];
+                    const listing = listings[i];
 
                     const listingElement = document.createElement('div');
                     listingElement.className = 'listing';
@@ -326,7 +326,6 @@
         async function buyToken(listingId) {
             try {
                 const listing = await contract.methods.listings(listingId).call();
-                console.log('Buying listing ID:', listingId, 'with price:', listing.priceInTRX);
                 await contract.methods.buyToken(listingId).send({
                     from: tronWeb.defaultAddress.base58,
                     callValue: listing.priceInTRX
