@@ -300,7 +300,7 @@
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 tronWeb = window.tronWeb;
                 $('#walletAddress').text(tronWeb.defaultAddress.base58);
-                stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
+                stakingContract = await tronWeb.contract().at(stakingContractAddress);
                 $('#walletInfo, #actions').show();
                 await updateStakingInfo();
             } else {
@@ -309,36 +309,57 @@
         }
 
         async function updateStakingInfo() {
-            const totalStaked = await stakingContract.methods.viewTotalStaked().call();
-            const userStakedBalance = await stakingContract.methods.viewStakedAmount(tronWeb.defaultAddress.base58).call();
-            const userRewards = await stakingContract.methods.viewPendingReward(tronWeb.defaultAddress.base58).call();
-            const currentAPR = await stakingContract.methods.viewAPR().call();
+            try {
+                const totalStaked = await stakingContract.viewTotalStaked().call();
+                const userStakedBalance = await stakingContract.viewStakedAmount(tronWeb.defaultAddress.base58).call();
+                const userRewards = await stakingContract.viewPendingReward(tronWeb.defaultAddress.base58).call();
+                const currentAPR = await stakingContract.viewAPR().call();
 
-            $('#totalStaked').text(tronWeb.fromSun(totalStaked).toFixed(0));
-            $('#userStakedBalance').text(tronWeb.fromSun(userStakedBalance).toFixed(0));
-            $('#userRewards').text(tronWeb.fromSun(userRewards).toFixed(0));
-            $('#currentAPR').text(currentAPR / 100);
+                console.log('Total Staked:', totalStaked);
+                console.log('User Staked Balance:', userStakedBalance);
+                console.log('User Rewards:', userRewards);
+                console.log('Current APR:', currentAPR);
+
+                $('#totalStaked').text(tronWeb.fromSun(totalStaked).toFixed(0));
+                $('#userStakedBalance').text(tronWeb.fromSun(userStakedBalance).toFixed(0));
+                $('#userRewards').text(tronWeb.fromSun(userRewards).toFixed(0));
+                $('#currentAPR').text((currentAPR / 100).toFixed(2));
+            } catch (error) {
+                console.error('Error updating staking info:', error);
+            }
         }
 
         async function stakeTokens() {
             const amount = $('#stakeAmount').val();
             if (amount <= 0) return alert('Please enter a valid amount to stake.');
 
-            await stakingContract.methods.stake(tronWeb.toSun(amount)).send();
-            await updateStakingInfo();
+            try {
+                await stakingContract.stake(tronWeb.toSun(amount)).send();
+                await updateStakingInfo();
+            } catch (error) {
+                console.error('Error staking tokens:', error);
+            }
         }
 
         async function withdrawTokens() {
             const amount = $('#withdrawAmount').val();
             if (amount <= 0) return alert('Please enter a valid amount to withdraw.');
 
-            await stakingContract.methods.withdraw(tronWeb.toSun(amount)).send();
-            await updateStakingInfo();
+            try {
+                await stakingContract.withdraw(tronWeb.toSun(amount)).send();
+                await updateStakingInfo();
+            } catch (error) {
+                console.error('Error withdrawing tokens:', error);
+            }
         }
 
         async function claimRewards() {
-            await stakingContract.methods.claimReward().send();
-            await updateStakingInfo();
+            try {
+                await stakingContract.claimReward().send();
+                await updateStakingInfo();
+            } catch (error) {
+                console.error('Error claiming rewards:', error);
+            }
         }
 
         $('#connectWallet').on('click', connectWallet);
