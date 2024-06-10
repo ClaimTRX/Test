@@ -90,7 +90,7 @@
     </div>
 
     <script>
-        const contractAddress = 'TBBwYfVebTWz8KtrHQC5NbTMsCSxrkgXen'; // Replace with your contract address
+        const contractAddress = 'TKJHQHKqnQRkkFGH4DLNVpsvanD12GbBnB'; // Replace with your contract address
         const tokenAddress = 'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb'; // Token contract address
         const abi = [
             {
@@ -296,14 +296,18 @@
             }
         }
 
-       async function fetchListings() {
+      async function fetchListings() {
     try {
         const result = await contract.methods.getActiveListings().call();
         console.log('Fetched listings:', result);
 
-        if (result && Array.isArray(result[0]) && Array.isArray(result[1])) {
+        // Validate the structure of the result
+        if (result && Array.isArray(result) && result.length === 2 && Array.isArray(result[0]) && Array.isArray(result[1])) {
             const listingIds = result[0];
             const listings = result[1];
+
+            console.log('Listing IDs:', listingIds);
+            console.log('Listings:', listings);
 
             const listingsContainer = document.getElementById('listings');
             listingsContainer.innerHTML = '';
@@ -312,7 +316,8 @@
                 const listingId = listingIds[i];
                 const listing = listings[i];
 
-                if (listing) {
+                // Ensure listing is valid before displaying it
+                if (listing && listing.seller && listing.tokenAmount && listing.priceInTRX) {
                     const listingElement = document.createElement('div');
                     listingElement.className = 'listing';
                     listingElement.innerHTML = `
@@ -322,10 +327,12 @@
                         <button onclick="buyToken(${listingId})">Buy</button>
                     `;
                     listingsContainer.appendChild(listingElement);
+                } else {
+                    console.error('Invalid listing data:', listing);
                 }
             }
         } else {
-            console.error('Invalid response from getActiveListings:', result);
+            console.error('Invalid response structure from getActiveListings:', result);
             alert('Failed to fetch listings.');
         }
     } catch (error) {
@@ -333,6 +340,7 @@
         alert('Failed to fetch listings.');
     }
 }
+
 
 
         async function buyToken(listingId) {
