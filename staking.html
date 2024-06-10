@@ -575,31 +575,32 @@
         }
 
         async function updateStakingInfo() {
-            try {
-                const totalStaked = await stakingContract.methods.viewTotalStaked().call();
-                const userStakedBalance = await stakingContract.methods.viewStakedAmount(tronWeb.defaultAddress.base58).call();
-                const userRewards = await stakingContract.methods.viewPendingReward(tronWeb.defaultAddress.base58).call();
-                const currentAPR = await stakingContract.methods.viewAPR().call();
+    try {
+        const totalStaked = await stakingContract.methods.viewTotalStaked().call();
+        const userStakedBalance = await stakingContract.methods.viewStakedAmount(tronWeb.defaultAddress.base58).call();
+        const userRewards = await stakingContract.methods.viewPendingReward(tronWeb.defaultAddress.base58).call();
+        const currentAPR = await stakingContract.methods.viewAPR().call();
 
-                console.log('Total Staked:', totalStaked.toString());
-                console.log('User Staked Balance:', userStakedBalance.toString());
-                console.log('User Rewards:', userRewards.toString());
-                console.log('Current APR:', currentAPR.toString());
+        console.log('Total Staked:', totalStaked.toString());
+        console.log('User Staked Balance:', userStakedBalance.toString());
+        console.log('User Rewards:', userRewards.toString());
+        console.log('Current APR:', currentAPR.toString());
 
-                const totalStakedValue = totalStaked / 1e6;
-                const userStakedBalanceValue = userStakedBalance / 1e6;
-                const userRewardsValue = userRewards / 1e6;
-                const currentAPRValue = currentAPR / 1e6 / 100;
+        const totalStakedValue = totalStaked / 1e6;
+        const userStakedBalanceValue = userStakedBalance / 1e6;
+        const userRewardsValue = userRewards / 1e6;
+        const currentAPRValue = (currentAPR / 1e6);
 
-                // Update the UI with the fetched values
-                $('#totalStaked').text(totalStakedValue.toFixed(2));
-                $('#userStakedBalance').text(userStakedBalanceValue.toFixed(2));
-                $('#userRewards').text(userRewardsValue.toFixed(2));
-                $('#currentAPR').text(currentAPRValue.toFixed(2));
-            } catch (error) {
-                console.error('Error updating staking info:', error);
-            }
-        }
+        // Update the UI with the fetched values
+        $('#totalStaked').text(totalStakedValue.toFixed(2));
+        $('#userStakedBalance').text(userStakedBalanceValue.toFixed(2));
+        $('#userRewards').text(userRewardsValue.toFixed(2));
+        $('#currentAPR').text(currentAPRValue.toFixed(2));
+    } catch (error) {
+        console.error('Error updating staking info:', error);
+    }
+}
+
 
         async function approveTokens() {
             const amount = $('#stakeAmount').val();
