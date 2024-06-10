@@ -574,51 +574,32 @@
             }
         }
 
-       async function updateStakingInfo() {
-    try {
-        const totalStaked = await stakingContract.methods.viewTotalStaked().call();
-        const userStakedBalance = await stakingContract.methods.viewStakedAmount(tronWeb.defaultAddress.base58).call();
-        const userRewards = await stakingContract.methods.viewPendingReward(tronWeb.defaultAddress.base58).call();
-        const currentAPR = await stakingContract.methods.viewAPR().call();
+        async function updateStakingInfo() {
+            try {
+                const totalStaked = await stakingContract.methods.viewTotalStaked().call();
+                const userStakedBalance = await stakingContract.methods.viewStakedAmount(tronWeb.defaultAddress.base58).call();
+                const userRewards = await stakingContract.methods.viewPendingReward(tronWeb.defaultAddress.base58).call();
+                const currentAPR = await stakingContract.methods.viewAPR().call();
 
-        console.log('Total Staked:', totalStaked);
-        console.log('User Staked Balance:', userStakedBalance);
-        console.log('User Rewards:', userRewards);
-        console.log('Current APR:', currentAPR);
+                console.log('Total Staked:', totalStaked.toString());
+                console.log('User Staked Balance:', userStakedBalance.toString());
+                console.log('User Rewards:', userRewards.toString());
+                console.log('Current APR:', currentAPR.toString());
 
-        const totalStakedValue = tronWeb.fromSun(totalStaked).toNumber();
-        const userStakedBalanceValue = tronWeb.fromSun(userStakedBalance).toNumber();
-        const userRewardsValue = tronWeb.fromSun(userRewards).toNumber();
-        const currentAPRValue = currentAPR.toNumber() / 100;
+                const totalStakedValue = tronWeb.fromSun(totalStaked).toNumber();
+                const userStakedBalanceValue = tronWeb.fromSun(userStakedBalance).toNumber();
+                const userRewardsValue = tronWeb.fromSun(userRewards).toNumber();
+                const currentAPRValue = currentAPR.toNumber() / 100;
 
-        // Check if values are numbers before formatting
-        if (!isNaN(totalStakedValue)) {
-            $('#totalStaked').text(totalStakedValue.toFixed(0));
-        } else {
-            console.error('Total Staked is not a number:', totalStakedValue);
+                // Update the UI with the fetched values
+                $('#totalStaked').text(totalStakedValue.toFixed(0));
+                $('#userStakedBalance').text(userStakedBalanceValue.toFixed(0));
+                $('#userRewards').text(userRewardsValue.toFixed(0));
+                $('#currentAPR').text(currentAPRValue.toFixed(2));
+            } catch (error) {
+                console.error('Error updating staking info:', error);
+            }
         }
-
-        if (!isNaN(userStakedBalanceValue)) {
-            $('#userStakedBalance').text(userStakedBalanceValue.toFixed(0));
-        } else {
-            console.error('User Staked Balance is not a number:', userStakedBalanceValue);
-        }
-
-        if (!isNaN(userRewardsValue)) {
-            $('#userRewards').text(userRewardsValue.toFixed(0));
-        } else {
-            console.error('User Rewards is not a number:', userRewardsValue);
-        }
-
-        if (!isNaN(currentAPRValue)) {
-            $('#currentAPR').text(currentAPRValue.toFixed(2));
-        } else {
-            console.error('Current APR is not a number:', currentAPRValue);
-        }
-    } catch (error) {
-        console.error('Error updating staking info:', error);
-    }
-}
 
         async function approveTokens() {
             const amount = $('#stakeAmount').val();
