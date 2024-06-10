@@ -6,6 +6,27 @@
     <title>TRC20 Staking DApp</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tronscan/tronweb@4.0.0/dist/TronWeb.js"></script>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        #walletInfo, #actions {
+            margin: 20px auto;
+            display: inline-block;
+            text-align: left;
+        }
+        input {
+            margin: 5px 0;
+            padding: 5px;
+            width: 200px;
+        }
+        button {
+            margin: 5px 0;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <h1>TRC20 Staking DApp</h1>
@@ -26,7 +47,7 @@
     </div>
 
     <script>
-        const contractAddress = "TU1Ct4p9VBdoqPeFy4pYVNvArtKPoPq4YV";
+        const contractAddress = "TRy3b13PXmJJzysoePkVgtZxUswwJb3MyH";
         const stakingTokenAddress = "TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb";
         let tronWeb;
         let tokenDecimals;
@@ -74,7 +95,7 @@
 
             $('#totalStaked').text(tronWeb.toBigNumber(totalStaked).shiftedBy(-tokenDecimals).toString());
             $('#userStakedBalance').text(tronWeb.toBigNumber(userStakedBalance).shiftedBy(-tokenDecimals).toString());
-            $('#userRewards').text(tronWeb.toBigNumber(userRewards).shiftedBy(-tokenDecimals).toString());
+            $('#userRewards').text(tronWeb.toBigNumber(userRewards).shiftedBy(-tokenDecimals).integerValue().toString());
             $('#currentAPR').text(tronWeb.toBigNumber(currentAPR).toString());
         }
 
