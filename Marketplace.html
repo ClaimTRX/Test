@@ -242,14 +242,20 @@
                 "type": "function"
             }
         ];
-        const tronWeb = new TronWeb({
-            fullHost: 'https://api.trongrid.io'
-        });
-        const contract = tronWeb.contract(abi, contractAddress);
-        const tokenContract = tronWeb.contract(tokenAbi, tokenAddress);
+
+        let tronWeb;
+        let contract;
+        let tokenContract;
+
+        async function initializeTronWeb() {
+            tronWeb = window.tronWeb;
+            contract = await tronWeb.contract(abi, contractAddress);
+            tokenContract = await tronWeb.contract(tokenAbi, tokenAddress);
+        }
 
         async function connectWallet() {
             try {
+                await initializeTronWeb();
                 const walletAddress = tronWeb.defaultAddress.base58;
                 if (walletAddress) {
                     document.getElementById('walletAddress').innerText = walletAddress;
