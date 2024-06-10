@@ -282,9 +282,10 @@
             const tokenAmount = document.getElementById('tokenAmount').value;
             const priceInTRX = document.getElementById('priceInTRX').value;
             const adjustedTokenAmount = BigInt(tokenAmount) * BigInt(Math.pow(10, decimals));
+            const adjustedPriceInTRX = BigInt(priceInTRX) * BigInt(Math.pow(10, decimals));
 
             try {
-                await contract.methods.listToken(adjustedTokenAmount.toString(), priceInTRX).send({
+                await contract.methods.listToken(adjustedTokenAmount.toString(), adjustedPriceInTRX.toString()).send({
                     from: tronWeb.defaultAddress.base58
                 });
                 alert('Tokens listed successfully!');
@@ -307,9 +308,8 @@
                     const listingElement = document.createElement('div');
                     listingElement.className = 'listing';
                     listingElement.innerHTML = `
-                        <p>Seller: ${listing.seller}</p>
                         <p>Token Amount: ${listing.tokenAmount / Math.pow(10, decimals)}</p>
-                        <p>Price: ${listing.priceInTRX} TRX</p>
+                        <p>Price: ${listing.priceInTRX / Math.pow(10, decimals)} TRX</p>
                         <button onclick="buyToken(${i})">Buy</button>
                     `;
                     listingsContainer.appendChild(listingElement);
