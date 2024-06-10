@@ -73,7 +73,8 @@
         </div>
         <div id="actions" style="display:none;">
             <input type="number" id="stakeAmount" placeholder="Amount to Stake">
-            <button id="stakeButton">Stake</button>
+            <button id="approveButton">Approve</button>
+            <button id="stakeButton" disabled>Stake</button>
             <input type="number" id="withdrawAmount" placeholder="Amount to Withdraw">
             <button id="withdrawButton">Withdraw</button>
             <button id="claimRewardsButton">Claim Rewards</button>
@@ -293,14 +294,279 @@
             }
         ];
 
+        const tokenContractAddress = 'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb';
+        const tokenContractAbi = [
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "name",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_spender",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "approve",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "totalSupply",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_from",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_to",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transferFrom",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "decimals",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint8"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "version",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "balanceOf",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "symbol",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_to",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transfer",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_spender",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "_extraData",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "approveAndCall",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "allowance",
+                "outputs": [
+                    {
+                        "name": "_owner",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_spender",
+                        "type": "address"
+                    },
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "payable": true,
+                "stateMutability": "payable",
+                "type": "fallback"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "_from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "_to",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Transfer",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "_owner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "_spender",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Approval",
+                "type": "event"
+            }
+        ];
+
         let tronWeb;
         let stakingContract;
+        let tokenContract;
 
         async function connectWallet() {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 tronWeb = window.tronWeb;
                 $('#walletAddress').text(tronWeb.defaultAddress.base58);
-                stakingContract = await tronWeb.contract().at(stakingContractAddress);
+                stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
+                tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
                 $('#walletInfo, #actions').show();
                 await updateStakingInfo();
             } else {
@@ -310,10 +576,10 @@
 
         async function updateStakingInfo() {
             try {
-                const totalStaked = await stakingContract.viewTotalStaked().call();
-                const userStakedBalance = await stakingContract.viewStakedAmount(tronWeb.defaultAddress.base58).call();
-                const userRewards = await stakingContract.viewPendingReward(tronWeb.defaultAddress.base58).call();
-                const currentAPR = await stakingContract.viewAPR().call();
+                const totalStaked = await stakingContract.methods.viewTotalStaked().call();
+                const userStakedBalance = await stakingContract.methods.viewStakedAmount(tronWeb.defaultAddress.base58).call();
+                const userRewards = await stakingContract.methods.viewPendingReward(tronWeb.defaultAddress.base58).call();
+                const currentAPR = await stakingContract.methods.viewAPR().call();
 
                 console.log('Total Staked:', totalStaked);
                 console.log('User Staked Balance:', userStakedBalance);
@@ -329,12 +595,25 @@
             }
         }
 
+        async function approveTokens() {
+            const amount = $('#stakeAmount').val();
+            if (amount <= 0) return alert('Please enter a valid amount to approve.');
+
+            try {
+                await tokenContract.methods.approve(stakingContractAddress, tronWeb.toSun(amount)).send();
+                $('#stakeButton').prop('disabled', false);
+                alert('Tokens approved successfully. You can now stake.');
+            } catch (error) {
+                console.error('Error approving tokens:', error);
+            }
+        }
+
         async function stakeTokens() {
             const amount = $('#stakeAmount').val();
             if (amount <= 0) return alert('Please enter a valid amount to stake.');
 
             try {
-                await stakingContract.stake(tronWeb.toSun(amount)).send();
+                await stakingContract.methods.stake(tronWeb.toSun(amount)).send();
                 await updateStakingInfo();
             } catch (error) {
                 console.error('Error staking tokens:', error);
@@ -346,7 +625,7 @@
             if (amount <= 0) return alert('Please enter a valid amount to withdraw.');
 
             try {
-                await stakingContract.withdraw(tronWeb.toSun(amount)).send();
+                await stakingContract.methods.withdraw(tronWeb.toSun(amount)).send();
                 await updateStakingInfo();
             } catch (error) {
                 console.error('Error withdrawing tokens:', error);
@@ -355,7 +634,7 @@
 
         async function claimRewards() {
             try {
-                await stakingContract.claimReward().send();
+                await stakingContract.methods.claimReward().send();
                 await updateStakingInfo();
             } catch (error) {
                 console.error('Error claiming rewards:', error);
@@ -363,6 +642,7 @@
         }
 
         $('#connectWallet').on('click', connectWallet);
+        $('#approveButton').on('click', approveTokens);
         $('#stakeButton').on('click', stakeTokens);
         $('#withdrawButton').on('click', withdrawTokens);
         $('#claimRewardsButton').on('click', claimRewards);
