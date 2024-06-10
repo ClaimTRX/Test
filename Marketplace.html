@@ -296,7 +296,7 @@
             }
         }
 
-     async function fetchListings() {
+    async function fetchListings() {
     try {
         const result = await contract.methods.getActiveListings().call();
         console.log('Fetched listings:', result);
@@ -348,6 +348,7 @@
         alert('Failed to fetch listings.');
     }
 }
+
 
 
 
