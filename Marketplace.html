@@ -304,6 +304,7 @@
 
                 for (let i = 0; i < activeListingIds.length; i++) {
                     const listingId = activeListingIds[i];
+                    console.log('Fetching listing ID:', listingId);
                     const listing = await contract.methods.listings(listingId).call();
 
                     const listingElement = document.createElement('div');
@@ -317,7 +318,7 @@
                     listingsContainer.appendChild(listingElement);
                 }
             } catch (error) {
-                console.error(error);
+                console.error('Error fetching listings:', error);
                 alert('Failed to fetch listings.');
             }
         }
@@ -325,6 +326,7 @@
         async function buyToken(listingId) {
             try {
                 const listing = await contract.methods.listings(listingId).call();
+                console.log('Buying listing ID:', listingId, 'with price:', listing.priceInTRX);
                 await contract.methods.buyToken(listingId).send({
                     from: tronWeb.defaultAddress.base58,
                     callValue: listing.priceInTRX
@@ -332,7 +334,7 @@
                 alert('Token purchased successfully!');
                 fetchListings();
             } catch (error) {
-                console.error(error);
+                console.error('Error buying token:', error);
                 alert('Failed to buy tokens.');
             }
         }
