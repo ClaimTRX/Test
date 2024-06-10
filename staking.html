@@ -35,6 +35,14 @@
             padding: 10px;
             font-size: 16px;
         }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
         button {
             background-color: #007bff;
             color: white;
@@ -73,7 +81,7 @@
     </div>
 
     <script>
-        const contractAddress = "TYpDNheXj6VCkJDjBqwUmYKUeuC3PccvyX";
+        const contractAddress = "TRy3b13PXmJJzysoePkVgtZxUswwJb3MyH";
         const stakingTokenAddress = "TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb";
         let tronWeb;
         let tokenDecimals;
