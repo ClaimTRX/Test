@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRC20 Staking DApp</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tronscan/tronweb@4.0.0/dist/TronWeb.js"></script>
+</head>
+<body>
+    <h1>TRC20 Staking DApp</h1>
+    <button id="connectWallet">Connect Wallet</button>
+    <div id="walletInfo" style="display:none;">
+        <p>Connected Wallet: <span id="walletAddress"></span></p>
+        <p>Total Staked: <span id="totalStaked"></span></p>
+        <p>Your Staked Balance: <span id="userStakedBalance"></span></p>
+        <p>Your Accumulated Rewards: <span id="userRewards"></span></p>
+        <p>Current APR: <span id="currentAPR"></span>%</p>
+    </div>
+    <div id="actions" style="display:none;">
+        <input type="number" id="stakeAmount" placeholder="Amount to Stake">
+        <button id="stakeButton">Stake</button>
+        <input type="number" id="withdrawAmount" placeholder="Amount to Withdraw">
+        <button id="withdrawButton">Withdraw</button>
+        <button id="claimRewardsButton">Claim Rewards</button>
+    </div>
+
+    <script>
+        const contractAddress = "TU1Ct4p9VBdoqPeFy4pYVNvArtKPoPq4YV";
+        const stakingTokenAddress = "TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb";
+        let tronWeb;
+
+        $(document).ready(async function () {
+            $('#connectWallet').click(async function () {
+                if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                    tronWeb = window.tronWeb;
+                    $('#walletAddress').text(tronWeb.defaultAddress.base58);
+                    $('#walletInfo').show();
+                    $('#actions').show();
+                    await loadContractData();
+                } else {
+                    alert("Please install TronLink.");
+                }
+            });
+
+            $('#stakeButton').click(async function () {
+                const amount = $('#stakeAmount').val();
+                await stakeTokens(amount);
+            });
+
+            $('#withdrawButton').click(async function () {
+                const amount = $('#withdrawAmount').val();
+                await withdrawTokens(amount);
+            });
+
+            $('#claimRewardsButton').click(async function () {
+                await claimRewards();
+            });
+        });
+
+        async function loadContractData() {
+            const contract = await tronWeb.contract().at(contractAddress);
+            const totalStaked = await contract.totalStakedTokens().call();
+            const userStakedBalance = await contract.stakedBalance(tronWeb.defaultAddress.base58).call();
+            const userRewards = await contract.accumulatedRewards(tronWeb.defaultAddress.base58).call();
+            const currentAPR = await contract.calculateAPR().call();
+
+            $('#totalStaked').text(tronWeb.toBigNumber(totalStaked).toString());
+            $('#userStakedBalance').text(tronWeb.toBigNumber(userStakedBalance).toString());
+            $('#userRewards').text(tronWeb.toBigNumber(userRewards).toString());
+            $('#currentAPR').text(tronWeb.toBigNumber(currentAPR).toString());
+        }
+
+        async function stakeTokens(amount) {
+            const contract = await tronWeb.contract().at(contractAddress);
+            const tokenContract = await tronWeb.contract().at(stakingTokenAddress);
+            const decimals = await tokenContract.decimals().call();
+            const amountInWei = tronWeb.toBigNumber(amount).shiftedBy(decimals).toString();
+            
+            await tokenContract.approve(contractAddress, amountInWei).send();
+            await contract.deposit(amountInWei).send();
+            await loadContractData();
+        }
+
+        async function withdrawTokens(amount) {
+            const contract = await tronWeb.contract().at(contractAddress);
+            const decimals = await tronWeb.contract().at(stakingTokenAddress).decimals().call();
+            const amountInWei = tronWeb.toBigNumber(amount).shiftedBy(decimals).toString();
+
+            await contract.withdraw(amountInWei).send();
+            await loadContractData();
+        }
+
+        async function claimRewards() {
+            const contract = await tronWeb.contract().at(contractAddress);
+            await contract.claimReward().send();
+            await loadContractData();
+        }
+    </script>
+</body>
+</html>
