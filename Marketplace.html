@@ -90,7 +90,7 @@
     </div>
 
     <script>
-        const contractAddress = 'TW8JMssk4V5jMMHmikvgzTBUWiZphTomys'; // Replace with your contract address
+        const contractAddress = 'TYG73CHs8DVsmfEYVEqnnMX8QQT5oc6Ro5'; // Replace with your contract address
         const tokenAddress = 'TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb'; // Token contract address
         const abi = [
             {
@@ -106,12 +106,39 @@
             },
             {
                 "inputs": [],
-                "name": "activeListingIds",
+                "name": "getActiveListings", // Changed function name to match the new contract
                 "outputs": [
                     {
                         "internalType": "uint256[]",
                         "name": "",
                         "type": "uint256[]"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "seller",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint128",
+                                "name": "tokenAmount",
+                                "type": "uint128"
+                            },
+                            {
+                                "internalType": "uint128",
+                                "name": "priceInTRX",
+                                "type": "uint128"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct TokenMarketplace.Listing[]",
+                        "name": "",
+                        "type": "tuple[]"
                     }
                 ],
                 "stateMutability": "view",
@@ -128,36 +155,6 @@
                 "name": "buyToken",
                 "outputs": [],
                 "stateMutability": "payable",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "getActiveListings",
-                "outputs": [
-                    {
-                        "components": [
-                            {
-                                "internalType": "address",
-                                "name": "seller",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "tokenAmount",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "priceInTRX",
-                                "type": "uint256"
-                            }
-                        ],
-                        "internalType": "struct TokenMarketplace.Listing[]",
-                        "name": "",
-                        "type": "tuple[]"
-                    }
-                ],
-                "stateMutability": "view",
                 "type": "function"
             },
             {
@@ -194,14 +191,19 @@
                         "type": "address"
                     },
                     {
-                        "internalType": "uint256",
+                        "internalType": "uint128",
                         "name": "tokenAmount",
-                        "type": "uint256"
+                        "type": "uint128"
                     },
                     {
-                        "internalType": "uint256",
+                        "internalType": "uint128",
                         "name": "priceInTRX",
-                        "type": "uint256"
+                        "type": "uint128"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isActive", // Added isActive to match the new contract
+                        "type": "bool"
                     }
                 ],
                 "stateMutability": "view",
@@ -296,61 +298,40 @@
             }
         }
 
-    async function fetchListings() {
-    try {
-        const result = await contract.methods.getActiveListings().call();
-        console.log('Fetched listings:', result);
+        async function fetchListings() {
+            try {
+                const result = await contract.methods.getActiveListings().call();
+                const listingIds = result[0]; // Extracting listing IDs from the result
+                const listings = result[1]; // Extracting listings from the result
 
-        // Validate the structure of the result
-        if (result && Array.isArray(result) && result.length === 2 && Array.isArray(result[0]) && Array.isArray(result[1])) {
-            const listingIds = result[0];
-            const listings = result[1];
+                const listingsContainer = document.getElementById('listings');
+                listingsContainer.innerHTML = '';
 
-            console.log('Listing IDs:', listingIds);
-            console.log('Listings:', listings);
+                for (let i = 0; i < listingIds.length; i++) {
+                    const listingId = listingIds[i];
+                    const listing = listings[i];
 
-            const listingsContainer = document.getElementById('listings');
-            listingsContainer.innerHTML = '';
+                    // Only display active listings
+                    if (listing.isActive) {
+                        const tokenAmount = listing.tokenAmount / Math.pow(10, decimals); // Adjusting for decimals
+                        const priceInTRX = listing.priceInTRX / Math.pow(10, decimals); // Adjusting for decimals
 
-            for (let i = 0; i < listingIds.length; i++) {
-                const listingId = listingIds[i];
-                const listing = listings[i];
-
-                console.log(`Listing ID: ${listingId}`, listing);
-
-                // Ensure listing is valid before displaying it
-                if (listing && listing.seller && listing.tokenAmount && listing.priceInTRX) {
-                    const tokenAmount = parseInt(listing.tokenAmount._hex, 16); // Convert BigNumber to integer
-                    const priceInTRX = parseInt(listing.priceInTRX._hex, 16); // Convert BigNumber to integer
-
-                    if (!isNaN(tokenAmount) && !isNaN(priceInTRX)) {
                         const listingElement = document.createElement('div');
                         listingElement.className = 'listing';
                         listingElement.innerHTML = `
                             <p>Seller: ${listing.seller}</p>
-                            <p>Token Amount: ${tokenAmount / Math.pow(10, decimals)}</p>
-                            <p>Price: ${priceInTRX / Math.pow(10, decimals)} TRX</p>
+                            <p>Token Amount: ${tokenAmount}</p>
+                            <p>Price: ${priceInTRX} TRX</p>
                             <button onclick="buyToken(${listingId})">Buy</button>
                         `;
                         listingsContainer.appendChild(listingElement);
-                    } else {
-                        console.error('Invalid tokenAmount or priceInTRX:', listing);
                     }
-                } else {
-                    console.error('Invalid listing data:', listing);
                 }
+            } catch (error) {
+                console.error(error);
+                alert('Failed to fetch listings.');
             }
-        } else {
-            console.error('Invalid response structure from getActiveListings:', result);
-            alert('Failed to fetch listings.');
         }
-    } catch (error) {
-        console.error('Error fetching listings:', error);
-        alert('Failed to fetch listings.');
-    }
-}
-
-
 
         async function buyToken(listingId) {
             try {
