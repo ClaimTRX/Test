@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRX Claimer</title>
+    <title>Platform Features</title>
     <style>
         body { 
             text-align: center; 
@@ -56,289 +56,57 @@
         input[type="text"], input[type="number"] {
             background-color: white; 
             color: black; 
-            border: 1px solid #ccc; /* Added border for outline */
+            border: 1px solid #ccc;
         }
         input[type="text"]:focus, input[type="number"]:focus {
             outline: none;
-            border-color: #007bff; /* Change border color on focus */
+            border-color: #007bff;
         }
         .disabled { 
             background-color: #ccc; 
             color: #666; 
             cursor: not-allowed; 
         }
-        #claimStatus, #claimAmount, #donationStatus { 
+        .feature-section {
             margin-top: 20px; 
-        }
-        .warning { 
-            color: red; 
-            font-size: 20px; 
-        }
-        #logoContainer {
-            text-align: center; 
-            margin: 20px auto; 
-            padding: 20px; 
-        }
-        #logo {
-            max-width: 100%; 
-            height: auto; 
-            width: auto; 
-        }
-        @media (max-width: 768px) {
-            #logoContainer {
-                padding: 10px; 
-            }
-            #logo {
-                max-width: 80%; 
-            }
-        }
-        .dropdown {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-        }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-        }
-        .dropdown-content a {
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            text-align: center;
-        }
-        .dropdown-content a:hover {
-            background-color: #f1f1f1;
-        }
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-        .dropdown:hover .dropbtn {
-            background-color: #0056b3;
-        }
-        .dropbtn {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 200px; /* Ensure width matches the Connect Wallet button */
-        }
-        .dropbtn:hover {
-            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     <div id="container">
-        <h1>TRX Claimer</h1>
-        <div id="buttonContainer">
-            <div class="dropdown">
-                <button class="dropbtn">Menu</button>
-                <div class="dropdown-content">
-                    <a href="CFTToken.html">buy CFT</a>
-                    <a href="staking.html">Staking</a>
-                    <a href="Marketplace.html">Marketplace</a>
-                     <a href="claim.html">Claim</a>
-                    <a href="Draw.html">Draw</a>
-                    <a href="TRC20.html">TRC20</a>
-                </div>
+        <h1>Welcome to Our Platform</h1>
+        <p>Explore the features that make our ecosystem vibrant and rewarding:</p>
+        
+        <div class="feature-section">
+            <h2>CFT Token</h2>
+            <p>Our ecosystem token, CFT, can be purchased 1:1 with TRX and staked for TRX rewards. While CFT isn't listed on any exchanges, every holder can list it at their desired price on our marketplace site. This token helps build our ecosystem and boost rewards.</p>
         </div>
-        <button id="connectWallet">Connect Wallet</button>
-        <div id="whitelistSection">
-            <div id="warningMessage" class="warning">
-                Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.
-            </div>
+        
+        <div class="feature-section">
+            <h2>Staking</h2>
+            <p>Stake your CFT Token here and claim TRX rewards at any time. Note that all energy costs are the user's responsibility.</p>
         </div>
-        <div id="claimSection" class="hidden">
-            <button id="claimTRX" class="disabled" disabled>Claim TRX</button>
-            <div id="claimAmount">0 TRX available to claim</div>
-            <div id="claimStatus"></div>
-            <div><p>TRX is made available for claim at random times through the day</p></div>
-            <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
-            <a href="https://t.me/claimfreetrxnow">Join our Telegram group</a>
-            <h2>Need energy? Visit TronNRG</h2>
-            <div id="logoContainer">
-                <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA/" target="_blank" rel="noopener noreferrer">
-                    <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/affiliateProgramEnglish.png?raw=true" alt="Affiliate Program Logo">
-                </a>
-            </div>
-            <div id="donationSection">
-                <input type="text" id="donationAmount" placeholder="Amount in TRX">
-                <button id="donateTRX" class="disabled" disabled>Donate TRX</button>
-            </div>
-            <div id="totalDonated">Total Donated: 0 TRX</div>
-            <div id="totalClaimed">Total Claimed: 0 TRX</div>
+        
+        <div class="feature-section">
+            <h2>Marketplace</h2>
+            <p>List your CFT Token at your desired price in our marketplace. All users looking to buy CFT Tokens are encouraged to check the marketplace for any listed tokens before purchasing them on our website.</p>
         </div>
+        
+        <div class="feature-section">
+            <h2>Claim</h2>
+            <p>Every day, 10 TRX are randomly made available for claim. Will you be fast enough to claim it before someone else does?</p>
+        </div>
+        
+        <div class="feature-section">
+            <h2>Draw</h2>
+            <p>Enter our draw every 12 hours for a chance to win some TRX. It's an exciting way to engage and potentially earn more rewards!</p>
+        </div>
+        
+        <div class="feature-section">
+            <h2>TRC20</h2>
+            <p>Claim TRC20 tokens every 72 hours. Please note that all energy costs are the user's responsibility.</p>
+        </div>
+        
     </div>
-</body>
-</html>
-
-
-
-    
-    <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
-    <script>
-        const contractAddress = 'TXp11vVghc8WN8MxKdw2bVDDigZxcpzJW9'; // Replace with your contract's address
-        let tronWeb;
-        let contract;
-
-        async function checkWhitelistStatus() {
-            try {
-                const walletAddress = tronWeb.defaultAddress.base58;
-                if (!walletAddress) throw new Error("Invalid Wallet Address");
-
-                const isWhitelisted = await contract.whitelist(walletAddress).call();
-                const claimSection = document.getElementById('claimSection');
-                const whitelistSection = document.getElementById('whitelistSection');
-                const warningMessage = document.getElementById('warningMessage');
-
-                if (isWhitelisted) {
-                    whitelistSection.style.display = 'none';
-                    claimSection.classList.remove('hidden');
-                } else {
-                    whitelistSection.style.display = 'block';
-                    claimSection.classList.add('hidden');
-                    disableButton('claimTRX');
-                }
-                return isWhitelisted;
-            } catch (error) {
-                console.error("Whitelist Check Error: ", error.message);
-                alert("An error occurred while checking whitelist status.");
-                return false;
-            }
-        }
-
-        async function init() {
-            try {
-                if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                    tronWeb = window.tronWeb;
-                    contract = await tronWeb.contract().at(contractAddress);
-
-                    const connectButton = document.getElementById('connectWallet');
-                    connectButton.classList.add('connected');
-                    connectButton.textContent = 'Wallet Connected';
-
-                    enableDonateButton(); // Always enable donate button once wallet is connected
-                    await updateUIStates();
-                } else {
-                    alert("Please install TronLink.");
-                }
-            } catch (error) {
-                console.error("Initialization Error: ", error.message);
-                alert("An error occurred while initializing the wallet connection.");
-            }
-        }
-
-        async function updateUIStates() {
-            const isWhitelisted = await checkWhitelistStatus();
-            await checkClaimStatus(isWhitelisted);
-            await updateDonationStats();
-            setInterval(async () => {
-                const isWhitelisted = await checkWhitelistStatus();
-                await checkClaimStatus(isWhitelisted);
-                await updateDonationStats();
-            }, 10000); // Update every 10 seconds
-        }
-
-        function enableDonateButton() {
-            const button = document.getElementById('donateTRX');
-            button.classList.remove('disabled');
-            button.disabled = false;
-        }
-
-        function disableDonateButton(temporarily) {
-            const button = document.getElementById('donateTRX');
-            button.classList.add('disabled');
-            button.disabled = true;
-            if (temporarily) {
-                setTimeout(() => {
-                    button.classList.remove('disabled');
-                    button.disabled = false;
-                }, 10000); // Re-enable after 10 seconds
-            }
-        }
-
-        function enableButton(buttonId) {
-            const button = document.getElementById(buttonId);
-            button.disabled = false;
-            button.classList.remove('disabled');
-        }
-
-        function disableButton(buttonId) {
-            const button = document.getElementById(buttonId);
-            button.disabled = true;
-            button.classList.add('disabled');
-        }
-
-        async function checkClaimStatus(isWhitelisted) {
-            try {
-                const availableToClaimInSuns = await contract.getClaimableAmount().call();
-                const availableToClaimInTRX = tronWeb.fromSun(availableToClaimInSuns);
-                document.getElementById('claimAmount').innerText = `${availableToClaimInTRX} TRX available to claim`;
-                
-                const claimButton = document.getElementById('claimTRX');
-                if (parseFloat(availableToClaimInTRX) > 0 && isWhitelisted) {
-                    enableButton('claimTRX');
-                } else {
-                    disableButton('claimTRX');
-                }
-            } catch (error) {
-                console.error("Claim Status Check Error: ", error.message);
-                alert("An error occurred while checking claim status.");
-            }
-        }
-
-       async function claimTRX() {
-    try {
-        await contract.claimTRX().send();
-        // No feedback provided
-        await updateUIStates();
-    } catch (error) {
-        console.error('Error: ' + error.message); // Use console.log for error debugging
-    }
-}
-
-
-        async function donateTRX() {
-            const amountToDonate = tronWeb.toSun(document.getElementById('donationAmount').value);
-            try {
-                await contract.donate().send({ callValue: amountToDonate });
-                alert('Thank you for your donation!');
-                await updateDonationStats();
-                disableDonateButton(true);
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-        }
-
-        async function updateDonationStats() {
-            try {
-                const totalDonatedInSuns = await contract.getTotalDonated().call();
-                const totalClaimedInSuns = await contract.getTotalClaimed().call();
-                const totalDonatedInTRX = tronWeb.fromSun(totalDonatedInSuns);
-                const totalClaimedInTRX = tronWeb.fromSun(totalClaimedInSuns);
-                document.getElementById('totalDonated').innerText = `Total Donated: ${totalDonatedInTRX} TRX`;
-                document.getElementById('totalClaimed').innerText = `Total Claimed: ${totalClaimedInTRX} TRX`;
-            } catch (error) {
-                console.error("Donation Stats Update Error: ", error.message);
-                alert("An error occurred while updating donation stats.");
-            }
-        }
-
-        document.getElementById('connectWallet').addEventListener('click', init);
-        document.getElementById('claimTRX').addEventListener('click', claimTRX);
-        document.getElementById('donateTRX').addEventListener('click', donateTRX);
-    </script>
 </body>
 </html>
