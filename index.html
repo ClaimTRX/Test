@@ -70,16 +70,68 @@
         .feature-section {
             margin-top: 20px; 
         }
+        .dropdown {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropbtn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dropbtn:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
     <div id="container">
         <h1>Welcome to Our Platform</h1>
+        <div class="dropdown">
+            <button class="dropbtn">Menu</button>
+            <div class="dropdown-content">
+                <a href="CFTToken.html">CFT Token</a>
+                <a href="staking.html">Staking</a>
+                <a href="marketplace.html">Marketplace</a>
+                <a href="claim.html">Claim</a>
+                <a href="draw.html">Draw</a>
+                <a href="TRC20.html">TRC20</a>
+            </div>
+        </div>
         <p>Explore the features that make our ecosystem vibrant and rewarding:</p>
         
         <div class="feature-section">
             <h2>CFT Token</h2>
-            <p>Our ecosystem token, CFT, can be purchased 1:1 with TRX and staked for TRX rewards. While CFT isn't listed on any exchanges, every holder can list it at their desired price on our marketplace site. This token helps build our ecosystem and boost rewards.</p>
+            <p>Our ecosystem token, CFT, can be purchased 1:1 with TRX and staked for TRX rewards. While CFT isn't listed on any exchanges, every holder can list it at their desired price on our marketplace site. This token helps build our ecosystem and boost rewards. Note that all energy costs are the user's responsibility</p>
         </div>
         
         <div class="feature-section">
@@ -89,7 +141,7 @@
         
         <div class="feature-section">
             <h2>Marketplace</h2>
-            <p>List your CFT Token at your desired price in our marketplace. All users looking to buy CFT Tokens are encouraged to check the marketplace for any listed tokens before purchasing them on our website.</p>
+            <p>List your CFT Token at your desired price in our marketplace. All users looking to buy CFT Tokens are encouraged to check the marketplace for any listed tokens before purchasing them on our website. Note that all energy costs are the user's responsibility</p>
         </div>
         
         <div class="feature-section">
