@@ -93,8 +93,9 @@
             }
         }
         .dropdown {
-            position: center;
-            display: inline-block;
+            display: flex;
+            justify-content: center;
+            width: 100%;
         }
         .dropdown-content {
             display: none;
@@ -110,7 +111,6 @@
             text-decoration: none;
             display: block;
             text-align: center;
-            width: auto;
         }
         .dropdown-content a:hover {
             background-color: #f1f1f1;
@@ -124,15 +124,15 @@
         .dropbtn {
             background-color: #007bff;
             color: white;
-            padding: 10px 20px; /* Increased padding to ensure the button is wide enough */
+            padding: 10px 20px;
             font-size: 16px;
             border: none;
             cursor: pointer;
             border-radius: 5px;
-            display: flex;           /* Added */
-            align-items: center;     /* Added */
-            justify-content: center; /* Added */
-            width: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 200px; /* Ensure width matches the Connect Wallet button */
         }
         .dropbtn:hover {
             background-color: #0056b3;
