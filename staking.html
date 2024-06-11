@@ -20,6 +20,8 @@
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             display: inline-block;
+            width: 100%;
+            max-width: 600px;
         }
         h1 {
             color: #007bff;
@@ -58,12 +60,26 @@
             margin: 0 auto 20px auto;
             width: auto;
         }
+        .link {
+            display: block;
+            margin: 10px 0;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .link:hover, .link:focus {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-     <a href="Draw.html">Go to Draw Page</a> <a href="TRC20.html">Go to TRC20 Page</a><a href="index.html">Go to index Page</a> <a href="Marketplace.html">Go to Marketplace Page</a>
     <div id="container">
         <h1>TRC20 Staking DApp</h1>
+        <div id="links">
+            <a href="Draw.html" class="link">Go to Draw Page</a>
+            <a href="TRC20.html" class="link">Go to TRC20 Page</a>
+            <a href="index.html" class="link">Go to Index Page</a>
+            <a href="Marketplace.html" class="link">Go to Marketplace Page</a>
+        </div>
         <button id="connectWallet">Connect Wallet</button>
         <div id="walletInfo" style="display:none;">
             <p>Connected Wallet: <span id="walletAddress"></span></p>
@@ -81,6 +97,9 @@
             <button id="claimRewardsButton">Claim Rewards</button>
         </div>
     </div>
+</body>
+</html>
+
 
     <script>
         const stakingContractAddress = 'TUXAUGuA79XQJPHwW8tyUhnym3pRSVWHVv';
