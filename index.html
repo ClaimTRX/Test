@@ -6,56 +6,55 @@
     <title>TRX Claimer</title>
     <style>
         body { 
-            font-family: Arial, sans-serif; 
             text-align: center; 
+            font-family: Arial, sans-serif; 
+            background-color: #f5f5f5; 
+            color: #333; 
             padding: 20px; 
-            background-color: #f2f2f2; /* Sets background color */
         }
-        button { 
-    margin: 10px; 
-    padding: 20px 30px; /* Increased padding for better appearance */
-    cursor: pointer; 
-    border-radius: 8px; /* Adds rounded corners to buttons */
-    border: none; /* Removes border */
-    background-color: #4CAF50; 
-    color: white;
-    font-size: 16px; /* Larger font size for better readability */
-}
-
-input[type="text"] { /* Styles specifically for text input fields */
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: 1px solid #ccc; /* Adds a light grey border */
-    color: black; /* Text color black for better readability */
-    background-color: #fff; /* Sets the background color to white */
-    margin: 10px;
-    font-size: 16px;
-}
-
-.hidden { 
-    display: none; 
-}
-
-.connected, button:not(.disabled) { 
-    background-color: #4CAF50; 
-    color: white; 
-}
-
-.disabled { 
-    background-color: #ccc; 
-    color: #666;
-}
-
-        .hidden { 
-            display: none; 
+        #container {
+            background: white; 
+            border-radius: 5px; 
+            padding: 20px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+            display: inline-block; 
+            width: 100%; 
+            max-width: 600px; 
         }
-        .connected, button:not(.disabled) { 
-            background-color: #4CAF50; 
+        h1, h2 { 
+            color: #007bff; 
+        }
+        p {
+            font-size: 16px; 
+            margin: 20px auto; 
+            max-width: 600px; 
+            line-height: 1.6; 
+        }
+        a { 
+            color: #007bff; 
+            text-decoration: none; 
+        }
+        a:hover, a:focus { 
+            text-decoration: underline; 
+        }
+        button, input { 
+            width: calc(100% - 22px); 
+            margin: 10px 0; 
+            padding: 10px; 
+            font-size: 16px; 
+            background-color: #007bff; 
             color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+        button:hover { 
+            background-color: #0056b3; 
         }
         .disabled { 
             background-color: #ccc; 
             color: #666; 
+            cursor: not-allowed; 
         }
         #claimStatus, #claimAmount, #donationStatus { 
             margin-top: 20px; 
@@ -64,61 +63,65 @@ input[type="text"] { /* Styles specifically for text input fields */
             color: red; 
             font-size: 20px; 
         }
-        
         #logoContainer {
-            text-align: center; /* Centers the logo within the container */
-            margin: 0 auto; /* Ensures even spacing around the container */
-            padding: 20px; /* Adds some space around the container */
+            text-align: center; 
+            margin: 20px auto; 
+            padding: 20px; 
         }
-
         #logo {
-            max-width: 100%; /* Makes sure the image never overflows the screen */
-            height: auto; /* Maintains the aspect ratio of the image */
-            width: auto; /* Prevents stretching on smaller screens */
+            max-width: 100%; 
+            height: auto; 
+            width: auto; 
         }
-
-        @media (max-width: 768px) { /* Adjusts styling for smaller devices */
+        @media (max-width: 768px) {
             #logoContainer {
-                padding: 10px; /* Reduces padding on smaller screens */
+                padding: 10px; 
             }
-
             #logo {
-                max-width: 80%; /* Allows a bit of margin around the image */
+                max-width: 80%; 
             }
         }
     </style>
 </head>
 <body>
-    <a href="Draw.html">Go to Draw Page</a> <a href="TRC20.html">Go to TRC20 Page</a><a href="staking.html">Go to Staking Page</a> <a href="Marketplace.html">Go to Marketplace Page</a>
-    <h1>TRX Claimer</h1>
-    <button id="connectWallet">Connect Wallet</button>
-    <div id="whitelistSection">
-        <div id="warningMessage" class="warning">
-            Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.
+    <div id="container">
+        <h1>TRX Claimer</h1>
+        <div id="links">
+            <a href="Draw.html">Go to Draw Page</a>
+            <a href="TRC20.html">Go to TRC20 Page</a>
+            <a href="staking.html">Go to Staking Page</a>
+            <a href="Marketplace.html">Go to Marketplace Page</a>
+        </div>
+        <button id="connectWallet">Connect Wallet</button>
+        <div id="whitelistSection">
+            <div id="warningMessage" class="warning">
+                Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.
+            </div>
+        </div>
+        <div id="claimSection" class="hidden">
+            <button id="claimTRX" class="disabled" disabled>Claim TRX</button>
+            <div id="claimAmount">0 TRX available to claim</div>
+            <div id="claimStatus"></div>
+            <div><p>TRX is made available for claim at random times through the day</p></div>
+            <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
+            <a href="https://t.me/claimfreetrxnow">Join our Telegram group</a>
+            <h2>Need energy? Visit TronNRG</h2>
+            <div id="logoContainer">
+                <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA/" target="_blank" rel="noopener noreferrer">
+                    <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/affiliateProgramEnglish.png?raw=true" alt="Affiliate Program Logo">
+                </a>
+            </div>
+            <div id="donationSection">
+                <input type="text" id="donationAmount" placeholder="Amount in TRX">
+                <button id="donateTRX" class="disabled" disabled>Donate TRX</button>
+            </div>
+            <div id="totalDonated">Total Donated: 0 TRX</div>
+            <div id="totalClaimed">Total Claimed: 0 TRX</div>
         </div>
     </div>
+</body>
+</html>
 
-    <div id="claimSection" class="hidden">
-        <button id="claimTRX" class="disabled" disabled>Claim TRX</button>
-        <div id="claimAmount">0 TRX available to claim</div>
-        <div id="claimStatus"></div>
-        <div><p>TRX is made available for claim at random times through the day</p></div>
-        <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
-        <a href="https://t.me/claimfreetrxnow">Join our Telegram group</a>
-        <h2>Need energy? visit TronNRG</h2>
-        <div id="logoContainer">
-            <a href="https://tronnrg.com/r/TXgL1i4dF1vEhDYuVsMuo8ovcfdEE6tztA/" target="_blank" rel="noopener noreferrer">
-                <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/affiliateProgramEnglish.png?raw=true" alt="Affiliate Program Logo">
-            </a>
-        </div>
-        
-        <div id="donationSection">
-            <input type="text" id="donationAmount" placeholder="Amount in TRX">
-            <button id="donateTRX" class="disabled" disabled>Donate TRX</button>
-        </div>
-        <div id="totalDonated">Total Donated: 0 TRX</div>
-        <div id="totalClaimed">Total Claimed: 0 TRX</div>
-    </div>
     
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
