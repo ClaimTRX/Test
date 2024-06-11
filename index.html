@@ -42,13 +42,13 @@
             margin: 10px 0; 
             padding: 10px; 
             font-size: 16px; 
-            border: none; 
             border-radius: 5px; 
             cursor: pointer; 
         }
         button {
             background-color: #007bff; 
             color: white; 
+            border: none;
         }
         button:hover { 
             background-color: #0056b3; 
@@ -56,6 +56,11 @@
         input[type="text"], input[type="number"] {
             background-color: white; 
             color: black; 
+            border: 1px solid #ccc; /* Added border for outline */
+        }
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #007bff; /* Change border color on focus */
         }
         .disabled { 
             background-color: #ccc; 
@@ -127,6 +132,7 @@
     </div>
 </body>
 </html>
+
 
 
     
