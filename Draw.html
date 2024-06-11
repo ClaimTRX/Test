@@ -73,16 +73,65 @@
             font-size: 18px; 
             margin-bottom: 10px; 
         }
+        .dropdown {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropdown:hover .dropbtn {
+            background-color: #0056b3;
+        }
+        .dropbtn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 200px; /* Ensure width matches the Connect Wallet button */
+        }
+        .dropbtn:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
     <div id="container">
         <h1>TRX Draw</h1>
-        <div id="links">
-            <a href="index.html">Claim Page</a>
-            <a href="TRC20.html">TRC20 Page</a>
-            <a href="Draw.html">Draw Page</a>
-            <a href="Marketplace.html">Marketplace Page</a>
+        <div id="buttonContainer">
+            <div class="dropdown">
+                <button class="dropbtn">Menu</button>
+                <div class="dropdown-content">
+                    <a href="index.html">Index</a>
+                    <a href="Draw.html">Draw</a>
+                    <a href="TRC20.html">TRC20</a>
+                    <a href="Marketplace.html">Marketplace</a>
+                </div>
         </div>
         <button id="connectWallet">Connect Wallet</button>
         <div id="warningMessage" class="hidden warning">
