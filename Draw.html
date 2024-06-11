@@ -18,30 +18,29 @@
             padding: 20px; 
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
             display: inline-block; 
+            width: 100%; 
+            max-width: 400px; 
         }
         h1 { 
             color: #007bff; 
         }
-        #walletInfo, #actions, #appContent, #logoContainer, #energyWarning {
-            margin: 20px auto; 
-            text-align: left; 
-            max-width: 400px; 
+        #links {
+            margin: 20px 0; 
         }
-        input, button { 
+        a { 
+            display: block; 
+            margin: 5px 0; 
+            color: #007bff; 
+            text-decoration: none; 
+        }
+        a:hover { 
+            text-decoration: underline; 
+        }
+        button { 
             width: calc(100% - 22px); 
             margin: 10px 0; 
             padding: 10px; 
             font-size: 16px; 
-        }
-        input[type=number] { 
-            -moz-appearance: textfield; 
-        }
-        input[type=number]::-webkit-outer-spin-button,
-        input[type=number]::-webkit-inner-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        }
-        button { 
             background-color: #007bff; 
             color: white; 
             border: none; 
@@ -50,11 +49,6 @@
         }
         button:hover { 
             background-color: #0056b3; 
-        }
-        #connectWallet {
-            display: block; 
-            margin: 0 auto 20px auto; 
-            width: auto; 
         }
         .disabled { 
             background-color: #ccc; 
@@ -69,9 +63,10 @@
             margin: 15px 0; 
         }
         #logo { 
-            width: 300px; 
-            height: 250px; 
+            width: 100%; 
+            height: auto; 
             object-fit: cover; 
+            margin-top: 20px; 
         }
         #visitText { 
             font-weight: bold; 
@@ -81,9 +76,14 @@
     </style>
 </head>
 <body>
-    <a href="index.html">Go to claim Page</a> <a href="TRC20.html">Go to TRC20 Page</a>
     <div id="container">
         <h1>TRX Draw</h1>
+        <div id="links">
+            <a href="index.html">Go to Claim Page</a>
+            <a href="TRC20.html">Go to TRC20 Page</a>
+            <a href="Draw.html">Go to Draw Page</a>
+            <a href="Marketplace.html">Go to Marketplace Page</a>
+        </div>
         <button id="connectWallet">Connect Wallet</button>
         <div id="warningMessage" class="hidden warning">
             Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.
@@ -108,6 +108,7 @@
     </div>
 </body>
 </html>
+
 
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
