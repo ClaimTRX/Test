@@ -152,7 +152,8 @@
     <script>
         let tronWeb;
         let tokenSaleContract;
-        const tokenSaleContractAddress = 'TNXkAJF4bwgCnXNf5T14ynN95X9vBoyLJp'; // Replace with your contract address
+        let tokenContract;
+        const tokenSaleContractAddress = 'TNXkAJF4bwgCnXNf5T14ynN95X9vBoyLJp'; // Replace with your TokenSale contract address
         const tokenSaleContractABI = [
             {
                 "inputs": [
@@ -207,7 +208,81 @@
                 "stateMutability": "payable",
                 "type": "receive"
             }
-        ]; // Replace with your contract ABI
+        ]; // Replace with your TokenSale contract ABI
+
+        const tokenContractAddress = 'TTogsjMPyNCmzdoPy5y7VihG51wcmqVC8p'; // Replace with your TRC20 token contract address
+        const tokenContractABI = [
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "_owner",
+                        "type": "address"
+                    }
+                ],
+                "name": "balanceOf",
+                "outputs": [
+                    {
+                        "name": "balance",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "name",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "symbol",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_to",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transfer",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ]; // Replace with your TRC20 token contract ABI
 
         async function connectWallet() {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
@@ -223,7 +298,8 @@
 
         async function updateTokenBalance() {
             const walletAddress = tronWeb.defaultAddress.base58;
-            const balance = await tokenSaleContract.balanceOf(walletAddress).call();
+            tokenContract = await tronWeb.contract(tokenContractABI, tokenContractAddress);
+            const balance = await tokenContract.balanceOf(walletAddress).call();
             $('#tokenBalance').text(tronWeb.fromSun(balance.toString()));
         }
 
