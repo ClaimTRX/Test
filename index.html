@@ -37,19 +37,25 @@
         a:hover, a:focus { 
             text-decoration: underline; 
         }
-        button, input { 
+        button, input[type="text"], input[type="number"] { 
             width: calc(100% - 22px); 
             margin: 10px 0; 
             padding: 10px; 
             font-size: 16px; 
-            background-color: #007bff; 
-            color: white; 
             border: none; 
             border-radius: 5px; 
             cursor: pointer; 
         }
+        button {
+            background-color: #007bff; 
+            color: white; 
+        }
         button:hover { 
             background-color: #0056b3; 
+        }
+        input[type="text"], input[type="number"] {
+            background-color: white; 
+            color: black; 
         }
         .disabled { 
             background-color: #ccc; 
@@ -121,6 +127,7 @@
     </div>
 </body>
 </html>
+
 
     
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
