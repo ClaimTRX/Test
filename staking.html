@@ -69,17 +69,59 @@
         .link:hover, .link:focus {
             text-decoration: underline;
         }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropdown:hover .dropbtn {
+            background-color: #0056b3;
+        }
+        .dropbtn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .dropbtn:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
     <div id="container">
         <h1>TRC20 Staking DApp</h1>
-        <div id="links">
-            <a href="index.html" class="link">Go to Index Page</a>
-            <a href="Draw.html" class="link">Go to Draw Page</a>
-            <a href="TRC20.html" class="link">Go to TRC20 Page</a>
-            <a href="Marketplace.html" class="link">Go to Marketplace Page</a>
-        </div>
+       <div class="dropdown">
+            <button class="dropbtn">Navigate</button>
+            <div class="dropdown-content">
+                <a href="index.html">Go to Index Page</a>
+                <a href="Draw.html">Go to Draw Page</a>
+                <a href="TRC20.html">Go to TRC20 Page</a>
+                <a href="Marketplace.html">Go to Marketplace Page</a>
+            </div>
         <button id="connectWallet">Connect Wallet</button>
         <div id="walletInfo" style="display:none;">
             <p>Connected Wallet: <span id="walletAddress"></span></p>
