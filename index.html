@@ -11,25 +11,23 @@
             background-color: #f5f5f5; 
             color: #333; 
             padding: 20px; 
-            margin: 0; 
         }
         #container {
             background: white; 
             border-radius: 5px; 
             padding: 20px; 
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
-            display: block; 
-            width: 90%; 
+            display: inline-block; 
+            width: 100%; 
             max-width: 600px; 
-            margin: auto; 
         }
         h1, h2 { 
             color: #007bff; 
-            margin-top: 0; 
         }
         p {
             font-size: 16px; 
             margin: 20px auto; 
+            max-width: 600px; 
             line-height: 1.6; 
         }
         a { 
@@ -73,8 +71,8 @@
             margin-top: 20px; 
         }
         .dropdown {
-            position: relative;
-            display: inline-block;
+            display: flex;
+            justify-content: center;
             width: 100%;
         }
         .dropdown-content {
@@ -84,7 +82,6 @@
             min-width: 160px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             z-index: 1;
-            width: 100%;
         }
         .dropdown-content a {
             color: black;
@@ -96,7 +93,7 @@
         .dropdown-content a:hover {
             background-color: #f1f1f1;
         }
-        .dropdown.show .dropdown-content {
+        .dropdown:hover .dropdown-content {
             display: block;
         }
         .dropbtn {
@@ -110,27 +107,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 100%;
         }
         .dropbtn:hover {
             background-color: #0056b3;
-        }
-        @media (max-width: 600px) {
-            #container {
-                width: 100%;
-                padding: 10px;
-            }
-            .dropbtn {
-                width: calc(100% - 20px);
-                text-align: center;
-            }
-            .dropdown-content {
-                width: 100%;
-            }
-            .dropdown-content a {
-                width: 100%;
-                box-sizing: border-box;
-            }
         }
     </style>
 </head>
@@ -138,15 +117,15 @@
     <div id="container">
         <h1>Welcome to Our Platform</h1>
         <div class="dropdown">
-            <button class="dropbtn" onclick="toggleDropdown()">Menu</button>
-            <div class="dropdown-content" id="dropdownContent">
-                <a href="CFTToken.html">CFT Token</a>
-                <a href="staking.html">Staking</a>
-                <a href="newstaking.html">New Staking</a>
+            <button class="dropbtn">Menu</button>
+            <div class="dropdown-content">
+                 <a href="index.html">Home</a>
+                <a href="CFTToken.html">Buy CFT</a>
+                <a href="newstaking.html">Staking</a>
                 <a href="marketplace.html">Marketplace</a>
                 <a href="claim.html">Claim</a>
                 <a href="draw.html">Draw</a>
-                <a href="TRC20.html">TRC20</a>
+                <a href="TRC20.html">TRC20 Claim</a>
             </div>
         </div>
         <p>Explore the features that make our ecosystem vibrant and rewarding:</p>
@@ -182,22 +161,5 @@
         </div>
         
     </div>
-    <script>
-        function toggleDropdown() {
-            document.getElementById("dropdownContent").classList.toggle("show");
-        }
-
-        window.onclick = function(event) {
-            if (!event.target.matches('.dropbtn')) {
-                var dropdowns = document.getElementsByClassName("dropdown-content");
-                for (var i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
-            }
-        }
-    </script>
 </body>
 </html>
