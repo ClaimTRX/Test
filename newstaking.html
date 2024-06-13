@@ -801,9 +801,9 @@
         const currentAPRValue = (currentAPR / 1e4);
 
         // Update the UI with the fetched values
-        $('#totalStaked').text(totalStakedValue.toFixed(2));
-        $('#userStakedBalance').text(userStakedBalanceValue.toFixed(2));
-        $('#userRewards').text(userRewardsValue.toFixed(2));
+         $('#totalStaked').text(totalStakedValue.toFixed(2) + " CFT");
+        $('#userStakedBalance').text(userStakedBalanceValue.toFixed(2) + " CFT");
+        $('#userRewards').text(userRewardsValue.toFixed(2) + " TRX");
         $('#currentAPR').text(currentAPRValue.toFixed(2));
     } catch (error) {
         console.error('Error updating staking info:', error);
