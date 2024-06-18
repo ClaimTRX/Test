@@ -127,40 +127,38 @@
             <div class="dropdown">
                 <button class="dropbtn">Menu</button>
                 <div class="dropdown-content">
-                   <a href="index.html">Home</a>
+                    <a href="index.html">Home</a>
                     <a href="CFTToken.html">Buy CFT</a>
                     <a href="staking.html">Staking</a>
                     <a href="newstaking.html">New Staking</a>
-                     <a href="Marketplace.html">Marketplace</a>
+                    <a href="Marketplace.html">Marketplace</a>
                     <a href="Claim.html">Claim</a>
                     <a href="TRC20.html">TRC20</a>
                 </div>
-        </div>
-        <button id="connectWallet">Connect Wallet</button>
-        <div id="warningMessage" class="hidden warning">
-            Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.
-        </div>
-        <div id="statusMessage" class="warning hidden"></div>
-        <div id="appContent">
-            <button id="register" class="disabled" disabled>Register</button>
-            <button id="draw" class="disabled" disabled>Draw Winner</button>
-            
-            <div id="timer">Next draw in: --:--:--</div>
-            <div id="prizeAmount">Current prize: 0 TRX</div>
-            <div id="lastWinner">Last winner: None</div>
-            <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
-            <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
-        </div>
-        <div id="logoContainer">
-            <p id="visitText">Visit the new Just.Money Explorer</p>
-            <a href="https://explorer.just.money/" target="_blank" rel="noopener noreferrer">
-                <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/JustMoneyLogo.jpg?raw=true" alt="Just Money Logo">
-            </a>
+            </div>
+            <button id="connectWallet">Connect Wallet</button>
+            <div id="warningMessage" class="hidden warning">
+                Contact <a href="https://t.me/Stian_86">Stian_86 on Telegram</a> to be whitelisted for this page.
+            </div>
+            <div id="statusMessage" class="warning hidden"></div>
+            <div id="appContent">
+                <button id="register" class="disabled" disabled>Register</button>
+                <button id="draw" class="disabled" disabled>Draw Winner</button>
+                
+                <div id="timer">Next draw in: --:--:--</div>
+                <div id="prizeAmount">Current prize: 0 TRX</div>
+                <div id="lastWinner">Last winner: None</div>
+                <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
+                <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
+            </div>
+            <div id="logoContainer">
+                <p id="visitText">Visit the new Just.Money Explorer</p>
+                <a href="https://explorer.just.money/" target="_blank" rel="noopener noreferrer">
+                    <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/JustMoneyLogo.jpg?raw=true" alt="Just Money Logo">
+                </a>
+            </div>
         </div>
     </div>
-</body>
-</html>
-
 
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
@@ -174,18 +172,17 @@
                 if (!walletAddress) throw new Error("Invalid Wallet Address");
 
                 const isWhitelisted = await contract.whitelist(walletAddress).call();
-                const appContent = document.getElementById('appContent');
                 const warningMessage = document.getElementById('warningMessage');
 
                 if (isWhitelisted) {
-                    appContent.style.display = 'block';
                     warningMessage.classList.add('hidden');
                     enableButton('register');
+                    enableButton('draw');
                     checkRegistrationStatus(walletAddress);
                 } else {
-                    appContent.style.display = 'none';
                     warningMessage.classList.remove('hidden');
                     disableButton('register');
+                    disableButton('draw');
                 }
             } catch (error) {
                 console.error("Whitelist Check Error: ", error.message);
@@ -194,51 +191,46 @@
             }
         }
 
-        
         async function init() {
-    try {
-        if (window.tronWeb && window.tronWeb.ready) {
-            tronWeb = window.tronWeb;
-            contract = await tronWeb.contract().at(contractAddress);
+            try {
+                if (window.tronWeb && window.tronWeb.ready) {
+                    tronWeb = window.tronWeb;
+                    contract = await tronWeb.contract().at(contractAddress);
 
-            const connectButton = document.getElementById('connectWallet');
-            connectButton.classList.add('connected');
-            connectButton.textContent = 'Wallet Connected';
+                    const connectButton = document.getElementById('connectWallet');
+                    connectButton.classList.add('connected');
+                    connectButton.textContent = 'Wallet Connected';
 
-            document.getElementById('logoContainer').style.display = 'block';
-
-            const walletAddress = tronWeb.defaultAddress.base58;
-            await checkWhitelistStatus();
-            checkRegistrationStatus(walletAddress); // Check if already registered
-            startDataUpdates();
-        } else {
-            document.getElementById('statusMessage').textContent = "Please install TronLink or open in a supported browser.";
-            document.getElementById('statusMessage').classList.remove('hidden');
+                    await checkWhitelistStatus();
+                    startDataUpdates();
+                } else {
+                    document.getElementById('statusMessage').textContent = "Please install TronLink or open in a supported browser.";
+                    document.getElementById('statusMessage').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error("Initialization Error: ", error.message);
+                document.getElementById('statusMessage').textContent = "An error occurred while initializing the wallet connection.";
+                document.getElementById('statusMessage').classList.remove('hidden');
+            }
         }
-    } catch (error) {
-        console.error("Initialization Error: ", error.message);
-        document.getElementById('statusMessage').textContent = "An error occurred while initializing the wallet connection.";
-        document.getElementById('statusMessage').classList.remove('hidden');
-    }
-}
+
         async function checkRegistrationStatus(walletAddress) {
-    try {
-        const isRegistered = await contract.hasRegistered(walletAddress).call();
-        const registerButton = document.getElementById('register');
-        if (isRegistered) {
-            registerButton.textContent = 'Already Registered';
-            disableButton('register');
-        } else {
-            registerButton.textContent = 'Register';
-            enableButton('register');
+            try {
+                const isRegistered = await contract.hasRegistered(walletAddress).call();
+                const registerButton = document.getElementById('register');
+                if (isRegistered) {
+                    registerButton.textContent = 'Already Registered';
+                    disableButton('register');
+                } else {
+                    registerButton.textContent = 'Register';
+                    enableButton('register');
+                }
+            } catch (error) {
+                console.error("Registration Status Error: ", error.message);
+                document.getElementById('statusMessage').textContent = 'Error checking registration status: ' + error.message;
+                document.getElementById('statusMessage').classList.remove('hidden');
+            }
         }
-    } catch (error) {
-        console.error("Registration Status Error: ", error.message);
-        document.getElementById('statusMessage').textContent = 'Error checking registration status: ' + error.message;
-        document.getElementById('statusMessage').classList.remove('hidden');
-    }
-}
-
 
         async function startDataUpdates() {
             try {
