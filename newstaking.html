@@ -770,18 +770,19 @@
         let stakingContract;
         let tokenContract;
 
-        async function connectWallet() {
-            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                tronWeb = window.tronWeb;
-                $('#walletAddress').text(tronWeb.defaultAddress.base58);
-                stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
-                tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
-                $('#walletInfo, #actions').show();
-                await updateStakingInfo();
-            } else {
-                alert('Please install TronLink and log in.');
-            }
+       async function connectWallet() {
+        if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+            tronWeb = window.tronWeb;
+            $('#walletAddress').text(tronWeb.defaultAddress.base58);
+            stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
+            tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
+            $('#walletInfo, #actions').show();
+            $('#connectWallet').text('Wallet Connected');
+            await updateStakingInfo();
+        } else {
+            alert('Please install TronLink and log in.');
         }
+    }
 
         async function updateStakingInfo() {
     try {
