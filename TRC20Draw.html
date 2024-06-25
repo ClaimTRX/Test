@@ -273,25 +273,32 @@
             document.getElementById('statusMessage').classList.remove('hidden');
         }
     }
-
+    
+function formatNumberWithCommas(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    
     async function updatePrizeAmount() {
         try {
             const prizeAmount = parseInt(await contract.prizeAmount().call());
             const tokenName = await getTokenName();
-            document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} ${tokenName}`;
+            const formattedPrizeAmount = formatNumberWithCommas(tronWeb.fromSun(prizeAmount));
+            document.getElementById('prizeAmount').innerText = `Current prize: ${formattedPrizeAmount} ${tokenName}`;
         } catch (error) {
             console.error("Prize Amount Update Error: ", error.message);
         }
     }
+    
 
-    async function updateRegistrationDetails() {
+     async function updateRegistrationDetails() {
         try {
             const interval = parseInt(await contract.interval().call()) / 3600;
             const prizeAmount = tronWeb.fromSun(parseInt(await contract.prizeAmount().call()));
             const tokenName = await getTokenName();
+            const formattedPrizeAmount = formatNumberWithCommas(prizeAmount);
 
             document.getElementById('intervalDisplay').innerText = `${interval}`;
-            document.getElementById('prizeDisplay').innerText = `${prizeAmount} ${tokenName}`;
+            document.getElementById('prizeDisplay').innerText = `${formattedPrizeAmount} ${tokenName}`;
         } catch (error) {
             console.error("Registration Details Update Error:", error.message);
         }
