@@ -60,7 +60,7 @@
             color: red; 
             font-size: 20px; 
         }
-        #prizeAmount, #intervalInfo, #warningMessage {
+        #timer, #prizeAmount, #intervalInfo, #warningMessage {
             margin: 15px 0; 
         }
         #logo { 
@@ -119,10 +119,6 @@
         .dropbtn:hover {
             background-color: #0056b3;
         }
-        #countdownTimer {
-            font-size: 18px;
-            margin: 15px 0;
-        }
     </style>
 </head>
 <body>
@@ -150,12 +146,12 @@
                 <button id="register" class="disabled" disabled>Register</button>
                 <button id="draw" class="disabled" disabled>Draw Winner</button>
                 
+                <div id="timer">Next draw in: --:--:--</div>
                 <div id="prizeAmount">Current prize: 0 TOKEN</div>
-                 <div id="visitText"><a href="https://explorer.just.money/address/TAGnb4n6Bbr1RATQ43FaQhfoFVm2ELyWY8" target="_blank" rel="noopener noreferrer">Contract</a></div>
-                <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
-                <div id="countdownTimer">Time until next draw: <span id="timeRemaining">--:--:--</span></div>
+                <div id="visitText"><a href="https://explorer.just.money/address/TAGnb4n6Bbr1RATQ43FaQhfoFVm2ELyWY8" target="_blank" rel="noopener noreferrer">Contract</a></div>
+                <div id="intervalInfo">Press Register to win every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
                 <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
-                <div id="visitText"><a href="https://explorer.just.money/" target="_blank" rel="noopener noreferrer">Visit the new Just.Money Explorer</a></div>
+                <div id="visitText"><a href="https://explorer.just.money/dapp/42" target="_blank" rel="noopener noreferrer">Visit the new Just.Money Explorer</a></div>
             </div>
             <div id="logoContainer">
                 <a href="https://explorer.just.money/dapp/42" target="_blank" rel="noopener noreferrer">
@@ -269,6 +265,7 @@
     async function startDataUpdates() {
         try {
             setInterval(() => {
+                updateTimer();
                 updatePrizeAmount();
             }, 1000);
 
@@ -277,6 +274,30 @@
             console.error("Data Updates Error: ", error.message);
             document.getElementById('statusMessage').textContent = "An error occurred while updating data.";
             document.getElementById('statusMessage').classList.remove('hidden');
+        }
+    }
+
+    async function updateTimer() {
+        try {
+            const lastDrawTime = parseInt(await contract.lastDrawTime().call());
+            const interval = parseInt(await contract.interval().call());
+            const currentTime = Math.floor(Date.now() / 1000);
+            const timeLeft = lastDrawTime + interval - currentTime;
+
+            const hours = Math.floor(timeLeft / 3600);
+            const minutes = Math.floor((timeLeft % 3600) / 60);
+            const seconds = timeLeft % 60;
+
+            const timerDisplay = document.getElementById('timer');
+            if (timeLeft > 0) {
+                timerDisplay.innerText = `Next draw in: ${hours}:${minutes}:${seconds}`;
+                disableButton('draw');
+            } else {
+                timerDisplay.innerText = "Draw is available!";
+                enableButton('draw');
+            }
+        } catch (error) {
+            console.error("Timer Update Error: ", error.message);
         }
     }
 
@@ -352,59 +373,10 @@
         }
     }
 
-    async function getLastDrawTime() {
-        try {
-            const lastDrawTimestamp = await contract.lastDrawTimestamp().call();
-            return parseInt(lastDrawTimestamp);
-        } catch (error) {
-            console.error("Last Draw Time Fetch Error: ", error.message);
-            return null;
-        }
-    }
-
-    function startCountdown(duration) {
-        let timer = duration, hours, minutes, seconds;
-        setInterval(function () {
-            hours = parseInt(timer / 3600, 10);
-            minutes = parseInt((timer % 3600) / 60, 10);
-            seconds = parseInt(timer % 60, 10);
-
-            hours = hours < 10 ? "0" + hours : hours;
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
-
-            document.getElementById('timeRemaining').textContent = hours + ":" + minutes + ":" + seconds;
-
-            if (--timer < 0) {
-                timer = duration;
-            }
-        }, 1000);
-    }
-
-    async function initializeCountdown() {
-        const drawIntervalSeconds = 24 * 3600; // 24 hours in seconds
-        const lastDrawTime = await getLastDrawTime();
-
-        if (lastDrawTime !== null) {
-            const currentTime = Math.floor(Date.now() / 1000);
-            const timeSinceLastDraw = currentTime - lastDrawTime;
-            const timeRemaining = drawIntervalSeconds - timeSinceLastDraw;
-
-            if (timeRemaining > 0) {
-                startCountdown(timeRemaining);
-            } else {
-                document.getElementById('timeRemaining').textContent = "00:00:00";
-            }
-        } else {
-            document.getElementById('timeRemaining').textContent = "--:--:--";
-        }
-    }
-
     window.addEventListener('load', async () => {
         document.getElementById('connectWallet').addEventListener('click', init);
         document.getElementById('register').addEventListener('click', registerForDraw);
         document.getElementById('draw').addEventListener('click', drawWinner);
-        await initializeCountdown();
     });
 </script>
 </body>
