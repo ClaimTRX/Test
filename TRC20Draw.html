@@ -60,7 +60,7 @@
             color: red; 
             font-size: 20px; 
         }
-        #timer, #prizeAmount, #lastWinner, #intervalInfo, #warningMessage {
+        #timer, #prizeAmount, #lastTxHash, #intervalInfo, #warningMessage {
             margin: 15px 0; 
         }
         #logo { 
@@ -147,8 +147,8 @@
                 <button id="draw" class="disabled" disabled>Draw Winner</button>
                 
                 <div id="timer">Next draw in: --:--:--</div>
-                <div id="prizeAmount">Current prize: 0 TRX</div>
-                <div id="lastWinner">Last winner: None</div>
+                <div id="prizeAmount">Current prize: 0 TOKEN</div>
+                <div id="lastTxHash">Last transaction hash: None</div>
                 <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
                 <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
             </div>
@@ -170,6 +170,17 @@
     const cftTokenAddress = 'TTogsjMPyNCmzdoPy5y7VihG51wcmqVC8p'; // CFT token contract address
     let tronWeb;
     let contract;
+    let prizeToken;
+
+    async function getTokenName() {
+        try {
+            const name = await prizeToken.name().call();
+            return name;
+        } catch (error) {
+            console.error("Token Name Fetch Error: ", error.message);
+            return "TOKEN";
+        }
+    }
 
     async function checkCFTTokenBalance() {
         try {
@@ -204,6 +215,12 @@
             if (window.tronWeb && window.tronWeb.ready) {
                 tronWeb = window.tronWeb;
                 contract = await tronWeb.contract().at(contractAddress);
+
+                const prizeTokenAddress = await contract.prizeToken().call();
+                prizeToken = await tronWeb.contract().at(prizeTokenAddress);
+
+                const tokenName = await getTokenName();
+                document.getElementById('prizeAmount').innerText = `Current prize: 0 ${tokenName}`;
 
                 const connectButton = document.getElementById('connectWallet');
                 connectButton.classList.add('connected');
@@ -249,7 +266,7 @@
             setInterval(() => {
                 updateTimer();
                 updatePrizeAmount();
-                updateLastWinner();
+                updateLastTxHash();
             }, 1000);
 
             await updateRegistrationDetails();
@@ -260,17 +277,12 @@
         }
     }
 
-    async function updateLastWinner() {
+    async function updateLastTxHash() {
         try {
-            const [address, username, amount] = await contract.getLastWinner().call();
-            if (address !== "0x0000000000000000000000000000000000000000") {
-                const winnerInfo = `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX.`;
-                document.getElementById('lastWinner').innerText = winnerInfo;
-            } else {
-                document.getElementById('lastWinner').innerText = "Last winner: None";
-            }
+            const lastTxHash = await contract.lastTxHash().call();
+            document.getElementById('lastTxHash').innerText = `Last transaction hash: ${lastTxHash}`;
         } catch (error) {
-            console.error("Last Winner Update Error:", error.message);
+            console.error("Last Transaction Hash Update Error:", error.message);
         }
     }
 
@@ -301,7 +313,8 @@
     async function updatePrizeAmount() {
         try {
             const prizeAmount = parseInt(await contract.prizeAmount().call());
-            document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} TRX`;
+            const tokenName = await getTokenName();
+            document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} ${tokenName}`;
         } catch (error) {
             console.error("Prize Amount Update Error: ", error.message);
         }
@@ -311,9 +324,10 @@
         try {
             const interval = parseInt(await contract.interval().call()) / 3600;
             const prizeAmount = tronWeb.fromSun(parseInt(await contract.prizeAmount().call()));
+            const tokenName = await getTokenName();
 
             document.getElementById('intervalDisplay').innerText = `${interval}`;
-            document.getElementById('prizeDisplay').innerText = `${prizeAmount} TRX`;
+            document.getElementById('prizeDisplay').innerText = `${prizeAmount} ${tokenName}`;
         } catch (error) {
             console.error("Registration Details Update Error:", error.message);
         }
