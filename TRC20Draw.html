@@ -119,6 +119,10 @@
         .dropbtn:hover {
             background-color: #0056b3;
         }
+        #countdownTimer {
+            font-size: 18px;
+            margin: 15px 0;
+        }
     </style>
 </head>
 <body>
@@ -149,6 +153,7 @@
                 <div id="prizeAmount">Current prize: 0 TOKEN</div>
                  <div id="visitText"><a href="https://explorer.just.money/address/TAGnb4n6Bbr1RATQ43FaQhfoFVm2ELyWY8" target="_blank" rel="noopener noreferrer">Contract</a></div>
                 <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
+                <div id="countdownTimer">Time until next draw: <span id="timeRemaining">--:--:--</span></div>
                 <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
                 <div id="visitText"><a href="https://explorer.just.money/" target="_blank" rel="noopener noreferrer">Visit the new Just.Money Explorer</a></div>
             </div>
@@ -276,38 +281,38 @@
     }
 
     function formatNumberWithCommas(number) {
-    // Check if the number is a whole number (i.e., ends in ".00")
-    const numberParts = number.split(".");
-    if (numberParts[1] === "00") {
-        number = numberParts[0];
+        // Check if the number is a whole number (i.e., ends in ".00")
+        const numberParts = number.split(".");
+        if (numberParts[1] === "00") {
+            number = numberParts[0];
+        }
+        return number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
-    return number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
 
-async function updatePrizeAmount() {
-    try {
-        const prizeAmount = parseInt(await contract.prizeAmount().call());
-        const tokenName = await getTokenName();
-        const formattedPrizeAmount = formatNumberWithCommas((prizeAmount / 10**decimals).toFixed(2));
-        document.getElementById('prizeAmount').innerText = `Current prize: ${formattedPrizeAmount} ${tokenName}`;
-    } catch (error) {
-        console.error("Prize Amount Update Error: ", error.message);
+    async function updatePrizeAmount() {
+        try {
+            const prizeAmount = parseInt(await contract.prizeAmount().call());
+            const tokenName = await getTokenName();
+            const formattedPrizeAmount = formatNumberWithCommas((prizeAmount / 10**decimals).toFixed(2));
+            document.getElementById('prizeAmount').innerText = `Current prize: ${formattedPrizeAmount} ${tokenName}`;
+        } catch (error) {
+            console.error("Prize Amount Update Error: ", error.message);
+        }
     }
-}
 
-async function updateRegistrationDetails() {
-    try {
-        const interval = parseInt(await contract.interval().call()) / 3600;
-        const prizeAmount = parseInt(await contract.prizeAmount().call());
-        const tokenName = await getTokenName();
-        const formattedPrizeAmount = formatNumberWithCommas((prizeAmount / 10**decimals).toFixed(2));
+    async function updateRegistrationDetails() {
+        try {
+            const interval = parseInt(await contract.interval().call()) / 3600;
+            const prizeAmount = parseInt(await contract.prizeAmount().call());
+            const tokenName = await getTokenName();
+            const formattedPrizeAmount = formatNumberWithCommas((prizeAmount / 10**decimals).toFixed(2));
 
-        document.getElementById('intervalDisplay').innerText = `${interval}`;
-        document.getElementById('prizeDisplay').innerText = `${formattedPrizeAmount} ${tokenName}`;
-    } catch (error) {
-        console.error("Registration Details Update Error:", error.message);
+            document.getElementById('intervalDisplay').innerText = `${interval}`;
+            document.getElementById('prizeDisplay').innerText = `${formattedPrizeAmount} ${tokenName}`;
+        } catch (error) {
+            console.error("Registration Details Update Error:", error.message);
+        }
     }
-}
 
     function enableButton(buttonId) {
         const button = document.getElementById(buttonId);
@@ -347,9 +352,36 @@ async function updateRegistrationDetails() {
         }
     }
 
+    function startCountdown(duration) {
+        let timer = duration, hours, minutes, seconds;
+        setInterval(function () {
+            hours = parseInt(timer / 3600, 10);
+            minutes = parseInt((timer % 3600) / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            hours = hours < 10 ? "0" + hours : hours;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            document.getElementById('timeRemaining').textContent = hours + ":" + minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                timer = duration;
+            }
+        }, 1000);
+    }
+
+    // Example usage: Start a 24-hour countdown
+    window.addEventListener('load', function() {
+        const intervalSeconds = 24 * 3600; // 24 hours in seconds
+        startCountdown(intervalSeconds);
+    });
+
     window.addEventListener('load', async () => {
         document.getElementById('connectWallet').addEventListener('click', init);
         document.getElementById('register').addEventListener('click', registerForDraw);
         document.getElementById('draw').addEventListener('click', drawWinner);
     });
 </script>
+</body>
+</html>
