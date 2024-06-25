@@ -60,7 +60,7 @@
             color: red; 
             font-size: 20px; 
         }
-        #timer, #prizeAmount, #registeredUsers, #intervalInfo, #warningMessage {
+        #prizeAmount, #intervalInfo, #warningMessage {
             margin: 15px 0; 
         }
         #logo { 
@@ -146,9 +146,8 @@
                 <button id="register" class="disabled" disabled>Register</button>
                 <button id="draw" class="disabled" disabled>Draw Winner</button>
                 
-                <div id="timer">Next draw in: --:--:--</div>
                 <div id="prizeAmount">Current prize: 0 TOKEN</div>
-                <div id="visitText"><a href="https://explorer.just.money/address/TAGnb4n6Bbr1RATQ43FaQhfoFVm2ELyWY8" target="_blank" rel="noopener noreferrer">Contract</a></div>
+                 <div id="visitText"><a href="https://explorer.just.money/address/TAGnb4n6Bbr1RATQ43FaQhfoFVm2ELyWY8" target="_blank" rel="noopener noreferrer">Contract</a></div>
                 <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
                 <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
                 <div id="visitText"><a href="https://explorer.just.money/" target="_blank" rel="noopener noreferrer">Visit the new Just.Money Explorer</a></div>
@@ -264,9 +263,7 @@
     async function startDataUpdates() {
         try {
             setInterval(() => {
-                updateTimer();
                 updatePrizeAmount();
-                updateRegisteredUsers();
             }, 1000);
 
             await updateRegistrationDetails();
@@ -274,39 +271,6 @@
             console.error("Data Updates Error: ", error.message);
             document.getElementById('statusMessage').textContent = "An error occurred while updating data.";
             document.getElementById('statusMessage').classList.remove('hidden');
-        }
-    }
-
-    async function updateRegisteredUsers() {
-        try {
-            const registeredUsers = await contract.participants().call();
-            document.getElementById('registeredUsers').innerText = `Registered users: ${registeredUsers.length}`;
-        } catch (error) {
-            console.error("Registered Users Update Error:", error.message);
-        }
-    }
-
-    async function updateTimer() {
-        try {
-            const lastDrawTime = parseInt(await contract.lastDrawTime().call());
-            const interval = parseInt(await contract.interval().call());
-            const currentTime = Math.floor(Date.now() / 1000);
-            const timeLeft = lastDrawTime + interval - currentTime;
-
-            const hours = Math.floor(timeLeft / 3600);
-            const minutes = Math.floor((timeLeft % 3600) / 60);
-            const seconds = timeLeft % 60;
-
-            const timerDisplay = document.getElementById('timer');
-            if (timeLeft > 0) {
-                timerDisplay.innerText = `Next draw in: ${hours}:${minutes}:${seconds}`;
-                disableButton('draw');
-            } else {
-                timerDisplay.innerText = "Draw is available!";
-                enableButton('draw');
-            }
-        } catch (error) {
-            console.error("Timer Update Error: ", error.message);
         }
     }
 
