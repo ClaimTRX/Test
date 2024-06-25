@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRC20 Draw</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/ClaimTRX/Test/main/favicon-32x32.png" type="image/png">
+    <style>
+        body { 
+            text-align: center; 
+            font-family: Arial, sans-serif; 
+            background-color: #f5f5f5; 
+            color: #333; 
+            padding: 20px; 
+        }
+        #container {
+            background: white; 
+            border-radius: 5px; 
+            padding: 20px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+            display: inline-block; 
+            width: 100%; 
+            max-width: 400px; 
+        }
+        h1 { 
+            color: #007bff; 
+        }
+        #links {
+            margin: 20px 0; 
+        }
+        a { 
+            display: block; 
+            margin: 5px 0; 
+            color: #007bff; 
+            text-decoration: none; 
+        }
+        a:hover { 
+            text-decoration: underline; 
+        }
+        button { 
+            width: calc(100% - 22px); 
+            margin: 10px 0; 
+            padding: 10px; 
+            font-size: 16px; 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+        button:hover { 
+            background-color: #0056b3; 
+        }
+        .disabled { 
+            background-color: #ccc; 
+            color: #666; 
+            cursor: not-allowed; 
+        }
+        .warning { 
+            color: red; 
+            font-size: 20px; 
+        }
+        #timer, #prizeAmount, #lastWinner, #intervalInfo, #warningMessage {
+            margin: 15px 0; 
+        }
+        #logo { 
+            width: 100%; 
+            height: auto; 
+            object-fit: cover; 
+            margin-top: 20px; 
+        }
+        #visitText { 
+            font-weight: bold; 
+            font-size: 18px; 
+            margin-bottom: 10px; 
+        }
+        .dropdown {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropdown:hover .dropbtn {
+            background-color: #0056b3;
+        }
+        .dropbtn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 200px; /* Ensure width matches the Connect Wallet button */
+        }
+        .dropbtn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>TRC20 Draw</h1>
+        <div id="buttonContainer">
+            <div class="dropdown">
+                <button class="dropbtn">Menu</button>
+                <div class="dropdown-content">
+                    <a href="index.html">Home</a>
+                    <a href="CFTToken.html">Buy CFT</a>
+                    <a href="newstaking.html">Staking</a>
+                    <a href="marketplace.html">Marketplace</a>
+                    <a href="claim.html">Claim</a>
+                    <a href="draw.html">Draw</a>
+                    <a href="TRC20.html">TRC20 Claim</a>
+                </div>
+            </div>
+            <button id="connectWallet">Connect Wallet</button>
+            <div id="warningMessage" class="warning hidden">
+                You need to hold at least 100 CFT tokens in your wallet to register.
+            </div>
+            <div id="statusMessage" class="warning hidden"></div>
+            <div id="appContent" style="display:none;">
+                <button id="register" class="disabled" disabled>Register</button>
+                <button id="draw" class="disabled" disabled>Draw Winner</button>
+                
+                <div id="timer">Next draw in: --:--:--</div>
+                <div id="prizeAmount">Current prize: 0 TRX</div>
+                <div id="lastWinner">Last winner: None</div>
+                <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
+                <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
+            </div>
+            <div id="logoContainer">
+                <p id="visitText">Visit the new Just.Money Explorer</p>
+                <a href="https://explorer.just.money/" target="_blank" rel="noopener noreferrer">
+                    <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/JustMoneyLogo.jpg?raw=true" alt="Just Money Logo">
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+<script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
+<script>
+    const contractAddress = 'TVAzz5SUaYEtSNAqs2HC9EKJW6vFwjev3G';
+    const cftTokenAddress = 'TTogsjMPyNCmzdoPy5y7VihG51wcmqVC8p'; // CFT token contract address
+    let tronWeb;
+    let contract;
+
+    async function checkCFTTokenBalance() {
+        try {
+            const walletAddress = tronWeb.defaultAddress.base58;
+            if (!walletAddress) throw new Error("Invalid Wallet Address");
+
+            const cftToken = await tronWeb.contract().at(cftTokenAddress);
+            const balance = await cftToken.balanceOf(walletAddress).call();
+
+            const appContent = document.getElementById('appContent');
+            const warningMessage = document.getElementById('warningMessage');
+
+            if (tronWeb.toDecimal(balance) >= 100 * 10 ** 6) { // Assuming CFT has 6 decimals
+                appContent.style.display = 'block';
+                warningMessage.style.display = 'none';
+                enableButton('register');
+                checkRegistrationStatus(walletAddress);
+            } else {
+                appContent.style.display = 'none';
+                warningMessage.style.display = 'block';
+                disableButton('register');
+            }
+        } catch (error) {
+            console.error("CFT Token Balance Check Error: ", error.message);
+            document.getElementById('statusMessage').textContent = "An error occurred while checking CFT token balance.";
+            document.getElementById('statusMessage').classList.remove('hidden');
+        }
+    }
+
+    async function init() {
+        try {
+            if (window.tronWeb && window.tronWeb.ready) {
+                tronWeb = window.tronWeb;
+                contract = await tronWeb.contract().at(contractAddress);
+
+                const connectButton = document.getElementById('connectWallet');
+                connectButton.classList.add('connected');
+                connectButton.textContent = 'Wallet Connected';
+
+                document.getElementById('logoContainer').style.display = 'block';
+
+                const walletAddress = tronWeb.defaultAddress.base58;
+                await checkCFTTokenBalance();
+                checkRegistrationStatus(walletAddress); // Check if already registered
+                startDataUpdates();
+            } else {
+                document.getElementById('statusMessage').textContent = "Please install TronLink or open in a supported browser.";
+                document.getElementById('statusMessage').classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error("Initialization Error: ", error.message);
+            document.getElementById('statusMessage').textContent = "An error occurred while initializing the wallet connection.";
+            document.getElementById('statusMessage').classList.remove('hidden');
+        }
+    }
+
+    async function checkRegistrationStatus(walletAddress) {
+        try {
+            const isRegistered = await contract.hasRegistered(walletAddress).call();
+            const registerButton = document.getElementById('register');
+            if (isRegistered) {
+                registerButton.textContent = 'Already Registered';
+                disableButton('register');
+            } else {
+                registerButton.textContent = 'Register';
+                enableButton('register');
+            }
+        } catch (error) {
+            console.error("Registration Status Error: ", error.message);
+            document.getElementById('statusMessage').textContent = 'Error checking registration status: ' + error.message;
+            document.getElementById('statusMessage').classList.remove('hidden');
+        }
+    }
+
+    async function startDataUpdates() {
+        try {
+            setInterval(() => {
+                updateTimer();
+                updatePrizeAmount();
+                updateLastWinner();
+            }, 1000);
+
+            await updateRegistrationDetails();
+        } catch (error) {
+            console.error("Data Updates Error: ", error.message);
+            document.getElementById('statusMessage').textContent = "An error occurred while updating data.";
+            document.getElementById('statusMessage').classList.remove('hidden');
+        }
+    }
+
+    async function updateLastWinner() {
+        try {
+            const [address, username, amount] = await contract.getLastWinner().call();
+            if (address !== "0x0000000000000000000000000000000000000000") {
+                const winnerInfo = `Last winner: ${username} won ${tronWeb.fromSun(amount)} TRX.`;
+                document.getElementById('lastWinner').innerText = winnerInfo;
+            } else {
+                document.getElementById('lastWinner').innerText = "Last winner: None";
+            }
+        } catch (error) {
+            console.error("Last Winner Update Error:", error.message);
+        }
+    }
+
+    async function updateTimer() {
+        try {
+            const lastDrawTime = parseInt(await contract.lastDrawTime().call());
+            const interval = parseInt(await contract.interval().call());
+            const currentTime = Math.floor(Date.now() / 1000);
+            const timeLeft = lastDrawTime + interval - currentTime;
+
+            const hours = Math.floor(timeLeft / 3600);
+            const minutes = Math.floor((timeLeft % 3600) / 60);
+            const seconds = timeLeft % 60;
+
+            const timerDisplay = document.getElementById('timer');
+            if (timeLeft > 0) {
+                timerDisplay.innerText = `Next draw in: ${hours}:${minutes}:${seconds}`;
+                disableButton('draw');
+            } else {
+                timerDisplay.innerText = "Draw is available!";
+                enableButton('draw');
+            }
+        } catch (error) {
+            console.error("Timer Update Error: ", error.message);
+        }
+    }
+
+    async function updatePrizeAmount() {
+        try {
+            const prizeAmount = parseInt(await contract.prizeAmount().call());
+            document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} TRX`;
+        } catch (error) {
+            console.error("Prize Amount Update Error: ", error.message);
+        }
+    }
+
+    async function updateRegistrationDetails() {
+        try {
+            const interval = parseInt(await contract.interval().call()) / 3600;
+            const prizeAmount = tronWeb.fromSun(parseInt(await contract.prizeAmount().call()));
+
+            document.getElementById('intervalDisplay').innerText = `${interval}`;
+            document.getElementById('prizeDisplay').innerText = `${prizeAmount} TRX`;
+        } catch (error) {
+            console.error("Registration Details Update Error:", error.message);
+        }
+    }
+
+    function enableButton(buttonId) {
+        const button = document.getElementById(buttonId);
+        button.disabled = false;
+        button.classList.remove('disabled');
+    }
+
+    function disableButton(buttonId) {
+        const button = document.getElementById(buttonId);
+        button.disabled = true;
+        button.classList.add('disabled');
+    }
+
+    async function registerForDraw() {
+        try {
+            await contract.register().send();
+            disableButton('register');
+            document.getElementById('register').textContent = 'Registered';
+            document.getElementById('statusMessage').textContent = 'Successfully registered for the draw!';
+            document.getElementById('statusMessage').classList.remove('hidden');
+        } catch (error) {
+            console.error("Registration Error: ", error.message);
+            document.getElementById('statusMessage').textContent = 'Error: ' + error.message;
+            document.getElementById('statusMessage').classList.remove('hidden');
+        }
+    }
+
+    async function drawWinner() {
+        try {
+            await contract.draw().send();
+            document.getElementById('statusMessage').textContent = 'Winner has been drawn!';
+            document.getElementById('statusMessage').classList.remove('hidden');
+        } catch (error) {
+            console.error("Draw Winner Error: ", error.message);
+            document.getElementById('statusMessage').textContent = 'Error: ' + error.message;
+            document.getElementById('statusMessage').classList.remove('hidden');
+        }
+    }
+
+    window.addEventListener('load', async () => {
+        document.getElementById('connectWallet').addEventListener('click', init);
+        document.getElementById('register').addEventListener('click', registerForDraw);
+        document.getElementById('draw').addEventListener('click', drawWinner);
+    });
+</script>
+</body>
+</html>
