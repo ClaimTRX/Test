@@ -60,7 +60,7 @@
             color: red; 
             font-size: 20px; 
         }
-        #timer, #prizeAmount, #lastTxHash, #intervalInfo, #warningMessage {
+        #timer, #prizeAmount, #lastWinnerAddress, #intervalInfo, #warningMessage {
             margin: 15px 0; 
         }
         #logo { 
@@ -148,7 +148,7 @@
                 
                 <div id="timer">Next draw in: --:--:--</div>
                 <div id="prizeAmount">Current prize: 0 TOKEN</div>
-                <div id="lastTxHash">Last transaction hash: <a href="https://shasta.tronscan.org/#/transaction/none" target="_blank" id="txLink">None</a></div>
+                <div id="lastWinnerAddress">Last winner: None</div>
                 <div id="intervalInfo">Press Register to win <span id="prizeDisplay">--</span> every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
                 <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
             </div>
@@ -266,7 +266,7 @@
             setInterval(() => {
                 updateTimer();
                 updatePrizeAmount();
-                updateLastTxHash();
+                updateLastWinnerAddress();
             }, 1000);
 
             await updateRegistrationDetails();
@@ -277,14 +277,16 @@
         }
     }
 
-    async function updateLastTxHash() {
+    async function updateLastWinnerAddress() {
         try {
-            const lastTxHash = await contract.lastTxHash().call();
-            const txLink = document.getElementById('txLink');
-            txLink.href = `https://shasta.tronscan.org/#/transaction/${lastTxHash}`;
-            txLink.innerText = lastTxHash;
+            const lastWinner = await contract.lastWinner().call();
+            if (lastWinner !== "0x0000000000000000000000000000000000000000") {
+                document.getElementById('lastWinnerAddress').innerText = `Last winner: ${lastWinner.slice(0, 5)}...`;
+            } else {
+                document.getElementById('lastWinnerAddress').innerText = "Last winner: None";
+            }
         } catch (error) {
-            console.error("Last Transaction Hash Update Error:", error.message);
+            console.error("Last Winner Address Update Error:", error.message);
         }
     }
 
