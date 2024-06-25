@@ -167,6 +167,7 @@
 <script>
     const contractAddress = 'TAGnb4n6Bbr1RATQ43FaQhfoFVm2ELyWY8';
     const cftTokenAddress = 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA'; // CFT token contract address
+    const decimals = 8; // Number of decimals for the prize token
     let tronWeb;
     let contract;
     let prizeToken;
@@ -273,29 +274,28 @@
             document.getElementById('statusMessage').classList.remove('hidden');
         }
     }
-    
-function formatNumberWithCommas(number) {
+
+    function formatNumberWithCommas(number) {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
-    
+
     async function updatePrizeAmount() {
         try {
             const prizeAmount = parseInt(await contract.prizeAmount().call());
             const tokenName = await getTokenName();
-            const formattedPrizeAmount = formatNumberWithCommas(tronWeb.fromSun(prizeAmount));
+            const formattedPrizeAmount = formatNumberWithCommas((prizeAmount / 10**decimals).toFixed(2));
             document.getElementById('prizeAmount').innerText = `Current prize: ${formattedPrizeAmount} ${tokenName}`;
         } catch (error) {
             console.error("Prize Amount Update Error: ", error.message);
         }
     }
-    
 
-     async function updateRegistrationDetails() {
+    async function updateRegistrationDetails() {
         try {
             const interval = parseInt(await contract.interval().call()) / 3600;
-            const prizeAmount = tronWeb.fromSun(parseInt(await contract.prizeAmount().call()));
+            const prizeAmount = parseInt(await contract.prizeAmount().call());
             const tokenName = await getTokenName();
-            const formattedPrizeAmount = formatNumberWithCommas(prizeAmount);
+            const formattedPrizeAmount = formatNumberWithCommas((prizeAmount / 10**decimals).toFixed(2));
 
             document.getElementById('intervalDisplay').innerText = `${interval}`;
             document.getElementById('prizeDisplay').innerText = `${formattedPrizeAmount} ${tokenName}`;
@@ -348,5 +348,3 @@ function formatNumberWithCommas(number) {
         document.getElementById('draw').addEventListener('click', drawWinner);
     });
 </script>
-</body>
-</html>
