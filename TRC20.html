@@ -644,6 +644,7 @@
                     const tokenInfo = await contract.tokens(tokenAddresses[i]).call();
                     const decimals = tokenInfo.decimals;
                     const accumulatedTokens = (claimableAmount / (10 ** decimals)).toFixed(0); // Show whole number
+                    const formattedTokens = Number(accumulatedTokens).toLocaleString(); // Format number with commas
                     document.getElementById(`claimableAmount${i}`).innerText = `Claimable Amount: ${accumulatedTokens}`;
                 }
             } catch (error) {
