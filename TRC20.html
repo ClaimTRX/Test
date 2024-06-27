@@ -635,22 +635,28 @@
             }
         }
 
-        async function updateClaimableAmounts() {
-            try {
-                const tokenAddresses = await contract.getTokenAddresses().call();
+       function formatNumberWithCommas(number) {
+        return number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
 
-                for (let i = 0; i < tokenAddresses.length; i++) {
-                    const claimableAmount = await contract.getClaimableAmount(tokenAddresses[i]).call();
-                    const tokenInfo = await contract.tokens(tokenAddresses[i]).call();
-                    const decimals = tokenInfo.decimals;
-                    const accumulatedTokens = (claimableAmount / (10 ** decimals)).toFixed(0); // Show whole number
-                    const formattedTokens = Number(accumulatedTokens).toLocaleString(); // Format number with commas
-                    document.getElementById(`claimableAmount${i}`).innerText = `Claimable Amount: ${accumulatedTokens}`;
-                }
-            } catch (error) {
-                console.error('Error updating claimable amounts:', error);
+    async function updateClaimableAmounts() {
+        try {
+            const tokenAddresses = await contract.getTokenAddresses().call();
+
+            for (let i = 0; i < tokenAddresses.length; i++) {
+                const claimableAmount = await contract.getClaimableAmount(tokenAddresses[i]).call();
+                const tokenInfo = await contract.tokens(tokenAddresses[i]).call();
+                const decimals = tokenInfo.decimals;
+                const accumulatedTokens = (claimableAmount / (10 ** decimals)).toFixed(0); // Show whole number
+                const formattedTokens = formatNumberWithCommas(accumulatedTokens.toString());
+                document.getElementById(`claimableAmount${i}`).innerText = `Claimable Amount: ${formattedTokens}`;
             }
+        } catch (error) {
+            console.error('Error updating claimable amounts:', error);
         }
+    }
+
+
 
         async function updateCooldownTimer() {
             try {
