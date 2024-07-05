@@ -76,72 +76,42 @@
         .feature-section {
             margin-top: 20px; 
         }
-        .dropdown {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-        }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-        }
-        .dropdown-content a {
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            text-align: center;
-        }
-        .dropdown-content a:hover {
-            background-color: #f1f1f1;
-        }
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-        .dropbtn {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .dropbtn:hover {
-            background-color: #0056b3;
-        }
     </style>
     <script>
         async function fetchData() {
+            const headers = {
+                'TRON-PRO-API-KEY': '1b226541-bba1-48cf-b6f7-d6cd75be7b7e'
+            };
+
             try {
-                const treasuryResponse = await fetch('https://api.tronscan.org/api/account?address=TFvHNqDqttkXSS8ZTdC4c4W7q97SFW3iKq');
+                // Fetch staked TRX from the treasury address
+                const treasuryResponse = await fetch('https://api.trongrid.io/v1/accounts/TFvHNqDqttkXSS8ZTdC4c4W7q97SFW3iKq', { headers });
                 const treasuryData = await treasuryResponse.json();
-                const stakedTRX = treasuryData.trx;
+                const stakedTRX = treasuryData.data[0].frozen?.[0]?.frozen_balance / 1e6 || 0; // Convert from Sun to TRX
 
-                const contractResponse = await fetch('https://api.tronscan.org/api/contract/TVSMKqBk12161JDAQBh9pkdxMAgCtuGrdA');
+                // Fetch total staked tokens from the contract (assuming we need to call a specific method)
+                const contractResponse = await fetch('https://api.trongrid.io/v1/contracts/TVSMKqBk12161JDAQBh9pkdxMAgCtuGrdA', { headers });
                 const contractData = await contractResponse.json();
-                const totalStakedTokens = contractData.data[0].totalStaked;
+                // Assuming totalStaked is a state variable or can be fetched through a view function
+                const totalStakedTokens = contractData.data[0]?.totalStaked || 0; // Adjust this line based on actual contract data
 
-                const burnedResponse = await fetch('https://api.tronscan.org/api/token20/TAQzALyftaynnr3VG3rCvzkY2KouFH79sA');
-                const burnedData = await burnedResponse.json();
-                const burnedTokens = burnedData.totalSupply; // You may need to subtract this from the initial supply to get the burned amount.
-
-                const burnAddressResponse = await fetch('https://api.tronscan.org/api/account?address=TLsV52sRDL79HXGGm9yzwKibb6BeruhUzy');
+                // Fetch burned tokens by subtracting total supply from initial supply
+                const tokenResponse = await fetch('https://api.trongrid.io/v1/assets/TAQzALyftaynnr3VG3rCvzkY2KouFH79sA', { headers });
+                const tokenData = await tokenResponse.json();
+                const initialSupply = tokenData.total_supply;
+                const burnAddressResponse = await fetch('https://api.trongrid.io/v1/accounts/TLsV52sRDL79HXGGm9yzwKibb6BeruhUzy', { headers });
                 const burnAddressData = await burnAddressResponse.json();
-                const tokensInBurnAddress = burnAddressData.trx;
+                const tokensInBurnAddress = burnAddressData.data[0].balance / 1e6 || 0; // Convert from Sun to token units
+                const burnedTokens = (initialSupply - tokensInBurnAddress) / 1e6; // Convert from Sun to token units
 
-                document.getElementById('stakedTRX').innerText = `Staked TRX: ${stakedTRX}`;
-                document.getElementById('totalStakedTokens').innerText = `Total Staked Tokens: ${totalStakedTokens}`;
-                document.getElementById('burnedTokens').innerText = `Tokens Burned: ${tokensInBurnAddress}`;
+                document.getElementById('stakedTRX').innerText = `Staked TRX: ${stakedTRX.toFixed(2)}`;
+                document.getElementById('totalStakedTokens').innerText = `Total Staked Tokens: ${totalStakedTokens.toFixed(2)}`;
+                document.getElementById('burnedTokens').innerText = `Tokens Burned: ${burnedTokens.toFixed(2)}`;
             } catch (error) {
                 console.error('Error fetching data:', error);
+                document.getElementById('stakedTRX').innerText = `Staked TRX: Error loading data`;
+                document.getElementById('totalStakedTokens').innerText = `Total Staked Tokens: Error loading data`;
+                document.getElementById('burnedTokens').innerText = `Tokens Burned: Error loading data`;
             }
         }
 
@@ -150,59 +120,10 @@
 </head>
 <body>
     <div id="container">
-        <h1>Welcome to Our Platform</h1>
-        <div class="dropdown">
-            <button class="dropbtn">Menu</button>
-            <div class="dropdown-content">
-                <a href="index.html">Home</a>
-                <a href="CFTToken.html">Buy CFT</a>
-                <a href="newstaking.html">Staking</a>
-                <a href="marketplace.html">Marketplace</a>
-                <a href="claim.html">Claim</a>
-                <a href="draw.html">Draw</a>
-                <a href="TRC20.html">TRC20 Claim</a>
-                <a href="TRC20Draw.html">TRC20 Draw</a>
-            </div>
-        </div>
-        <p>Explore the features that make our ecosystem vibrant and rewarding:</p>
-        
-        <div class="feature-section">
-            <h2>CFT Token</h2>
-            <p>Our ecosystem token, CFT, can be purchased 1:1 with TRX and staked for TRX rewards. While CFT isn't listed on any exchanges, every holder can list it at their desired price on our marketplace site. This token helps build our ecosystem and boost rewards. Note that all energy costs are the user's responsibility</p>
-        </div>
-        
-        <div class="feature-section">
-            <h2>Staking</h2>
-            <p>Stake your CFT Token here and claim TRX rewards at any time. Note that all energy costs are the user's responsibility.</p>
-        </div>
-        
-        <div class="feature-section">
-            <h2>Marketplace</h2>
-            <p>List your CFT Token at your desired price in our marketplace. All users looking to buy CFT Tokens are encouraged to check the marketplace for any listed tokens before purchasing them on our website. Note that all energy costs are the user's responsibility</p>
-        </div>
-        
-        <div class="feature-section">
-            <h2>Claim</h2>
-            <p>Multiple times a day, 10 TRX are randomly made available for claim. Will you be fast enough to claim it before someone else does?</p>
-        </div>
-        
-        <div class="feature-section">
-            <h2>Draw</h2>
-            <p>Enter our draw every 12 hours for a chance to win some TRX. It's an exciting way to engage and potentially earn more rewards!</p>
-        </div>
-        
-        <div class="feature-section">
-            <h2>TRC20</h2>
-            <p>Claim TRC20 tokens every 72 hours. Please note that all energy costs are the user's responsibility.</p>
-        </div>
+        <h1>Platform Treasury</h1>
 
         <div class="feature-section">
-            <h2>TRC20 Draw (Beta)</h2>
-            <p>Register for TRC20 Draw every 24 hours. We are launching this new feature with 1,000,000 JM token to one lucky winner each day for 7 days. Energy cost are covered by the smart contract. There is no whitelist function for this feature but you need to hold 100 CFT tokens in your wallet to be able to participate. If you want to learn more about JustMoney you can check out their new explorer at <a href="https://explorer.just.money/">https://explorer.just.money/</a> or join their Telegram group <a href="https://t.me/JustMoneyEcosystem">https://t.me/JustMoneyEcosystem</a>.</p>
-        </div>
-
-        <div class="feature-section">
-            <h2>Treasury</h2>
+            <h2>Treasury Data</h2>
             <p id="stakedTRX">Staked TRX: Loading...</p>
             <p id="totalStakedTokens">Total Staked Tokens: Loading...</p>
             <p id="burnedTokens">Tokens Burned: Loading...</p>
