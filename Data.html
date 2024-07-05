@@ -91,13 +91,24 @@
                 console.log('Treasury Data:', treasuryData);
                 const stakedTRX = treasuryData.data[0]?.frozen?.[0]?.frozen_balance / 1e6 || 0; // Convert from Sun to TRX
 
-                // Fetch total staked tokens from the contract (assuming we need to call a specific method)
-                const contractResponse = await fetch('https://api.trongrid.io/v1/contracts/TVSMKqBk12161JDAQBh9pkdxMAgCtuGrdA', { headers });
+                // Fetch total staked tokens from the contract
+                const contractPayload = {
+                    contract_address: 'TVSMKqBk12161JDAQBh9pkdxMAgCtuGrdA',
+                    function_selector: 'totalStaked()',
+                    owner_address: 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb'
+                };
+                const contractResponse = await fetch('https://api.trongrid.io/wallet/triggerconstantcontract', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...headers
+                    },
+                    body: JSON.stringify(contractPayload)
+                });
                 if (!contractResponse.ok) throw new Error('Failed to fetch contract data');
                 const contractData = await contractResponse.json();
                 console.log('Contract Data:', contractData);
-                // Assuming totalStaked is a state variable or can be fetched through a view function
-                const totalStakedTokens = contractData.data[0]?.totalStaked || 0; // Adjust this line based on actual contract data
+                const totalStakedTokens = contractData.constant_result?.[0] || 0; // Adjust this line based on actual contract data
 
                 // Fetch burned tokens by subtracting total supply from initial supply
                 const tokenResponse = await fetch('https://api.trongrid.io/v1/assets/TAQzALyftaynnr3VG3rCvzkY2KouFH79sA', { headers });
