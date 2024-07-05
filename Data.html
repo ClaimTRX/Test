@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Features</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/ClaimTRX/Test/main/favicon-32x32.png" type="image/png">
+    <style>
+        body { 
+            text-align: center; 
+            font-family: Arial, sans-serif; 
+            background-color: #f5f5f5; 
+            color: #333; 
+            padding: 20px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        #container {
+            background: white; 
+            border-radius: 5px; 
+            padding: 20px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+            max-width: 600px; 
+            margin: auto;
+        }
+
+        h1, h2 { 
+            color: #007bff; 
+        }
+        p {
+            font-size: 16px; 
+            margin: 20px auto; 
+            max-width: 600px; 
+            line-height: 1.6; 
+        }
+        a { 
+            color: #007bff; 
+            text-decoration: none; 
+        }
+        a:hover, a:focus { 
+            text-decoration: underline; 
+        }
+        button, input[type="text"], input[type="number"] { 
+            width: calc(100% - 22px); 
+            margin: 10px 0; 
+            padding: 10px; 
+            font-size: 16px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+        button {
+            background-color: #007bff; 
+            color: white; 
+            border: none;
+        }
+        button:hover { 
+            background-color: #0056b3; 
+        }
+        input[type="text"], input[type="number"] {
+            background-color: white; 
+            color: black; 
+            border: 1px solid #ccc;
+        }
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        .disabled { 
+            background-color: #ccc; 
+            color: #666; 
+            cursor: not-allowed; 
+        }
+        .feature-section {
+            margin-top: 20px; 
+        }
+        .dropdown {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropbtn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dropbtn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        async function fetchData() {
+            try {
+                const treasuryResponse = await fetch('https://api.tronscan.org/api/account?address=TFvHNqDqttkXSS8ZTdC4c4W7q97SFW3iKq');
+                const treasuryData = await treasuryResponse.json();
+                const stakedTRX = treasuryData.trx;
+
+                const contractResponse = await fetch('https://api.tronscan.org/api/contract/TVSMKqBk12161JDAQBh9pkdxMAgCtuGrdA');
+                const contractData = await contractResponse.json();
+                const totalStakedTokens = contractData.data[0].totalStaked;
+
+                const burnedResponse = await fetch('https://api.tronscan.org/api/token20/TAQzALyftaynnr3VG3rCvzkY2KouFH79sA');
+                const burnedData = await burnedResponse.json();
+                const burnedTokens = burnedData.totalSupply; // You may need to subtract this from the initial supply to get the burned amount.
+
+                const burnAddressResponse = await fetch('https://api.tronscan.org/api/account?address=TLsV52sRDL79HXGGm9yzwKibb6BeruhUzy');
+                const burnAddressData = await burnAddressResponse.json();
+                const tokensInBurnAddress = burnAddressData.trx;
+
+                document.getElementById('stakedTRX').innerText = `Staked TRX: ${stakedTRX}`;
+                document.getElementById('totalStakedTokens').innerText = `Total Staked Tokens: ${totalStakedTokens}`;
+                document.getElementById('burnedTokens').innerText = `Tokens Burned: ${tokensInBurnAddress}`;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchData);
+    </script>
+</head>
+<body>
+    <div id="container">
+        <h1>Welcome to Our Platform</h1>
+        <div class="dropdown">
+            <button class="dropbtn">Menu</button>
+            <div class="dropdown-content">
+                <a href="index.html">Home</a>
+                <a href="CFTToken.html">Buy CFT</a>
+                <a href="newstaking.html">Staking</a>
+                <a href="marketplace.html">Marketplace</a>
+                <a href="claim.html">Claim</a>
+                <a href="draw.html">Draw</a>
+                <a href="TRC20.html">TRC20 Claim</a>
+                <a href="TRC20Draw.html">TRC20 Draw</a>
+            </div>
+        
+</body>
+</html>
