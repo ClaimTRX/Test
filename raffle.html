@@ -128,8 +128,10 @@
     <script>
         let tronWeb;
         let contract;
+        let cftTokenContract;
 
         const contractAddress = "TNHS5eWorCBnY86BXGDxqhepMiCv8fhpSt";
+        const cftTokenAddress = "TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb"; // Add your CFT token contract address here
         const contractABI = [
             {
                 "inputs": [
@@ -284,12 +286,37 @@
             }
         ];
 
+        const cftTokenABI = [
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_spender",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "approve",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "type": "function"
+            }
+        ];
+
         async function connectWallet() {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 tronWeb = window.tronWeb;
                 const account = tronWeb.defaultAddress.base58;
                 document.getElementById('connectWallet').innerText = `Connected: ${account}`;
                 contract = await tronWeb.contract(contractABI, contractAddress);
+                cftTokenContract = await tronWeb.contract(cftTokenABI, cftTokenAddress);
                 updateUI();
             } else {
                 alert('Please install TronLink wallet!');
@@ -304,10 +331,19 @@
             document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prize)} CFT`;
         }
 
+        async function approveToken() {
+            const maxApproval = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'; // Maximum uint256 value
+            await cftTokenContract.methods.approve(contractAddress, maxApproval).send({
+                from: tronWeb.defaultAddress.base58
+            });
+        }
+
         async function buyTickets() {
             const amount = document.getElementById('ticketAmount').value;
             const ticketPrice = await contract.methods.ticketPrice().call();
             const totalCost = ticketPrice * amount;
+
+            await approveToken();
 
             await contract.methods.buyTickets(amount).send({
                 from: tronWeb.defaultAddress.base58,
@@ -351,7 +387,8 @@
                 </form>
                 <div id="prizeAmount">Current prize: 0 TOKEN</div>
                 <div id="visitText"><a href="https://explorer.just.money/address/TAGnb4n6Bbr1RATQ43FaQhfoFVm2ELyWY8" target="_blank" rel="noopener noreferrer">Contract</a></div>
-                
+                <div id="intervalInfo">Press Register to win every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
+                <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
                 <div id="visitText"><a href="https://explorer.just.money/dapp/42" target="_blank" rel="noopener noreferrer">Visit the new Just.Money Explorer</a></div>
             </div>
             <div id="logoContainer">
