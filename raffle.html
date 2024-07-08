@@ -130,7 +130,7 @@
         let contract;
         let cftTokenContract;
 
-        const contractAddress = "TNHS5eWorCBnY86BXGDxqhepMiCv8fhpSt";
+        const contractAddress = "TRvVYeAvSpUrRCG6j6d3mKgELMG2WwF9D3";
         const cftTokenAddress = "TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb"; // Add your CFT token contract address here
         const contractABI = [
             {
@@ -239,6 +239,20 @@
                 "constant": true
             },
             {
+                "inputs": [],
+                "name": "prizeAmount",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function",
+                "constant": true
+            },
+            {
                 "inputs": [
                     {
                         "internalType": "address",
@@ -280,6 +294,26 @@
             {
                 "inputs": [],
                 "name": "drawWinner",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "tokenAddress",
+                        "type": "address"
+                    }
+                ],
+                "name": "withdrawTokens",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "withdrawTRX",
                 "outputs": [],
                 "stateMutability": "nonpayable",
                 "type": "function"
@@ -332,71 +366,95 @@
         ];
 
         async function connectWallet() {
-            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                tronWeb = window.tronWeb;
-                const account = tronWeb.defaultAddress.base58;
-                document.getElementById('connectWallet').innerText = `Connected: ${account}`;
-                contract = await tronWeb.contract(contractABI, contractAddress);
-                cftTokenContract = await tronWeb.contract(cftTokenABI, cftTokenAddress);
-                updateUI();
-            } else {
-                alert('Please install TronLink wallet!');
+            try {
+                if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                    tronWeb = window.tronWeb;
+                    const account = tronWeb.defaultAddress.base58;
+                    document.getElementById('connectWallet').innerText = `Connected: ${account}`;
+                    contract = await tronWeb.contract(contractABI, contractAddress);
+                    cftTokenContract = await tronWeb.contract(cftTokenABI, cftTokenAddress);
+                    updateUI();
+                } else {
+                    alert('Please install TronLink wallet!');
+                }
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
             }
         }
 
         async function updateUI() {
-            const ticketsSold = await contract.methods.ticketsSold().call();
-            const ticketPrice = await contract.methods.ticketPrice().call();
-            const prize = (ticketPrice * ticketsSold * 75) / 100;
-            document.getElementById('ticketsSold').innerText = ticketsSold;
-            document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prize)} CFT`;
+            try {
+                const ticketsSold = await contract.methods.ticketsSold().call();
+                const prizeAmount = await contract.methods.prizeAmount().call();
+                document.getElementById('ticketsSold').innerText = ticketsSold;
+                document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} CFT`;
 
-            const drawButton = document.getElementById('drawButton');
-            if (ticketsSold >= 25) {
-                drawButton.disabled = false;
-                drawButton.classList.remove('disabled');
-            } else {
-                drawButton.disabled = true;
-                drawButton.classList.add('disabled');
+                const drawButton = document.getElementById('drawButton');
+                if (ticketsSold >= 25) {
+                    drawButton.disabled = false;
+                    drawButton.classList.remove('disabled');
+                } else {
+                    drawButton.disabled = true;
+                    drawButton.classList.add('disabled');
+                }
+            } catch (error) {
+                console.error('Error updating UI:', error);
             }
         }
 
         async function checkAllowance() {
-            const allowance = await cftTokenContract.methods.allowance(tronWeb.defaultAddress.base58, contractAddress).call();
-            return allowance;
+            try {
+                const allowance = await cftTokenContract.methods.allowance(tronWeb.defaultAddress.base58, contractAddress).call();
+                return allowance;
+            } catch (error) {
+                console.error('Error checking allowance:', error);
+                return 0;
+            }
         }
 
         async function approveTokenIfNeeded(amount) {
-            const allowance = await checkAllowance();
-            if (allowance < amount) {
-                const maxApproval = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'; // Maximum uint256 value
-                await cftTokenContract.methods.approve(contractAddress, maxApproval).send({
-                    from: tronWeb.defaultAddress.base58
-                });
+            try {
+                const allowance = await checkAllowance();
+                if (allowance < amount) {
+                    const maxApproval = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'; // Maximum uint256 value
+                    await cftTokenContract.methods.approve(contractAddress, maxApproval).send({
+                        from: tronWeb.defaultAddress.base58
+                    });
+                }
+            } catch (error) {
+                console.error('Error approving token:', error);
             }
         }
 
         async function buyTickets() {
-            const amount = document.getElementById('ticketAmount').value;
-            const ticketPrice = await contract.methods.ticketPrice().call();
-            const totalCost = ticketPrice * amount;
+            try {
+                const amount = document.getElementById('ticketAmount').value;
+                const ticketPrice = await contract.methods.ticketPrice().call();
+                const totalCost = ticketPrice * amount;
 
-            await approveTokenIfNeeded(totalCost);
+                await approveTokenIfNeeded(totalCost);
 
-            await contract.methods.buyTickets(amount).send({
-                from: tronWeb.defaultAddress.base58,
-                callValue: totalCost
-            });
+                await contract.methods.buyTickets(amount).send({
+                    from: tronWeb.defaultAddress.base58,
+                    callValue: totalCost
+                });
 
-            updateUI();
+                updateUI();
+            } catch (error) {
+                console.error('Error buying tickets:', error);
+            }
         }
 
         async function drawWinner() {
-            await contract.methods.drawWinner().send({
-                from: tronWeb.defaultAddress.base58
-            });
+            try {
+                await contract.methods.drawWinner().send({
+                    from: tronWeb.defaultAddress.base58
+                });
 
-            updateUI();
+                updateUI();
+            } catch (error) {
+                console.error('Error drawing winner:', error);
+            }
         }
 
         window.addEventListener('load', () => {
