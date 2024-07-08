@@ -307,6 +307,27 @@
                     }
                 ],
                 "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "_owner",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_spender",
+                        "type": "address"
+                    }
+                ],
+                "name": "allowance",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "type": "function"
             }
         ];
 
@@ -329,13 +350,30 @@
             const prize = (ticketPrice * ticketsSold * 75) / 100;
             document.getElementById('ticketsSold').innerText = ticketsSold;
             document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prize)} CFT`;
+
+            const drawButton = document.getElementById('drawButton');
+            if (ticketsSold >= 25) {
+                drawButton.disabled = false;
+                drawButton.classList.remove('disabled');
+            } else {
+                drawButton.disabled = true;
+                drawButton.classList.add('disabled');
+            }
         }
 
-        async function approveToken() {
-            const maxApproval = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'; // Maximum uint256 value
-            await cftTokenContract.methods.approve(contractAddress, maxApproval).send({
-                from: tronWeb.defaultAddress.base58
-            });
+        async function checkAllowance() {
+            const allowance = await cftTokenContract.methods.allowance(tronWeb.defaultAddress.base58, contractAddress).call();
+            return allowance;
+        }
+
+        async function approveTokenIfNeeded(amount) {
+            const allowance = await checkAllowance();
+            if (allowance < amount) {
+                const maxApproval = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'; // Maximum uint256 value
+                await cftTokenContract.methods.approve(contractAddress, maxApproval).send({
+                    from: tronWeb.defaultAddress.base58
+                });
+            }
         }
 
         async function buyTickets() {
@@ -343,11 +381,19 @@
             const ticketPrice = await contract.methods.ticketPrice().call();
             const totalCost = ticketPrice * amount;
 
-            await approveToken();
+            await approveTokenIfNeeded(totalCost);
 
             await contract.methods.buyTickets(amount).send({
                 from: tronWeb.defaultAddress.base58,
                 callValue: totalCost
+            });
+
+            updateUI();
+        }
+
+        async function drawWinner() {
+            await contract.methods.drawWinner().send({
+                from: tronWeb.defaultAddress.base58
             });
 
             updateUI();
@@ -359,6 +405,7 @@
                 event.preventDefault();
                 buyTickets();
             });
+            document.getElementById('drawButton').addEventListener('click', drawWinner);
         });
     </script>
 </head>
@@ -385,6 +432,7 @@
                     <input type="number" id="ticketAmount" min="1" required>
                     <button type="submit">Buy Tickets</button>
                 </form>
+                <button id="drawButton" class="disabled" disabled>Draw Winner</button>
                 <div id="prizeAmount">Current prize: 0 TOKEN</div>
                 <div id="visitText"><a href="https://explorer.just.money/address/TAGnb4n6Bbr1RATQ43FaQhfoFVm2ELyWY8" target="_blank" rel="noopener noreferrer">Contract</a></div>
                 <div id="intervalInfo">Press Register to win every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
