@@ -123,6 +123,21 @@
         .dropbtn:hover {
             background-color: #0056b3;
         }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+            width: calc(100% - 20px);
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@tronweb3/tronweb/dist/TronWeb.min.js"></script>
     <script>
@@ -302,7 +317,7 @@
                 const drawButton = document.getElementById('drawButton');
 
                 if (ticketsSoldElement) {
-                    ticketsSoldElement.innerText = ticketsSold;
+                    ticketsSoldElement.innerText = `Tickets sold: ${ticketsSold}`;
                 } else {
                     console.error('ticketsSold element not found');
                 }
@@ -388,14 +403,18 @@
             <div id="statusMessage" class="warning hidden"></div>
             <div id="appContent">
                 <form id="buyTicketsForm">
-                    <input type="number" id="ticketAmount" min="1" required>
+                    <input type="number" id="ticketAmount" min="1" required placeholder="Amount of tickets">
                     <button type="submit">Buy Tickets</button>
                 </form>
                 <button id="drawButton" class="disabled" disabled>Draw Winner</button>
                 <div id="prizeAmount">Current prize: 0 TRX</div>
-                <div id="ticketsSold">Tickets sold</div>
-                <div id="visitText"><a href="https://explorer.just.money/address/TWCmdTQHZJ8Fb5bBEHtAWJ9wwnsoA8LTRd" target="_blank" rel="noopener noreferrer">Contract</a></div>
-                <div id="intervalInfo">Tickets cost 10 TRX each ticket, 75% of ticket sales each round goes to the winner, 25% is used to buy and burn CFT</div>
+                <div id="ticketsSold">Tickets sold: 0</div>
+                <div id="visitText"><a href="https://explorer.just.money/address/TAGnb4n6Bbr1RATQ43FaQhfoFVm2ELyWY8" target="_blank" rel="noopener noreferrer">Contract</a></div>
+                <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
+                <div id="prizeDetails">
+                    <p>Tickets cost 10 TRX each. 75% of the ticket sales go to the winner, and 25% is used to buy and burn CFT.</p>
+                    <p>The draw button is enabled when a minimum of 25 tickets are sold.</p>
+                </div>
                 <div id="visitText"><a href="https://explorer.just.money/dapp/42" target="_blank" rel="noopener noreferrer">Visit the new Just.Money Explorer</a></div>
             </div>
             <div id="logoContainer">
