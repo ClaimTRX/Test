@@ -294,16 +294,35 @@
             try {
                 const ticketsSold = await contract.methods.ticketsSold().call();
                 const prizeAmount = await contract.methods.prizeAmount().call();
-                document.getElementById('ticketsSold').innerText = ticketsSold;
-                document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} TRX`;
+                console.log('Tickets Sold:', ticketsSold);
+                console.log('Prize Amount:', prizeAmount);
 
+                const ticketsSoldElement = document.getElementById('ticketsSold');
+                const prizeAmountElement = document.getElementById('prizeAmount');
                 const drawButton = document.getElementById('drawButton');
-                if (ticketsSold >= 25) {
-                    drawButton.disabled = false;
-                    drawButton.classList.remove('disabled');
+
+                if (ticketsSoldElement) {
+                    ticketsSoldElement.innerText = ticketsSold;
                 } else {
-                    drawButton.disabled = true;
-                    drawButton.classList.add('disabled');
+                    console.error('ticketsSold element not found');
+                }
+
+                if (prizeAmountElement) {
+                    prizeAmountElement.innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} TRX`;
+                } else {
+                    console.error('prizeAmount element not found');
+                }
+
+                if (drawButton) {
+                    if (ticketsSold >= 25) {
+                        drawButton.disabled = false;
+                        drawButton.classList.remove('disabled');
+                    } else {
+                        drawButton.disabled = true;
+                        drawButton.classList.add('disabled');
+                    }
+                } else {
+                    console.error('drawButton element not found');
                 }
             } catch (error) {
                 console.error('Error updating UI:', error);
@@ -374,6 +393,7 @@
                 </form>
                 <button id="drawButton" class="disabled" disabled>Draw Winner</button>
                 <div id="prizeAmount">Current prize: 0 TRX</div>
+                <div id="ticketsSold"></div>
                 <div id="visitText"><a href="https://explorer.just.money/address/TAGnb4n6Bbr1RATQ43FaQhfoFVm2ELyWY8" target="_blank" rel="noopener noreferrer">Contract</a></div>
                 <div id="intervalInfo">Press Register to win every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
                 <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
