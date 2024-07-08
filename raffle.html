@@ -128,19 +128,12 @@
     <script>
         let tronWeb;
         let contract;
-        let cftTokenContract;
 
-        const contractAddress = "TRvVYeAvSpUrRCG6j6d3mKgELMG2WwF9D3";
-        const cftTokenAddress = "TWRJ4z9BnERjx9gKzBT9GkiCbPYmWCc4jb"; // Add your CFT token contract address here
+        const contractAddress = "TWCmdTQHZJ8Fb5bBEHtAWJ9wwnsoA8LTRd";
 
         const contractABI = [
             {
                 "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "_cftTokenAddress",
-                        "type": "address"
-                    },
                     {
                         "internalType": "address",
                         "name": "_prizeWallet",
@@ -154,20 +147,6 @@
                 ],
                 "stateMutability": "nonpayable",
                 "type": "constructor"
-            },
-            {
-                "inputs": [],
-                "name": "cftTokenAddress",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function",
-                "constant": true
             },
             {
                 "inputs": [],
@@ -257,19 +236,6 @@
                 "inputs": [
                     {
                         "internalType": "address",
-                        "name": "_newTokenAddress",
-                        "type": "address"
-                    }
-                ],
-                "name": "updateTokenAddress",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
                         "name": "_newPrizeWallet",
                         "type": "address"
                     }
@@ -289,25 +255,12 @@
                 ],
                 "name": "buyTickets",
                 "outputs": [],
-                "stateMutability": "nonpayable",
+                "stateMutability": "payable",
                 "type": "function"
             },
             {
                 "inputs": [],
                 "name": "drawWinner",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "tokenAddress",
-                        "type": "address"
-                    }
-                ],
-                "name": "withdrawTokens",
                 "outputs": [],
                 "stateMutability": "nonpayable",
                 "type": "function"
@@ -321,51 +274,6 @@
             }
         ];
 
-        const cftTokenABI = [
-            {
-                "constant": false,
-                "inputs": [
-                    {
-                        "name": "_spender",
-                        "type": "address"
-                    },
-                    {
-                        "name": "_value",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "approve",
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "bool"
-                    }
-                ],
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [
-                    {
-                        "name": "_owner",
-                        "type": "address"
-                    },
-                    {
-                        "name": "_spender",
-                        "type": "address"
-                    }
-                ],
-                "name": "allowance",
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "type": "function"
-            }
-        ];
-
         async function connectWallet() {
             try {
                 if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
@@ -373,7 +281,6 @@
                     const account = tronWeb.defaultAddress.base58;
                     document.getElementById('connectWallet').innerText = `Connected: ${account}`;
                     contract = await tronWeb.contract(contractABI, contractAddress);
-                    cftTokenContract = await tronWeb.contract(cftTokenABI, cftTokenAddress);
                     updateUI();
                 } else {
                     alert('Please install TronLink wallet!');
@@ -388,7 +295,7 @@
                 const ticketsSold = await contract.methods.ticketsSold().call();
                 const prizeAmount = await contract.methods.prizeAmount().call();
                 document.getElementById('ticketsSold').innerText = ticketsSold;
-                document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} CFT`;
+                document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} TRX`;
 
                 const drawButton = document.getElementById('drawButton');
                 if (ticketsSold >= 25) {
@@ -403,37 +310,11 @@
             }
         }
 
-        async function checkAllowance() {
-            try {
-                const allowance = await cftTokenContract.methods.allowance(tronWeb.defaultAddress.base58, contractAddress).call();
-                return allowance;
-            } catch (error) {
-                console.error('Error checking allowance:', error);
-                return 0;
-            }
-        }
-
-        async function approveTokenIfNeeded(amount) {
-            try {
-                const allowance = await checkAllowance();
-                if (allowance < amount) {
-                    const maxApproval = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'; // Maximum uint256 value
-                    await cftTokenContract.methods.approve(contractAddress, maxApproval).send({
-                        from: tronWeb.defaultAddress.base58
-                    });
-                }
-            } catch (error) {
-                console.error('Error approving token:', error);
-            }
-        }
-
         async function buyTickets() {
             try {
                 const amount = document.getElementById('ticketAmount').value;
                 const ticketPrice = await contract.methods.ticketPrice().call();
                 const totalCost = ticketPrice * amount;
-
-                await approveTokenIfNeeded(totalCost);
 
                 await contract.methods.buyTickets(amount).send({
                     from: tronWeb.defaultAddress.base58,
@@ -492,7 +373,7 @@
                     <button type="submit">Buy Tickets</button>
                 </form>
                 <button id="drawButton" class="disabled" disabled>Draw Winner</button>
-                <div id="prizeAmount">Current prize: 0 TOKEN</div>
+                <div id="prizeAmount">Current prize: 0 TRX</div>
                 <div id="visitText"><a href="https://explorer.just.money/address/TAGnb4n6Bbr1RATQ43FaQhfoFVm2ELyWY8" target="_blank" rel="noopener noreferrer">Contract</a></div>
                 <div id="intervalInfo">Press Register to win every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
                 <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
