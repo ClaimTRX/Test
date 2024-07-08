@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRC20 Draw</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/ClaimTRX/Test/main/favicon-32x32.png" type="image/png">
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        #container {
+            background: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            color: #007bff;
+        }
+        #links {
+            margin: 20px 0;
+        }
+        a {
+            display: block;
+            margin: 5px 0;
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        button {
+            width: calc(100% - 22px);
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .disabled {
+            background-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
+        }
+        .warning {
+            color: red;
+            font-size: 20px;
+        }
+        #timer, #prizeAmount, #intervalInfo, #warningMessage {
+            margin: 15px 0;
+        }
+        #logo {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            margin-top: 20px;
+        }
+        #visitText {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .dropdown {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropdown:hover .dropbtn {
+            background-color: #0056b3;
+        }
+        .dropbtn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 200px; /* Ensure width matches the Connect Wallet button */
+        }
+        .dropbtn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tronweb3/tronweb/dist/TronWeb.min.js"></script>
+    <script>
+        let tronWeb;
+        let contract;
+
+        const contractAddress = "YOUR_CONTRACT_ADDRESS";
+        const contractABI = []; // Your contract ABI here
+
+        async function connectWallet() {
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                tronWeb = window.tronWeb;
+                const account = tronWeb.defaultAddress.base58;
+                document.getElementById('connectWallet').innerText = `Connected: ${account}`;
+                contract = await tronWeb.contract(contractABI, contractAddress);
+                updateUI();
+            } else {
+                alert('Please install TronLink wallet!');
+            }
+        }
+
+        async function updateUI() {
+            const ticketsSold = await contract.methods.ticketsSold().call();
+            const ticketPrice = await contract.methods.ticketPrice().call();
+            const prize = (ticketPrice * ticketsSold * 75) / 100;
+            document.getElementById('ticketsSold').innerText = ticketsSold;
+            document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prize)} CFT`;
+        }
+
+        async function buyTickets() {
+            const amount = document.getElementById('ticketAmount').value;
+            const ticketPrice = await contract.methods.ticketPrice().call();
+            const totalCost = ticketPrice * amount;
+
+            await contract.methods.buyTickets(amount).send({
+                from: tronWeb.defaultAddress.base58,
+                callValue: totalCost
+            });
+
+            updateUI();
+        }
+
+        window.addEventListener('load', () => {
+            document.getElementById('connectWallet').addEventListener('click', connectWallet);
+            document.getElementById('buyTicketsForm').addEventListener('submit', (event) => {
+                event.preventDefault();
+                buyTickets();
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="container">
+        <h1>TRC20 Draw</h1>
+        <div id="buttonContainer">
+            <div class="dropdown">
+                <button class="dropbtn">Menu</button>
+                <div class="dropdown-content">
+                    <a href="index.html">Home</a>
+                    <a href="CFTToken.html">Buy CFT</a>
+                    <a href="newstaking.html">Staking</a>
+                    <a href="marketplace.html">Marketplace</a>
+                    <a href="claim.html">Claim</a>
+                    <a href="draw.html">Draw</a>
+                    <a href="TRC20.html">TRC20 Claim</a>
+                </div>
+            </div>
+            <button id="connectWallet">Connect Wallet</button>
+            <div id="statusMessage" class="warning hidden"></div>
+            <div id="appContent">
+                <form id="buyTicketsForm">
+                    <input type="number" id="ticketAmount" min="1" required>
+                    <button type="submit">Buy Tickets</button>
+                </form>
+                <div id="prizeAmount">Current prize: 0 TOKEN</div>
+                <div id="visitText"><a href="https://explorer.just.money/address/TAGnb4n6Bbr1RATQ43FaQhfoFVm2ELyWY8" target="_blank" rel="noopener noreferrer">Contract</a></div>
+                <div id="intervalInfo">Press Register to win every <span id="intervalDisplay">--</span> hours. Remember to register for each round!</div>
+                <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
+                <div id="visitText"><a href="https://explorer.just.money/dapp/42" target="_blank" rel="noopener noreferrer">Visit the new Just.Money Explorer</a></div>
+            </div>
+            <div id="logoContainer">
+                <a href="https://explorer.just.money/dapp/42" target="_blank" rel="noopener noreferrer">
+                    <img id="logo" src="https://github.com/ClaimTRX/Test/blob/main/JustMoneyLogo.jpg?raw=true" alt="Just Money Logo">
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
