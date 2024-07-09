@@ -176,7 +176,7 @@
         </select>
         <button id="connectWallet">Connect Wallet</button>
         <div id="walletInfo" style="display:none;">
-            
+            <p>Connected Wallet: <span id="walletAddress"></span></p>
             <p>Token Balance: <span id="tokenBalance"></span></p>
         </div>
         <div id="actions">
@@ -184,6 +184,7 @@
             <h2>Buy Tokens</h2>
             <input type="number" id="trxAmount" placeholder="Amount of TRX" min="1" required disabled>
             <button id="buyTokenButton" class="disabled" disabled>Buy Tokens</button>
+            <p>Remaining CFT tokens for sale: <span id="remainingTokens"></span></p>
         </div>
     </div>
 
@@ -351,6 +352,7 @@
                 $('#trxAmount').prop('disabled', false);
                 $('#buyTokenButton').prop('disabled', false).removeClass('disabled');
                 await updateTokenBalance();
+                await updateRemainingTokens();
             } else {
                 alert('Please install TronLink wallet!');
             }
@@ -361,6 +363,12 @@
             tokenContract = await tronWeb.contract(tokenContractABI, tokenContractAddress);
             const balance = await tokenContract.balanceOf(walletAddress).call();
             $('#tokenBalance').text(tronWeb.fromSun(balance.toString()));
+        }
+
+        async function updateRemainingTokens() {
+            tokenContract = await tronWeb.contract(tokenContractABI, tokenContractAddress);
+            const remainingTokens = await tokenContract.balanceOf(tokenSaleContractAddress).call();
+            $('#remainingTokens').text(tronWeb.fromSun(remainingTokens.toString()));
         }
 
         async function buyTokens() {
@@ -377,6 +385,7 @@
                 });
                 alert('Transaction successful: ' + transaction);
                 await updateTokenBalance();
+                await updateRemainingTokens();
             } catch (error) {
                 alert('Transaction failed: ' + error);
             }
