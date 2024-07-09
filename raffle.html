@@ -144,7 +144,7 @@
         let tronWeb;
         let contract;
 
-        const contractAddress = "TWCmdTQHZJ8Fb5bBEHtAWJ9wwnsoA8LTRd";
+        const contractAddress = "TMUDuMwYd94M6k7bhKgo6kqBKiDkjAFPDV";
 
         const contractABI = [
             {
@@ -286,6 +286,25 @@
                 "outputs": [],
                 "stateMutability": "nonpayable",
                 "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    }
+                ],
+                "name": "getTickets",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
             }
         ];
 
@@ -297,6 +316,7 @@
                     document.getElementById('connectWallet').innerText = `Connected: ${account}`;
                     contract = await tronWeb.contract(contractABI, contractAddress);
                     updateUI();
+                    updateTicketCount(account);
                 } else {
                     alert('Please install TronLink wallet!');
                 }
@@ -344,6 +364,20 @@
             }
         }
 
+        async function updateTicketCount(account) {
+            try {
+                const ticketsCount = await contract.methods.getTickets(account).call();
+                const ticketsCountElement = document.getElementById('ticketsCount');
+                if (ticketsCountElement) {
+                    ticketsCountElement.innerText = `Your tickets: ${ticketsCount}`;
+                } else {
+                    console.error('ticketsCount element not found');
+                }
+            } catch (error) {
+                console.error('Error getting ticket count:', error);
+            }
+        }
+
         async function buyTickets() {
             try {
                 const amount = document.getElementById('ticketAmount').value;
@@ -356,6 +390,7 @@
                 });
 
                 updateUI();
+                updateTicketCount(tronWeb.defaultAddress.base58);
             } catch (error) {
                 console.error('Error buying tickets:', error);
             }
@@ -397,6 +432,7 @@
                     <a href="claim.html">Claim</a>
                     <a href="draw.html">Draw</a>
                     <a href="TRC20.html">TRC20 Claim</a>
+                    <a href="raffle.html">TRX Raffle</a>
                 </div>
             </div>
             <button id="connectWallet">Connect Wallet</button>
@@ -409,15 +445,14 @@
                 <button id="drawButton" class="disabled" disabled>Draw Winner</button>
                 <div id="prizeAmount">Current prize: 0 TRX</div>
                 <div id="ticketsSold">Tickets sold: 0</div>
-                <div id="visitText"><a href="https://explorer.just.money/address/TAGnb4n6Bbr1RATQ43FaQhfoFVm2ELyWY8" target="_blank" rel="noopener noreferrer">Contract</a></div>
+                <div id="ticketsCount">Your tickets: 0</div>
+                <div id="visitText"><a href="https://explorer.just.money/address/TMUDuMwYd94M6k7bhKgo6kqBKiDkjAFPDV" target="_blank" rel="noopener noreferrer">Contract</a></div>
                 <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
                 <div id="prizeDetails">
                     <p>Tickets cost 10 TRX each. 75% of the ticket sales go to the winner, and 25% is used to buy and burn CFT.</p>
                     <p>The draw button is enabled when a minimum of 25 tickets are sold.</p>
                 </div>
-               
             </div>
-            
         </div>
     </div>
 </body>
