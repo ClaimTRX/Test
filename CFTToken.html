@@ -191,213 +191,217 @@
         </div>
     </div>
 
-    function formatNumberWithCommas(number) {
-    return parseInt(number).toLocaleString('en-US');
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    const switcher = document.getElementById('language-switcher');
-    switcher.addEventListener('change', function() {
-        const selectedLanguage = switcher.value;
-        switch (selectedLanguage) {
-            case 'en':
-                window.location.href = 'CFTToken.html';
-                break;
-            case 'es':
-                window.location.href = 'CFTToken-es.html';
-                break;
-            case 'zh':
-                window.location.href = 'CFTToken-zh.html';
-                break;
-            default:
-                window.location.href = 'CFTToken.html';
+    <script>
+        function formatNumberWithCommas(number) {
+            return number.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         }
-    });
-});
 
-let tronWeb;
-let tokenSaleContract;
-let tokenContract;
-const tokenSaleContractAddress = 'TNd9QQNUUENTQWCs81yan3ttzahQXHJhAC';
-const tokenSaleContractABI = [
-    {
-        "inputs": [
-            {
-                "internalType": "contract ITRC20",
-                "name": "_token",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_tokenPrice",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "withdrawTRX",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "withdrawTokens",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "buyTokens",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "stateMutability": "payable",
-        "type": "receive"
-    }
-];
-
-const tokenContractAddress = 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA';
-const tokenContractABI = [
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "_owner",
-                "type": "address"
-            }
-        ],
-        "name": "balanceOf",
-        "outputs": [
-            {
-                "name": "balance",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "name",
-        "outputs": [
-            {
-                "name": "",
-                "type": "string"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "symbol",
-        "outputs": [
-            {
-                "name": "",
-                "type": "string"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": false,
-        "inputs": [
-            {
-                "name": "_to",
-                "type": "address"
-            },
-            {
-                "name": "_value",
-                "type": "uint256"
-            }
-        ],
-        "name": "transfer",
-        "outputs": [
-            {
-                "name": "",
-                "type": "bool"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-    }
-];
-
-async function connectWallet() {
-    if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-        tronWeb = window.tronWeb;
-        $('#walletAddress').text(tronWeb.defaultAddress.base58);
-        $('#walletInfo').show();
-        $('#connectWallet').text(`Connected: ${tronWeb.defaultAddress.base58}`);
-        $('#trxAmount').prop('disabled', false);
-        $('#buyTokenButton').prop('disabled', false).removeClass('disabled');
-        await updateTokenBalance();
-        await updateRemainingTokens();
-    } else {
-        alert('Please install TronLink wallet!');
-    }
-}
-
-async function updateTokenBalance() {
-    const walletAddress = tronWeb.defaultAddress.base58;
-    tokenContract = await tronWeb.contract(tokenContractABI, tokenContractAddress);
-    const balance = await tokenContract.balanceOf(walletAddress).call();
-    $('#tokenBalance').text(formatNumberWithCommas(tronWeb.fromSun(balance.toString())));
-}
-
-async function updateRemainingTokens() {
-    tokenContract = await tronWeb.contract(tokenContractABI, tokenContractAddress);
-    const remainingTokens = await tokenContract.balanceOf(tokenSaleContractAddress).call();
-    $('#remainingTokens').text(formatNumberWithCommas(tronWeb.fromSun(remainingTokens.toString())));
-}
-
-async function buyTokens() {
-    const trxAmount = $('#trxAmount').val();
-    if (!trxAmount || trxAmount <= 0) {
-        alert('Please enter a valid amount of TRX');
-        return;
-    }
-
-    try {
-        tokenSaleContract = await tronWeb.contract(tokenSaleContractABI, tokenSaleContractAddress);
-        const transaction = await tokenSaleContract.buyTokens().send({
-            callValue: tronWeb.toSun(trxAmount)
+        document.addEventListener('DOMContentLoaded', function() {
+            const switcher = document.getElementById('language-switcher');
+            switcher.addEventListener('change', function() {
+                const selectedLanguage = switcher.value;
+                switch (selectedLanguage) {
+                    case 'en':
+                        window.location.href = 'CFTToken.html';
+                        break;
+                    case 'es':
+                        window.location.href = 'CFTToken-es.html';
+                        break;
+                    case 'zh':
+                        window.location.href = 'CFTToken-zh.html';
+                        break;
+                    default:
+                        window.location.href = 'CFTToken.html';
+                }
+            });
         });
-        alert('Transaction successful: ' + transaction);
-        await updateTokenBalance();
-        await updateRemainingTokens();
-    } catch (error) {
-        alert('Transaction failed: ' + error);
-    }
-}
 
-$(document).ready(function() {
-    $('#connectWallet').on('click', connectWallet);
-    $('#buyTokenButton').on('click', buyTokens);
-});
+        let tronWeb;
+        let tokenSaleContract;
+        let tokenContract;
+        const tokenSaleContractAddress = 'TNd9QQNUUENTQWCs81yan3ttzahQXHJhAC';
+        const tokenSaleContractABI = [
+            {
+                "inputs": [
+                    {
+                        "internalType": "contract ITRC20",
+                        "name": "_token",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "_tokenPrice",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "withdrawTRX",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "withdrawTokens",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "buyTokens",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "stateMutability": "payable",
+                "type": "receive"
+            }
+        ];
+
+        const tokenContractAddress = 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA';
+        const tokenContractABI = [
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "_owner",
+                        "type": "address"
+                    }
+                ],
+                "name": "balanceOf",
+                "outputs": [
+                    {
+                        "name": "balance",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "name",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "symbol",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_to",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transfer",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ];
+
+        async function connectWallet() {
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                tronWeb = window.tronWeb;
+                $('#walletAddress').text(tronWeb.defaultAddress.base58);
+                $('#walletInfo').show();
+                $('#connectWallet').text(`Connected: ${tronWeb.defaultAddress.base58}`);
+                $('#trxAmount').prop('disabled', false);
+                $('#buyTokenButton').prop('disabled', false).removeClass('disabled');
+                await updateTokenBalance();
+                await updateRemainingTokens();
+            } else {
+                alert('Please install TronLink wallet!');
+            }
+        }
+
+        async function updateTokenBalance() {
+            const walletAddress = tronWeb.defaultAddress.base58;
+            tokenContract = await tronWeb.contract(tokenContractABI, tokenContractAddress);
+            const balance = await tokenContract.balanceOf(walletAddress).call();
+            $('#tokenBalance').text(formatNumberWithCommas(tronWeb.fromSun(balance.toString())));
+        }
+
+        async function updateRemainingTokens() {
+            tokenContract = await tronWeb.contract(tokenContractABI, tokenContractAddress);
+            const remainingTokens = await tokenContract.balanceOf(tokenSaleContractAddress).call();
+            $('#remainingTokens').text(formatNumberWithCommas(tronWeb.fromSun(remainingTokens.toString())));
+        }
+
+        async function buyTokens() {
+            const trxAmount = $('#trxAmount').val();
+            if (!trxAmount || trxAmount <= 0) {
+                alert('Please enter a valid amount of TRX');
+                return;
+            }
+
+            try {
+                tokenSaleContract = await tronWeb.contract(tokenSaleContractABI, tokenSaleContractAddress);
+                const transaction = await tokenSaleContract.buyTokens().send({
+                    callValue: tronWeb.toSun(trxAmount)
+                });
+                alert('Transaction successful: ' + transaction);
+                await updateTokenBalance();
+                await updateRemainingTokens();
+            } catch (error) {
+                alert('Transaction failed: ' + error);
+            }
+        }
+
+        $(document).ready(function() {
+            $('#connectWallet').on('click', connectWallet);
+            $('#buyTokenButton').on('click', buyTokens);
+        });
+    </script>
+</body>
+</html>
