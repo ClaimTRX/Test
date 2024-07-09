@@ -9,16 +9,20 @@
     <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
             text-align: center;
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
             color: #333;
             padding: 20px;
+        }
+        #container {
+            background: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            width: 100%;
+            max-width: 600px;
         }
         .container {
             background: white; 
@@ -32,31 +36,35 @@
         h1 {
             color: #007bff;
         }
-        input[type="number"], input[type="text"] {
-            -moz-appearance: textfield;
+        #walletInfo, #actions, #marketplace {
+            margin: 20px auto;
+            text-align: left;
+            max-width: 400px;
+        }
+        input, button {
             width: calc(100% - 22px);
+            margin: 10px 0;
             padding: 10px;
             font-size: 16px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
         }
-        input[type="number"]::-webkit-outer-spin-button,
-        input[type="number"]::-webkit-inner-spin-button {
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
-        button {
-            width: calc(100% - 22px);
-            margin: 10px 0;
-            padding: 10px;
-            font-size: 16px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+        button { 
+            width: calc(100% - 22px); 
+            margin: 10px 0; 
+            padding: 10px; 
+            font-size: 16px; 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
         }
         button:hover {
             background-color: #0056b3;
