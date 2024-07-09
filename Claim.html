@@ -147,17 +147,23 @@
             <div class="dropdown">
                 <button class="dropbtn">Menu</button>
                 <div class="dropdown-content">
-                   <a href="index.html">Home</a>
-                <a href="CFTToken.html">Buy CFT</a>
-                <a href="newstaking.html">Staking</a>
-                <a href="marketplace.html">Marketplace</a>
-                <a href="claim.html">Claim</a>
-                <a href="draw.html">Draw</a>
-                <a href="TRC20.html">TRC20 Claim</a>
+                    <a href="index.html">Home</a>
+                    <a href="CFTToken.html">Buy CFT</a>
+                    <a href="newstaking.html">Staking</a>
+                    <a href="marketplace.html">Marketplace</a>
+                    <a href="claim.html">Claim</a>
+                    <a href="draw.html">Draw</a>
+                    <a href="TRC20.html">TRC20 Claim</a>
                     <a href="TRC20Draw.html">TRC20 Draw</a>
                     <a href="raffle.html">TRX Raffle</a>
                 </div>
+            </div>
         </div>
+        <select id="language-switcher">
+            <option value="en" selected>English</option>
+            <option value="es">Español</option>
+            <option value="zh">中文</option>
+        </select>
         <button id="connectWallet">Connect Wallet</button>
         <div id="whitelistSection">
             <div id="warningMessage" class="warning">
@@ -185,14 +191,29 @@
             <div id="totalClaimed">Total Claimed: 0 TRX</div>
         </div>
     </div>
-</body>
-</html>
 
-
-
-    
     <script src="https://cdn.jsdelivr.net/gh/tronprotocol/tron-web/dist/tronweb.min.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const switcher = document.getElementById('language-switcher');
+            switcher.addEventListener('change', function() {
+                const selectedLanguage = switcher.value;
+                switch (selectedLanguage) {
+                    case 'en':
+                        window.location.href = 'claim.html';
+                        break;
+                    case 'es':
+                        window.location.href = 'claim-es.html';
+                        break;
+                    case 'zh':
+                        window.location.href = 'claim-zh.html';
+                        break;
+                    default:
+                        window.location.href = 'claim.html';
+                }
+            });
+        });
+
         const contractAddress = 'TXp11vVghc8WN8MxKdw2bVDDigZxcpzJW9'; // Replace with your contract's address
         let tronWeb;
         let contract;
@@ -303,16 +324,15 @@
             }
         }
 
-       async function claimTRX() {
-    try {
-        await contract.claimTRX().send();
-        // No feedback provided
-        await updateUIStates();
-    } catch (error) {
-        console.error('Error: ' + error.message); // Use console.log for error debugging
-    }
-}
-
+        async function claimTRX() {
+            try {
+                await contract.claimTRX().send();
+                // No feedback provided
+                await updateUIStates();
+            } catch (error) {
+                console.error('Error: ' + error.message); // Use console.log for error debugging
+            }
+        }
 
         async function donateTRX() {
             const amountToDonate = tronWeb.toSun(document.getElementById('donationAmount').value);
