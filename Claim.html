@@ -105,10 +105,9 @@
             display: flex;
             justify-content: center;
             width: 100%;
-            position: relative; /* Added this line */
         }
         .dropdown-content {
-            display: none; /* Change this line */
+            display: none;
             position: absolute;
             background-color: #f9f9f9;
             min-width: 160px;
@@ -125,8 +124,11 @@
         .dropdown-content a:hover {
             background-color: #f1f1f1;
         }
-        .dropdown .dropdown-content.show { /* Added this line */
-            display: block; /* Added this line */
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropdown:hover .dropbtn {
+            background-color: #0056b3;
         }
         .dropbtn {
             background-color: #007bff;
@@ -151,8 +153,8 @@
         <h1>TRX Claimer</h1>
         <div id="buttonContainer">
             <div class="dropdown">
-                  <button class="dropbtn" id="menuButton">Menu</button> <!-- Added id="menuButton" -->
-                <div class="dropdown-content" id="dropdownContent"> <!-- Added id="dropdownContent" -->
+                <button class="dropbtn">Menu</button>
+                <div class="dropdown-content">
                     <a href="index.html">Home</a>
                     <a href="CFTToken.html">Buy CFT</a>
                     <a href="newstaking.html">Staking</a>
@@ -218,24 +220,6 @@
                         window.location.href = 'claim.html';
                 }
             });
-        });
-        const menuButton = document.getElementById('menuButton'); // JavaScript to handle menu button click
-            const dropdownContent = document.getElementById('dropdownContent'); // JavaScript to handle dropdown content
-            menuButton.addEventListener('click', function() {
-                dropdownContent.classList.toggle('show'); // Toggles the 'show' class
-            });
-
-            window.onclick = function(event) {
-                if (!event.target.matches('.dropbtn')) { // Closes the dropdown if the user clicks outside of it
-                    var dropdowns = document.getElementsByClassName("dropdown-content");
-                    for (var i = 0; i < dropdowns.length; i++) {
-                        var openDropdown = dropdowns[i];
-                        if (openDropdown.classList.contains('show')) {
-                            openDropdown.classList.remove('show');
-                        }
-                    }
-                }
-            };
         });
 
         const contractAddress = 'TXp11vVghc8WN8MxKdw2bVDDigZxcpzJW9'; // Replace with your contract's address
