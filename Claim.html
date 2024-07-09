@@ -21,7 +21,7 @@
             display: inline-block; 
             width: 100%; 
             max-width: 600px; 
-            position: relative; /* Add this line */
+             position: relative; /* Add this line */
         }
         #language-switcher {
             position: absolute; /* Add this line */
@@ -105,10 +105,9 @@
             display: flex;
             justify-content: center;
             width: 100%;
-            position: relative; /* Add this line */
         }
         .dropdown-content {
-            display: none; /* Change this line */
+            display: none;
             position: absolute;
             background-color: #f9f9f9;
             min-width: 160px;
@@ -125,8 +124,11 @@
         .dropdown-content a:hover {
             background-color: #f1f1f1;
         }
-        .dropdown .dropdown-content.show { /* Add this line */
-            display: block; /* Add this line */
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropdown:hover .dropbtn {
+            background-color: #0056b3;
         }
         .dropbtn {
             background-color: #007bff;
