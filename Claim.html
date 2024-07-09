@@ -102,9 +102,10 @@
             }
         }
         .dropdown {
-            display: flex;
+            display: none; /* Change this line */
             justify-content: center;
             width: 100%;
+            position: relative; /* Add this line */
         }
         .dropdown-content {
             display: none;
@@ -124,12 +125,8 @@
         .dropdown-content a:hover {
             background-color: #f1f1f1;
         }
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-        .dropdown:hover .dropbtn {
-            background-color: #0056b3;
-        }
+       .dropdown .dropdown-content.show { /* Add this line */
+            display: block; /* Add this line */
         .dropbtn {
             background-color: #007bff;
             color: white;
