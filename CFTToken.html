@@ -103,9 +103,6 @@
         .dropdown:hover .dropdown-content {
             display: block;
         }
-        .dropdown:hover .dropbtn {
-            background-color: #0056b3;
-        }
         .dropbtn {
             background-color: #007bff;
             color: white;
@@ -132,17 +129,22 @@
                 <button class="dropbtn">Menu</button>
                 <div class="dropdown-content">
                     <a href="index.html">Home</a>
-                <a href="CFTToken.html">Buy CFT</a>
-                <a href="newstaking.html">Staking</a>
-                <a href="marketplace.html">Marketplace</a>
-                <a href="claim.html">Claim</a>
-                <a href="draw.html">Draw</a>
-                <a href="TRC20.html">TRC20 Claim</a>
+                    <a href="CFTToken.html">Buy CFT</a>
+                    <a href="newstaking.html">Staking</a>
+                    <a href="marketplace.html">Marketplace</a>
+                    <a href="claim.html">Claim</a>
+                    <a href="draw.html">Draw</a>
+                    <a href="TRC20.html">TRC20 Claim</a>
                     <a href="TRC20Draw.html">TRC20 Draw</a>
                     <a href="raffle.html">TRX Raffle</a>
-                </div>    
+                </div>
             </div>
         </div>
+        <select id="language-switcher">
+            <option value="en" selected>English</option>
+            <option value="es">Español</option>
+            <option value="zh">中文</option>
+        </select>
         <button id="connectWallet">Connect Wallet</button>
         <div id="walletInfo" style="display:none;">
             <p>Connected Wallet: <span id="walletAddress"></span></p>
@@ -157,6 +159,26 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const switcher = document.getElementById('language-switcher');
+            switcher.addEventListener('change', function() {
+                const selectedLanguage = switcher.value;
+                switch (selectedLanguage) {
+                    case 'en':
+                        window.location.href = 'CFTToken.html';
+                        break;
+                    case 'es':
+                        window.location.href = 'CFTToken-es.html';
+                        break;
+                    case 'zh':
+                        window.location.href = 'CFTToken-zh.html';
+                        break;
+                    default:
+                        window.location.href = 'CFTToken.html';
+                }
+            });
+        });
+
         let tronWeb;
         let tokenSaleContract;
         let tokenContract;
@@ -292,18 +314,17 @@
         ]; // Replace with your TRC20 token contract ABI
 
         async function connectWallet() {
-    if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-        tronWeb = window.tronWeb;
-        $('#walletAddress').text(tronWeb.defaultAddress.base58);
-        $('#walletInfo').show();
-        $('#actions').show();
-        $('#connectWallet').text('Wallet Connected');
-        await updateTokenBalance();
-    } else {
-        alert('Please install TronLink wallet!');
-    }
-}
-
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                tronWeb = window.tronWeb;
+                $('#walletAddress').text(tronWeb.defaultAddress.base58);
+                $('#walletInfo').show();
+                $('#actions').show();
+                $('#connectWallet').text('Wallet Connected');
+                await updateTokenBalance();
+            } else {
+                alert('Please install TronLink wallet!');
+            }
+        }
 
         async function updateTokenBalance() {
             const walletAddress = tronWeb.defaultAddress.base58;
