@@ -4,30 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRC20 Staking DApp</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/ClaimTRX/Test/main/favicon-32x32.png" type="image/png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tronscan/tronweb@4.0.0/dist/TronWeb.js"></script>
     <style>
-        body { 
-    text-align: center; 
-    font-family: Arial, sans-serif; 
-    background-color: #f5f5f5; 
-    color: #333; 
-    padding: 20px; 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-}
-#container {
-    background: white; 
-    border-radius: 5px; 
-    padding: 20px; 
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
-    max-width: 600px; 
-    margin: auto;
-}
-
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            padding: 20px;
+        }
+        #container {
+            background: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            width: 100%;
+            max-width: 600px;
+        }
         h1 {
             color: #007bff;
         }
@@ -137,12 +133,15 @@
             <div class="dropdown">
                 <button class="dropbtn">Menu</button>
                 <div class="dropdown-content">
-                    <a href="index.html">Home</a>
-                    <a href="CFTToken.html">Buy CFT</a>
-                    <a href="Marketplace.html">Marketplace</a>
-                     <a href="claim.html">Claim</a>
-                    <a href="Draw.html">Draw</a>
-                    <a href="TRC20.html">TRC20</a>
+                   <a href="index.html">Home</a>
+                <a href="CFTToken.html">Buy CFT</a>
+                <a href="newstaking.html">Staking</a>
+                <a href="marketplace.html">Marketplace</a>
+                <a href="claim.html">Claim</a>
+                <a href="draw.html">Draw</a>
+                <a href="TRC20.html">TRC20 Claim</a>
+                    <a href="TRC20Draw.html">TRC20 Draw</a>
+                    <a href="raffle.html">TRX Raffle</a>
                 </div>
             </div>
             <button id="connectWallet">Connect Wallet</button>
@@ -158,8 +157,8 @@
             <input type="number" id="stakeAmount" placeholder="Amount to Stake">
             <button id="approveButton">Approve</button>
             <button id="stakeButton" disabled>Stake</button>
-            <input type="number" id="withdrawAmount" placeholder="Amount to Withdraw">
-            <button id="withdrawButton">Withdraw</button>
+            <input type="number" id="withdrawAmount" placeholder="Amount to Unstake">
+            <button id="withdrawButton">Unstake</button>
             <button id="claimRewardsButton">Claim Rewards</button>
         </div>
     </div>
@@ -775,7 +774,7 @@
         let stakingContract;
         let tokenContract;
 
-       async function connectWallet() {
+        async function connectWallet() {
         if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
             tronWeb = window.tronWeb;
             $('#walletAddress').text(tronWeb.defaultAddress.base58);
@@ -807,7 +806,7 @@
         const currentAPRValue = (currentAPR / 1e4);
 
         // Update the UI with the fetched values
-         $('#totalStaked').text(totalStakedValue.toFixed(2) + " CFT");
+        $('#totalStaked').text(totalStakedValue.toFixed(2) + " CFT");
         $('#userStakedBalance').text(userStakedBalanceValue.toFixed(2) + " CFT");
         $('#userRewards').text(userRewardsValue.toFixed(2) + " TRX");
         $('#currentAPR').text(currentAPRValue.toFixed(2));
