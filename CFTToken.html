@@ -371,12 +371,14 @@
             const walletAddress = tronWeb.defaultAddress.base58;
             tokenContract = await tronWeb.contract(tokenContractABI, tokenContractAddress);
             const balance = await tokenContract.balanceOf(walletAddress).call();
+            const adjustedBalance = balance / (10 ** 6); // Adjust for 6 decimals
             $('#tokenBalance').text(formatNumberWithCommas(tronWeb.fromSun(balance.toString())));
     }
 
         async function updateRemainingTokens() {
             tokenContract = await tronWeb.contract(tokenContractABI, tokenContractAddress);
             const remainingTokens = await tokenContract.balanceOf(tokenSaleContractAddress).call();
+            const adjustedRemainingTokens = remainingTokens / (10 ** 6); // Adjust for 6 decimals
             $('#remainingTokens').text(formatNumberWithCommas(tronWeb.fromSun(remainingTokens.toString())));
     }
 
