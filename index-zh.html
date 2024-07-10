@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>平台功能</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/ClaimTRX/Test/main/favicon-32x32.png" type="image/png">
+    <style>
+        body { 
+            text-align: center; 
+            font-family: Arial, sans-serif; 
+            background-color: #f5f5f5; 
+            color: #333; 
+            padding: 20px; 
+        }
+        #container {
+            background: white; 
+            border-radius: 5px; 
+            padding: 20px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+            display: inline-block; 
+            width: 100%; 
+            max-width: 600px; 
+            position: relative; 
+        }
+        .container {
+            background: white; 
+            border-radius: 5px; 
+            padding: 20px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+            width: 100%; 
+            max-width: 600px; 
+            margin: 0 auto; 
+        }
+        #language-switcher {
+            position: absolute; 
+            top: 20px; 
+            right: 20px; 
+            padding: 5px;
+            font-size: 14px;
+        }
+        h1, h2 { 
+            color: #007bff; 
+        }
+        p {
+            font-size: 16px; 
+            margin: 20px auto; 
+            max-width: 600px; 
+            line-height: 1.6; 
+        }
+        a { 
+            color: #007bff; 
+            text-decoration: none; 
+        }
+        a:hover, a:focus { 
+            text-decoration: underline; 
+        }
+        button, input[type="text"], input[type="number"] { 
+            width: calc(100% - 22px); 
+            margin: 10px 0; 
+            padding: 10px; 
+            font-size: 16px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input[type="text"], input[type="number"] {
+            background-color: white; 
+            color: black; 
+            border: 1px solid #ccc;
+        }
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        .disabled { 
+            background-color: #ccc; 
+            color: #666; 
+            cursor: not-allowed; 
+        }
+        .feature-section {
+            margin-top: 20px; 
+        }
+        .dropdown {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        .dropbtn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 200px; 
+        }
+        .dropbtn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>欢迎来到我们的平台</h1>
+        <div class="dropdown">
+            <button class="dropbtn">菜单</button>
+            <div class="dropdown-content">
+                <a href="index-zh.html">首页</a>
+                <a href="CFTToken.html">购买CFT</a>
+                <a href="newstaking.html">质押</a>
+                <a href="marketplace.html">市场</a>
+                <a href="claim.html">认领</a>
+                <a href="draw.html">抽奖</a>
+                <a href="TRC20.html">TRC20认领</a>
+                <a href="TRC20Draw.html">TRC20抽奖</a>
+                <a href="raffle.html">TRX抽奖</a>
+            </div>
+        </div>
+        <select id="language-switcher">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="zh" selected>中文</option>
+        </select>
+        <p>探索使我们的生态系统充满活力和回报的功能：</p>
+        
+        <div class="feature-section">
+            <h2>CFT 代币</h2>
+            <p>我们的生态系统代币CFT可以1:1与TRX购买，并质押以获得TRX奖励。虽然CFT没有在任何交易所上市，但每个持有者都可以在我们的市场网站上按自己想要的价格列出。此代币有助于构建我们的生态系统并增加奖励。请注意，所有的能源费用由用户承担。</p>
+        </div>
+        
+        <div class="feature-section">
+            <h2>质押</h2>
+            <p>在这里质押您的CFT代币并随时认领TRX奖励。我们旨在为用户提供Tron上最好的年收益率。请注意，所有的能源费用由用户承担。</p>
+        </div>
+        
+        <div class="feature-section">
+            <h2>市场</h2>
+            <p>在我们的市场上按自己想要的价格列出您的CFT代币。所有想要购买CFT代币的用户在我们的网站购买之前，建议先查看市场上是否有任何列出的代币。请注意，所有的能源费用由用户承担。</p>
+        </div>
+        
+        <div class="feature-section">
+            <h2>认领</h2>
+            <p>每天多次，10 TRX会随机提供给用户认领。你能否比别人更快认领到它呢？</p>
+        </div>
+        
+        <div class="feature-section">
+            <h2>抽奖</h2>
+            <p>每12小时参加我们的抽奖，有机会赢取一些TRX。这是一种令人兴奋的方式来参与并可能获得更多的奖励！</p>
+        </div>
+        
+        <div class="feature-section">
+            <h2>TRC20</h2>
+            <p>每72小时认领一次TRC20代币。请注意，所有的能源费用由用户承担。</p>
+        </div>
+
+        <div class="feature-section">
+            <h2>TRC20抽奖（测试版）</h2>
+            <p>每24小时注册参加TRC20抽奖。每周有新代币。能源成本由智能合约覆盖。此功能没有白名单功能，但您需要在钱包中持有100个CFT代币才能参与。</p>
+        </div>
+
+        <div class="feature-section">
+            <h2>TRX 抽奖</h2>
+            <p>通过购买彩票参与我们的TRX抽奖。每张彩票增加您赢得奖池份额的机会。一旦售出最低数量的彩票，抽奖将自动进行。请注意，所有的能源费用由ClaimFreeTRX承担，因此您只需担心带宽费用。</p>
+        </div>
+
+        <div class="feature-section">
+            <h2>加入我们的社区</h2>
+            <button onclick="window.open('https://t.me/claimfreetrxnow', '_blank')">加入Telegram群组</button>
+            <button onclick="window.open('https://x.com/cfttrc20?s=21', '_blank')">关注我们的Twitter</button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const switcher = document.getElementById('language-switcher');
+        switcher.addEventListener('change', function() {
+            const selectedLanguage = switcher.value;
+            switch (selectedLanguage) {
+                case 'en':
+                    window.location.href = 'index.html';
+                    break;
+                case 'es':
+                    window.location.href = 'index-es.html';
+                    break;
+                case 'zh':
+                    window.location.href = 'index-zh.html';
+                    break;
+                default:
+                    window.location.href = 'index-zh.html';
+            }
+        });
+
+        const dropbtn = document.querySelector('.dropbtn');
+        const dropdownContent = document.querySelector('.dropdown-content');
+
+        dropbtn.addEventListener('click', function() {
+            dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (!event.target.matches('.dropbtn')) {
+                if (dropdownContent.style.display === 'block') {
+                    dropdownContent.style.display = 'none';
+                }
+            }
+        });
+    });
+    </script>
+</body>
+</html>
