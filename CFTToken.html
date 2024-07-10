@@ -129,7 +129,6 @@
         .dropdown-content a:hover {
             background-color: #f1f1f1;
         }
-        
         .dropbtn {
             background-color: #007bff;
             color: white;
@@ -167,42 +166,36 @@
                 </div>
             </div>
         </div>
-        
+        <select id="language-switcher">
+            <option value="en" selected>English</option>
+            <option value="es">Español</option>
+            <option value="zh">中文</option>
         </select>
         <button id="connectWallet">Connect Wallet</button>
-        <div id="walletInfo" style="display:none;">
-            
-        </div>
+        <div id="walletInfo" style="display:none;"></div>
         <div id="actions">
             <br>
-           
             <p>CFT tokens are bought with TRX</p>
             <p>Each million token sold will increase the</p>
-            <p>price with 0.1 TRX until all tokens are sold</p>  <br> 
-                <p>Current price per CFT token is 1 TRX</p>
-                <br>
+            <p>price with 0.1 TRX until all tokens are sold</p>
+            <br> 
+            <p>Current price per CFT token is 1 TRX</p>
+            <br>
             <h2>Buy Tokens</h2>
             <input type="number" id="trxAmount" placeholder="Amount of TRX" min="1" required disabled>
             <button id="buyTokenButton" class="disabled" disabled>Buy Tokens</button>
-                <p>Your Token Balance: <span id="tokenBalance"></span></p>
+            <p>Your Token Balance: <span id="tokenBalance"></span></p>
             <p>Remaining CFT tokens for sale: <span id="remainingTokens"></span></p>
-                
         </div>
     </div>
-
     <script>
-       
-
-       function formatNumberWithCommas(number) {
-        // Check if the number is a whole number (i.e., ends in ".00")
-        const numberParts = number.split(".");
-        if (numberParts[1] === "00") {
-            number = numberParts[0];
+        function formatNumberWithCommas(number) {
+            const numberParts = number.split(".");
+            if (numberParts[1] === "00") {
+                number = numberParts[0];
+            }
+            return number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
-        return number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
-        
-
         let tronWeb;
         let tokenSaleContract;
         let tokenContract;
@@ -262,7 +255,6 @@
                 "type": "receive"
             }
         ];
-
         const tokenContractAddress = 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA';
         const tokenContractABI = [
             {
@@ -336,7 +328,6 @@
                 "type": "function"
             }
         ];
-
         async function connectWallet() {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 tronWeb = window.tronWeb;
@@ -351,29 +342,25 @@
                 alert('Please install TronLink wallet!');
             }
         }
-
         async function updateTokenBalance() {
             const walletAddress = tronWeb.defaultAddress.base58;
             tokenContract = await tronWeb.contract(tokenContractABI, tokenContractAddress);
             const balance = await tokenContract.balanceOf(walletAddress).call();
-            const adjustedBalance = (balance / (10 ** 6)).toFixed(0); // Adjust for 6 decimals and remove decimals
-        $('#tokenBalance').text(formatNumberWithCommas(adjustedBalance.toString()));
-    }
-
+            const adjustedBalance = (balance / (10 ** 6)).toFixed(0);
+            $('#tokenBalance').text(formatNumberWithCommas(adjustedBalance.toString()));
+        }
         async function updateRemainingTokens() {
             tokenContract = await tronWeb.contract(tokenContractABI, tokenContractAddress);
             const remainingTokens = await tokenContract.balanceOf(tokenSaleContractAddress).call();
-            const adjustedRemainingTokens = (remainingTokens / (10 ** 6)).toFixed(0); // Adjust for 6 decimals and remove decimals
-        $('#remainingTokens').text(formatNumberWithCommas(adjustedRemainingTokens.toString()));
-    }
-
+            const adjustedRemainingTokens = (remainingTokens / (10 ** 6)).toFixed(0);
+            $('#remainingTokens').text(formatNumberWithCommas(adjustedRemainingTokens.toString()));
+        }
         async function buyTokens() {
             const trxAmount = $('#trxAmount').val();
             if (!trxAmount || trxAmount <= 0) {
                 alert('Please enter a valid amount of TRX');
                 return;
             }
-
             try {
                 tokenSaleContract = await tronWeb.contract(tokenSaleContractABI, tokenSaleContractAddress);
                 const transaction = await tokenSaleContract.buyTokens().send({
@@ -386,14 +373,11 @@
                 alert('Transaction failed: ' + error);
             }
         }
-        // New JavaScript for dropdown toggle
         const dropbtn = document.querySelector('.dropbtn');
         const dropdownContent = document.querySelector('.dropdown-content');
-
         dropbtn.addEventListener('click', function() {
             dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
         });
-
         window.addEventListener('click', function(event) {
             if (!event.target.matches('.dropbtn')) {
                 if (dropdownContent.style.display === 'block') {
@@ -401,7 +385,6 @@
                 }
             }
         });
-
         $(document).ready(function() {
             $('#connectWallet').on('click', connectWallet);
             $('#buyTokenButton').on('click', buyTokens);
