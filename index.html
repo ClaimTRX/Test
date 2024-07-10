@@ -207,24 +207,41 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const switcher = document.getElementById('language-switcher');
-            switcher.addEventListener('change', function() {
-                const selectedLanguage = switcher.value;
-                switch (selectedLanguage) {
-                    case 'en':
-                        window.location.href = 'index.html';
-                        break;
-                    case 'es':
-                        window.location.href = 'index-es.html';
-                        break;
-                    case 'zh':
-                        window.location.href = 'index-zh.html';
-                        break;
-                    default:
-                        window.location.href = 'index.html';
-                }
-            });
+        const switcher = document.getElementById('language-switcher');
+        switcher.addEventListener('change', function() {
+            const selectedLanguage = switcher.value;
+            switch (selectedLanguage) {
+                case 'en':
+                    window.location.href = 'index.html';
+                    break;
+                case 'es':
+                    window.location.href = 'index-es.html';
+                    break;
+                case 'zh':
+                    window.location.href = 'index-zh.html';
+                    break;
+                default:
+                    window.location.href = 'index.html';
+            }
         });
+
+        // New JavaScript for dropdown toggle
+        const dropbtn = document.querySelector('.dropbtn');
+        const dropdownContent = document.querySelector('.dropdown-content');
+
+        dropbtn.addEventListener('click', function() {
+            dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (!event.target.matches('.dropbtn')) {
+                if (dropdownContent.style.display === 'block') {
+                    dropdownContent.style.display = 'none';
+                }
+            }
+        });
+        // End of new JavaScript
+    });
     </script>
 
 </body>
