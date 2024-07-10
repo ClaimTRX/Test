@@ -94,6 +94,7 @@
             display: flex;
             justify-content: center;
             width: 100%;
+             position: relative; /* Add this line */
         }
         .dropdown-content {
             display: none;
@@ -107,14 +108,14 @@
             color: black;
             padding: 12px 16px;
             text-decoration: none;
-            display: block;
+            
             text-align: center;
         }
         .dropdown-content a:hover {
             background-color: #f1f1f1;
         }
         .dropdown:hover .dropdown-content {
-            display: block;
+            
         }
          .dropbtn {
             background-color: #007bff;
@@ -224,6 +225,20 @@
                         window.location.href = 'index.html';
                 }
             });
+            const dropbtn = document.querySelector('.dropbtn');
+        const dropdownContent = document.querySelector('.dropdown-content');
+
+        dropbtn.addEventListener('click', function() {
+            dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (!event.target.matches('.dropbtn')) {
+                if (dropdownContent.style.display === 'block') {
+                    dropdownContent.style.display = 'none';
+                }
+            }
+        });
         });
     </script>
 
