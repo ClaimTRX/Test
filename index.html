@@ -103,6 +103,8 @@
             min-width: 160px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             z-index: 1;
+            left: 50%; /* Add this line */
+            transform: translateX(-50%); /* Add this line */
         }
         .dropdown-content a {
             color: black;
@@ -225,20 +227,20 @@
                         window.location.href = 'index.html';
                 }
             });
-            const dropbtn = document.querySelector('.dropbtn');
-        const dropdownContent = document.querySelector('.dropdown-content');
+             const dropbtn = document.querySelector('.dropbtn');
+            const dropdownContent = document.querySelector('.dropdown-content');
 
-        dropbtn.addEventListener('click', function() {
-            dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
-        });
+            dropbtn.addEventListener('click', function() {
+                dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+            });
 
-        window.addEventListener('click', function(event) {
-            if (!event.target.matches('.dropbtn')) {
-                if (dropdownContent.style.display === 'block') {
-                    dropdownContent.style.display = 'none';
+            window.addEventListener('click', function(event) {
+                if (!event.target.matches('.dropbtn')) {
+                    if (dropdownContent.style.display === 'block') {
+                        dropdownContent.style.display = 'none';
+                    }
                 }
-            }
-        });
+            });
         });
     </script>
 
