@@ -204,22 +204,7 @@
         }
         return number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
-        document.addEventListener('DOMContentLoaded', function() {
-            const switcher = document.getElementById('language-switcher');
-            switcher.addEventListener('change', function() {
-                const selectedLanguage = switcher.value;
-                switch (selectedLanguage) {
-                    case 'en':
-                        window.location.href = 'CFTToken.html';
-                        break;
-                    case 'zh':
-                        window.location.href = 'CFTToken-zh.html';
-                        break;
-                    default:
-                        window.location.href = 'CFTToken.html';
-                }
-            });
-        });
+        
 
         let tronWeb;
         let tokenSaleContract;
