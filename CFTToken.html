@@ -129,9 +129,7 @@
         .dropdown-content a:hover {
             background-color: #f1f1f1;
         }
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
+        
         .dropbtn {
             background-color: #007bff;
             color: white;
@@ -389,6 +387,21 @@
                 alert('Transaction failed: ' + error);
             }
         }
+        // New JavaScript for dropdown toggle
+        const dropbtn = document.querySelector('.dropbtn');
+        const dropdownContent = document.querySelector('.dropdown-content');
+
+        dropbtn.addEventListener('click', function() {
+            dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (!event.target.matches('.dropbtn')) {
+                if (dropdownContent.style.display === 'block') {
+                    dropdownContent.style.display = 'none';
+                }
+            }
+        });
 
         $(document).ready(function() {
             $('#connectWallet').on('click', connectWallet);
