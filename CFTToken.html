@@ -188,6 +188,24 @@
         </div>
     </div>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const switcher = document.getElementById('language-switcher');
+            switcher.addEventListener('change', function() {
+                const selectedLanguage = switcher.value;
+                switch (selectedLanguage) {
+                    case 'en':
+                        window.location.href = 'CFTToken.html';
+                        break;
+                    case 'es':
+                        window.location.href = 'index_es.html';
+                        break;
+                    case 'zh':
+                        window.location.href = 'CFTToken-zh.html';
+                        break;
+                    default:
+                        window.location.href = 'CFTToken.html';
+                }
+            });
         function formatNumberWithCommas(number) {
             const numberParts = number.split(".");
             if (numberParts[1] === "00") {
