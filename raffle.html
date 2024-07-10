@@ -326,6 +326,21 @@
                 console.error('Error connecting wallet:', error);
             }
         }
+        // New JavaScript for dropdown toggle
+        const dropbtn = document.querySelector('.dropbtn');
+        const dropdownContent = document.querySelector('.dropdown-content');
+
+        dropbtn.addEventListener('click', function() {
+            dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (!event.target.matches('.dropbtn')) {
+                if (dropdownContent.style.display === 'block') {
+                    dropdownContent.style.display = 'none';
+                }
+            }
+        });
 
         async function updateUI() {
             try {
@@ -409,21 +424,6 @@
                 console.error('Error drawing winner:', error);
             }
         }
-        // New JavaScript for dropdown toggle
-        const dropbtn = document.querySelector('.dropbtn');
-        const dropdownContent = document.querySelector('.dropdown-content');
-
-        dropbtn.addEventListener('click', function() {
-            dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
-        });
-
-        window.addEventListener('click', function(event) {
-            if (!event.target.matches('.dropbtn')) {
-                if (dropdownContent.style.display === 'block') {
-                    dropdownContent.style.display = 'none';
-                }
-            }
-        });
 
         window.addEventListener('load', () => {
             document.getElementById('connectWallet').addEventListener('click', connectWallet);
