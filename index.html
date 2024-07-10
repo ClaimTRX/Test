@@ -91,21 +91,22 @@
             margin-top: 20px; 
         }
         .dropdown {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-             position: relative; /* Add this line */
-        }
+            .dropdown {
+    display: inline-block;
+    position: relative; /* Add this line */
+}
+
         .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-            left: 50%; /* Add this line */
-            transform: translateX(-50%); /* Add this line */
-        }
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    left: 50%; /* Add this line */
+    transform: translateX(-50%); /* Add this line */
+}
+
         .dropdown-content a {
             color: black;
             padding: 12px 16px;
@@ -210,38 +211,42 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const switcher = document.getElementById('language-switcher');
-            switcher.addEventListener('change', function() {
-                const selectedLanguage = switcher.value;
-                switch (selectedLanguage) {
-                    case 'en':
-                        window.location.href = 'index.html';
-                        break;
-                    case 'es':
-                        window.location.href = 'index-es.html';
-                        break;
-                    case 'zh':
-                        window.location.href = 'index-zh.html';
-                        break;
-                    default:
-                        window.location.href = 'index.html';
-                }
-            });
-             const dropbtn = document.querySelector('.dropbtn');
-            const dropdownContent = document.querySelector('.dropdown-content');
+    const switcher = document.getElementById('language-switcher');
+    switcher.addEventListener('change', function() {
+        const selectedLanguage = switcher.value;
+        switch (selectedLanguage) {
+            case 'en':
+                window.location.href = 'index.html';
+                break;
+            case 'es':
+                window.location.href = 'index-es.html';
+                break;
+            case 'zh':
+                window.location.href = 'index-zh.html';
+                break;
+            default:
+                window.location.href = 'index.html';
+        }
+    });
 
-            dropbtn.addEventListener('click', function() {
-                dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
-            });
+    // New JavaScript for dropdown toggle
+    const dropbtn = document.querySelector('.dropbtn');
+    const dropdownContent = document.querySelector('.dropdown-content');
 
-            window.addEventListener('click', function(event) {
-                if (!event.target.matches('.dropbtn')) {
-                    if (dropdownContent.style.display === 'block') {
-                        dropdownContent.style.display = 'none';
-                    }
-                }
-            });
-        });
+    dropbtn.addEventListener('click', function() {
+        dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+    });
+
+    window.addEventListener('click', function(event) {
+        if (!event.target.matches('.dropbtn')) {
+            if (dropdownContent.style.display === 'block') {
+                dropdownContent.style.display = 'none';
+            }
+        }
+    });
+    // End of new JavaScript
+});
+
     </script>
 
 </body>
