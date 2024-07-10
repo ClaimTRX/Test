@@ -195,9 +195,13 @@
 
     <script>
        function formatNumberWithCommas(number) {
+        // Check if the number is a whole number (i.e., ends in ".00")
+        const numberParts = number.split(".");
+        if (numberParts[1] === "00") {
+            number = numberParts[0];
+        }
         return number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
-
         document.addEventListener('DOMContentLoaded', function() {
             const switcher = document.getElementById('language-switcher');
             switcher.addEventListener('change', function() {
@@ -371,15 +375,15 @@
             const walletAddress = tronWeb.defaultAddress.base58;
             tokenContract = await tronWeb.contract(tokenContractABI, tokenContractAddress);
             const balance = await tokenContract.balanceOf(walletAddress).call();
-            const adjustedBalance = balance / (10 ** 6); // Adjust for 6 decimals
-            $('#tokenBalance').text(formatNumberWithCommas(tronWeb.fromSun(balance.toString())));
+            const adjustedBalance = (balance / (10 ** 6)).toFixed(0); // Adjust for 6 decimals and remove decimals
+        $('#tokenBalance').text(formatNumberWithCommas(adjustedBalance.toString()));
     }
 
         async function updateRemainingTokens() {
             tokenContract = await tronWeb.contract(tokenContractABI, tokenContractAddress);
             const remainingTokens = await tokenContract.balanceOf(tokenSaleContractAddress).call();
-            const adjustedRemainingTokens = remainingTokens / (10 ** 6); // Adjust for 6 decimals
-            $('#remainingTokens').text(formatNumberWithCommas(tronWeb.fromSun(remainingTokens.toString())));
+            const adjustedRemainingTokens = (remainingTokens / (10 ** 6)).toFixed(0); // Adjust for 6 decimals and remove decimals
+        $('#remainingTokens').text(formatNumberWithCommas(adjustedRemainingTokens.toString()));
     }
 
         async function buyTokens() {
