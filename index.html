@@ -209,7 +209,19 @@
             // Initialize Web3
             const web3 = new Web3('https://api.trongrid.io'); // TronGrid API URL
             const contractAddress = 'TVSMKqBk12161JDAQBh9pkdxMAgCtuGrdA'; // Replace with your contract address
-            const abi = [ /* ABI array here */ ]; // Replace with your contract's ABI
+            const abi = [ {
+                "inputs": [],
+                "name": "viewAPR",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }, ]; // Replace with your contract's ABI
 
             const contract = new web3.eth.Contract(abi, contractAddress);
 
