@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRC20 质押 DApp</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/ClaimTRX/Test/main/favicon-32x32.png" type="image/png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tronscan/tronweb@4.0.0/dist/TronWeb.js"></script>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            padding: 20px;
+        }
+        #container {
+            background: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            width: 100%;
+            max-width: 600px;
+        }
+         .container {
+            background: white; 
+            border-radius: 5px; 
+            padding: 20px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+            width: 100%; 
+            max-width: 600px; 
+            margin: 0 auto; 
+        }
+        #language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px;
+            font-size: 14px;
+        }
+        h1 {
+            color: #007bff;
+        }
+        #walletInfo, #actions {
+            margin: 20px auto;
+            text-align: left;
+            max-width: 400px;
+        }
+        input, button {
+            width: calc(100% - 22px);
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #buttonContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        #connectWallet {
+            display: block;
+            margin: 10px 0;
+            width: auto;
+        }
+        .link {
+            display: block;
+            margin: 10px 0;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .link:hover, .link:focus {
+            text-decoration: underline;
+        }
+        .dropdown {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        .dropdown:hover .dropbtn {
+            background-color: #0056b3;
+        }
+        .dropbtn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 200px;
+        }
+        .dropbtn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>质押您的 CFT 代币</h1>
+        <div id="buttonContainer">
+            <div class="dropdown">
+                <button class="dropbtn">菜单</button>
+                <div class="dropdown-content">
+                    <a href="index-zh.html">首页</a>
+                    <a href="CFTToken-zh.html">购买CFT</a>
+                    <a href="newstaking-zh.html">质押</a>
+                    <a href="marketplace-zh.html">市场</a>
+                    <a href="claim-zh.html">认领</a>
+                    <a href="draw-zh.html">抽奖</a>
+                    <a href="TRC20-zh.html">TRC20认领</a>
+                    <a href="TRC20Draw-zh.html">TRC20抽奖</a>
+                    <a href="raffle-zh.html">TRX抽奖</a>
+                </div>
+            </div>
+            <select id="language-switcher">
+                <option value="en">English</option>
+                <option value="zh" selected>中文</option>
+            </select>
+            <button id="connectWallet">连接钱包</button>
+        </div>
+        <div id="walletInfo" style="display:none;">
+            <p>连接的钱包：<span id="walletAddress"></span></p>
+            <p>总质押量：<span id="totalStaked"></span></p>
+            <p>您的质押余额：<span id="userStakedBalance"></span></p>
+            <p>您的累计奖励：<span id="userRewards"></span></p>
+            <p>当前年利率：<span id="currentAPR"></span>%</p>
+        </div>
+        <div id="actions" style="display:none;">
+            <input type="number" id="stakeAmount" placeholder="质押数量">
+            <button id="approveButton">批准</button>
+            <button id="stakeButton" disabled>质押</button>
+            <input type="number" id="withdrawAmount" placeholder="取消质押数量">
+            <button id="withdrawButton">取消质押</button>
+            <button id="claimRewardsButton">领取奖励</button>
+        </div>
+    </div>
+    <script>
+        const stakingContractAddress = 'TVSMKqBk12161JDAQBh9pkdxMAgCtuGrdA';
+        const stakingContractAbi = [
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_stakingToken",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "RewardClaimed",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Staked",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Withdrawn",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "OwnerWithdrawn",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "stake",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "withdraw",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "claimReward",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "ownerWithdraw",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "viewAPR",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "viewTotalStaked",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "account",
+                        "type": "address"
+                    }
+                ],
+                "name": "viewStakedAmount",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "account",
+                        "type": "address"
+                    }
+                ],
+                "name": "viewPendingReward",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_dailyReward",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setDailyReward",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "stateMutability": "payable",
+                "type": "receive"
+            }
+        ];
+
+        const tokenContractAddress = 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA';
+        const tokenContractAbi = [
+    {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "inputs": [],
+        "name": "name",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "symbol",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [
+            {
+                "internalType": "uint8",
+                "name": "",
+                "type": "uint8"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "totalSupply",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "taxAddress",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "taxRate",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "whitelist",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "balanceOf",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "allowance",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_to",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_value",
+                "type": "uint256"
+            }
+        ],
+        "name": "transfer",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "success",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_spender",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_value",
+                "type": "uint256"
+            }
+        ],
+        "name": "approve",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "success",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_from",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_to",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_value",
+                "type": "uint256"
+            }
+        ],
+        "name": "transferFrom",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "success",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_taxRate",
+                "type": "uint256"
+            }
+        ],
+        "name": "setTaxRate",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_taxAddress",
+                "type": "address"
+            }
+        ],
+        "name": "setTaxAddress",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_account",
+                "type": "address"
+            },
+            {
+                "internalType": "bool",
+                "name": "_isWhitelisted",
+                "type": "bool"
+            }
+        ],
+        "name": "updateWhitelist",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "value",
+                "type": "uint256"
+            }
+        ],
+        "name": "Transfer",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "spender",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "value",
+                "type": "uint256"
+            }
+        ],
+        "name": "Approval",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "oldRate",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "newRate",
+                "type": "uint256"
+            }
+        ],
+        "name": "TaxRateChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "oldAddress",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "newAddress",
+                "type": "address"
+            }
+        ],
+        "name": "TaxAddressChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "isWhitelisted",
+                "type": "bool"
+            }
+        ],
+        "name": "WhitelistUpdated",
+        "type": "event"
+    }
+];
+
+        let tronWeb;
+        let stakingContract;
+        let tokenContract;
+
+        async function connectWallet() {
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                tronWeb = window.tronWeb;
+                $('#walletAddress').text(tronWeb.defaultAddress.base58);
+                stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
+                tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
+                $('#walletInfo, #actions').show();
+                $('#connectWallet').text('已连接');
+                await updateStakingInfo();
+            } else {
+                alert('请安装 TronLink 并登录。');
+            }
+        }
+
+        async function updateStakingInfo() {
+            try {
+                const totalStaked = await stakingContract.methods.viewTotalStaked().call();
+                const userStakedBalance = await stakingContract.methods.viewStakedAmount(tronWeb.defaultAddress.base58).call();
+                const userRewards = await stakingContract.methods.viewPendingReward(tronWeb.defaultAddress.base58).call();
+                const currentAPR = await stakingContract.methods.viewAPR().call();
+
+                console.log('Total Staked:', totalStaked.toString());
+                console.log('User Staked Balance:', userStakedBalance.toString());
+                console.log('User Rewards:', userRewards.toString());
+                console.log('Current APR:', currentAPR.toString());
+
+                const totalStakedValue = totalStaked / 1e6;
+                const userStakedBalanceValue = userStakedBalance / 1e6;
+                const userRewardsValue = userRewards / 1e6;
+                const currentAPRValue = (currentAPR / 1e4);
+
+                $('#totalStaked').text(totalStakedValue.toFixed(2) + " CFT");
+                $('#userStakedBalance').text(userStakedBalanceValue.toFixed(2) + " CFT");
+                $('#userRewards').text(userRewardsValue.toFixed(2) + " TRX");
+                $('#currentAPR').text(currentAPRValue.toFixed(2));
+            } catch (error) {
+                console.error('更新质押信息时出错:', error);
+            }
+        }
+
+        async function approveTokens() {
+            const amount = $('#stakeAmount').val();
+            if (amount <= 0) return alert('请输入有效的批准金额。');
+
+            try {
+                await tokenContract.methods.approve(stakingContractAddress, tronWeb.toSun(amount)).send();
+                $('#stakeButton').prop('disabled', false);
+                alert('代币批准成功。您现在可以质押了。');
+            } catch (error) {
+                console.error('批准代币时出错:', error);
+            }
+        }
+
+        async function stakeTokens() {
+            const amount = $('#stakeAmount').val();
+            if (amount <= 0) return alert('请输入有效的质押金额。');
+
+            try {
+                await stakingContract.methods.stake(tronWeb.toSun(amount)).send();
+                await updateStakingInfo();
+            } catch (error) {
+                console.error('质押代币时出错:', error);
+            }
+        }
+
+        async function withdrawTokens() {
+            const amount = $('#withdrawAmount').val();
+            if (amount <= 0) return alert('请输入有效的取消质押金额。');
+
+            try {
+                await stakingContract.methods.withdraw(tronWeb.toSun(amount)).send();
+                await updateStakingInfo();
+            } catch (error) {
+                console.error('取消质押代币时出错:', error);
+            }
+        }
+
+        async function claimRewards() {
+            try {
+                await stakingContract.methods.claimReward().send();
+                await updateStakingInfo();
+            } catch (error) {
+                console.error('领取奖励时出错:', error);
+            }
+        }
+
+        const dropbtn = document.querySelector('.dropbtn');
+        const dropdownContent = document.querySelector('.dropdown-content');
+
+        dropbtn.addEventListener('click', function() {
+            dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (!event.target.matches('.dropbtn')) {
+                if (dropdownContent.style.display === 'block') {
+                    dropdownContent.style.display = 'none';
+                }
+            }
+        });
+
+        $(document).ready(function() {
+            $('#connectWallet').on('click', connectWallet);
+            $('#approveButton').on('click', approveTokens);
+            $('#stakeButton').on('click', stakeTokens);
+            $('#withdrawButton').on('click', withdrawTokens);
+            $('#claimRewardsButton').on('click', claimRewards);
+            $('#language-switcher').on('change', function() {
+                const selectedLanguage = $(this).val();
+                if (selectedLanguage === 'zh') {
+                    window.location.href = 'newstaking-zh.html';
+                } else {
+                    window.location.href = 'newstaking.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
