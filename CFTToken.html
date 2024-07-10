@@ -169,7 +169,7 @@
         </div>
         <select id="language-switcher">
             <option value="en" selected>English</option>
-            <option value="es">Español</option>
+            
             <option value="zh">中文</option>
         </select>
         <button id="connectWallet">Connect Wallet</button>
@@ -194,6 +194,22 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const switcher = document.getElementById('language-switcher');
+            switcher.addEventListener('change', function() {
+                const selectedLanguage = switcher.value;
+                switch (selectedLanguage) {
+                    case 'en':
+                        window.location.href = 'CFTToken.html';
+                        break;
+                    case 'zh':
+                        window.location.href = 'CFTToken-zh.html';
+                        break;
+                    default:
+                        window.location.href = 'CFTToken.html';
+                }
+            });
+
        function formatNumberWithCommas(number) {
         // Check if the number is a whole number (i.e., ends in ".00")
         const numberParts = number.split(".");
