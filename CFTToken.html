@@ -194,9 +194,9 @@
     </div>
 
     <script>
-        function formatNumberWithCommas(number) {
-            return number.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-        }
+       function formatNumberWithCommas(number) {
+        return number.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
 
         document.addEventListener('DOMContentLoaded', function() {
             const switcher = document.getElementById('language-switcher');
@@ -372,13 +372,13 @@
             tokenContract = await tronWeb.contract(tokenContractABI, tokenContractAddress);
             const balance = await tokenContract.balanceOf(walletAddress).call();
             $('#tokenBalance').text(formatNumberWithCommas(tronWeb.fromSun(balance.toString())));
-        }
+    }
 
         async function updateRemainingTokens() {
             tokenContract = await tronWeb.contract(tokenContractABI, tokenContractAddress);
             const remainingTokens = await tokenContract.balanceOf(tokenSaleContractAddress).call();
             $('#remainingTokens').text(formatNumberWithCommas(tronWeb.fromSun(remainingTokens.toString())));
-        }
+    }
 
         async function buyTokens() {
             const trxAmount = $('#trxAmount').val();
