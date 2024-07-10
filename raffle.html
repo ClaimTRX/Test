@@ -13,7 +13,7 @@
             color: #333;
             padding: 20px;
         }
-        #container {
+        .container {
             background: white;
             border-radius: 5px;
             padding: 20px;
@@ -21,20 +21,8 @@
             max-width: 600px;
             margin: auto;
         }
-        .container {
-            background: white; 
-            border-radius: 5px; 
-            padding: 20px; 
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
-            width: 100%; 
-            max-width: 600px; 
-            margin: 0 auto; 
-        }
         h1 {
             color: #007bff;
-        }
-        #links {
-            margin: 20px 0;
         }
         a {
             display: block;
@@ -68,24 +56,9 @@
             color: red;
             font-size: 20px;
         }
-        #timer, #prizeAmount, #intervalInfo, #warningMessage {
-            margin: 15px 0;
-        }
-        #logo {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            margin-top: 20px;
-        }
-        #visitText {
-            font-weight: bold;
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
         .dropdown {
-            display: flex;
-            justify-content: center;
-            width: 100%;
+            position: relative;
+            display: inline-block;
         }
         .dropdown-content {
             display: none;
@@ -105,10 +78,6 @@
         .dropdown-content a:hover {
             background-color: #f1f1f1;
         }
-        
-        .dropdown:hover .dropbtn {
-            background-color: #0056b3;
-        }
         .dropbtn {
             background-color: #007bff;
             color: white;
@@ -117,10 +86,6 @@
             border: none;
             cursor: pointer;
             border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 200px; /* Ensure width matches the Connect Wallet button */
         }
         .dropbtn:hover {
             background-color: #0056b3;
@@ -143,13 +108,12 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@tronweb3/tronweb/dist/TronWeb.min.js"></script>
     <script>
-        let tronWeb;
-        let contract;
+        document.addEventListener('DOMContentLoaded', function() {
+            let tronWeb;
+            let contract;
 
-        const contractAddress = "TMUDuMwYd94M6k7bhKgo6kqBKiDkjAFPDV";
-
-        const contractABI = [
-            {
+            const contractAddress = "TMUDuMwYd94M6k7bhKgo6kqBKiDkjAFPDV";
+            const contractABI = [{
                 "inputs": [
                     {
                         "internalType": "address",
@@ -307,65 +271,33 @@
                 ],
                 "stateMutability": "view",
                 "type": "function"
-            }
-        ];
+            }];
 
-        async function connectWallet() {
-            try {
-                if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                    tronWeb = window.tronWeb;
-                    const account = tronWeb.defaultAddress.base58;
-                    document.getElementById('connectWallet').innerText = `Connected: ${account}`;
-                    contract = await tronWeb.contract(contractABI, contractAddress);
-                    updateUI();
-                    updateTicketCount(account);
-                } else {
-                    alert('Please install TronLink wallet!');
-                }
-            } catch (error) {
-                console.error('Error connecting wallet:', error);
-            }
-        }
-        // New JavaScript for dropdown toggle
-        const dropbtn = document.querySelector('.dropbtn');
-        const dropdownContent = document.querySelector('.dropdown-content');
-
-        dropbtn.addEventListener('click', function() {
-            dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
-        });
-
-        window.addEventListener('click', function(event) {
-            if (!event.target.matches('.dropbtn')) {
-                if (dropdownContent.style.display === 'block') {
-                    dropdownContent.style.display = 'none';
+            async function connectWallet() {
+                try {
+                    if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                        tronWeb = window.tronWeb;
+                        const account = tronWeb.defaultAddress.base58;
+                        document.getElementById('connectWallet').innerText = `Connected: ${account}`;
+                        contract = await tronWeb.contract(contractABI, contractAddress);
+                        updateUI();
+                        updateTicketCount(account);
+                    } else {
+                        alert('Please install TronLink wallet!');
+                    }
+                } catch (error) {
+                    console.error('Error connecting wallet:', error);
                 }
             }
-        });
 
-        async function updateUI() {
-            try {
-                const ticketsSold = await contract.methods.ticketsSold().call();
-                const prizeAmount = await contract.methods.prizeAmount().call();
-                console.log('Tickets Sold:', ticketsSold);
-                console.log('Prize Amount:', prizeAmount);
+            async function updateUI() {
+                try {
+                    const ticketsSold = await contract.methods.ticketsSold().call();
+                    const prizeAmount = await contract.methods.prizeAmount().call();
+                    document.getElementById('ticketsSold').innerText = `Tickets sold: ${ticketsSold}`;
+                    document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} TRX`;
 
-                const ticketsSoldElement = document.getElementById('ticketsSold');
-                const prizeAmountElement = document.getElementById('prizeAmount');
-                const drawButton = document.getElementById('drawButton');
-
-                if (ticketsSoldElement) {
-                    ticketsSoldElement.innerText = `Tickets sold: ${ticketsSold}`;
-                } else {
-                    console.error('ticketsSold element not found');
-                }
-
-                if (prizeAmountElement) {
-                    prizeAmountElement.innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} TRX`;
-                } else {
-                    console.error('prizeAmount element not found');
-                }
-
-                if (drawButton) {
+                    const drawButton = document.getElementById('drawButton');
                     if (ticketsSold >= 25) {
                         drawButton.disabled = false;
                         drawButton.classList.remove('disabled');
@@ -373,64 +305,70 @@
                         drawButton.disabled = true;
                         drawButton.classList.add('disabled');
                     }
-                } else {
-                    console.error('drawButton element not found');
+                } catch (error) {
+                    console.error('Error updating UI:', error);
                 }
-            } catch (error) {
-                console.error('Error updating UI:', error);
             }
-        }
 
-        async function updateTicketCount(account) {
-            try {
-                const ticketsCount = await contract.methods.getTickets(account).call();
-                const ticketsCountElement = document.getElementById('ticketsCount');
-                if (ticketsCountElement) {
-                    ticketsCountElement.innerText = `Your tickets: ${ticketsCount}`;
-                } else {
-                    console.error('ticketsCount element not found');
+            async function updateTicketCount(account) {
+                try {
+                    const ticketsCount = await contract.methods.getTickets(account).call();
+                    document.getElementById('ticketsCount').innerText = `Your tickets: ${ticketsCount}`;
+                } catch (error) {
+                    console.error('Error getting ticket count:', error);
                 }
-            } catch (error) {
-                console.error('Error getting ticket count:', error);
             }
-        }
 
-        async function buyTickets() {
-            try {
-                const amount = document.getElementById('ticketAmount').value;
-                const ticketPrice = await contract.methods.ticketPrice().call();
-                const totalCost = ticketPrice * amount;
-
-                await contract.methods.buyTickets(amount).send({
-                    from: tronWeb.defaultAddress.base58,
-                    callValue: totalCost
-                });
-
-                updateUI();
-                updateTicketCount(tronWeb.defaultAddress.base58);
-            } catch (error) {
-                console.error('Error buying tickets:', error);
-            }
-        }
-
-        async function drawWinner() {
-            try {
-                await contract.methods.drawWinner().send({
-                    from: tronWeb.defaultAddress.base58
-                });
-
-                updateUI();
-            } catch (error) {
-                console.error('Error drawing winner:', error);
-            }
-        }
-
-        window.addEventListener('load', () => {
-            document.getElementById('connectWallet').addEventListener('click', connectWallet);
-            document.getElementById('buyTicketsForm').addEventListener('submit', (event) => {
+            async function buyTickets(event) {
                 event.preventDefault();
-                buyTickets();
+                try {
+                    const amount = document.getElementById('ticketAmount').value;
+                    const ticketPrice = await contract.methods.ticketPrice().call();
+                    const totalCost = ticketPrice * amount;
+
+                    await contract.methods.buyTickets(amount).send({
+                        from: tronWeb.defaultAddress.base58,
+                        callValue: totalCost
+                    });
+
+                    updateUI();
+                    updateTicketCount(tronWeb.defaultAddress.base58);
+                } catch (error) {
+                    console.error('Error buying tickets:', error);
+                }
+            }
+
+            async function drawWinner() {
+                try {
+                    await contract.methods.drawWinner().send({
+                        from: tronWeb.defaultAddress.base58
+                    });
+
+                    updateUI();
+                } catch (error) {
+                    console.error('Error drawing winner:', error);
+                }
+            }
+
+            // Event listeners for dropdown
+            const dropbtn = document.querySelector('.dropbtn');
+            const dropdownContent = document.querySelector('.dropdown-content');
+
+            dropbtn.addEventListener('click', function() {
+                dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
             });
+
+            window.addEventListener('click', function(event) {
+                if (!event.target.matches('.dropbtn')) {
+                    if (dropdownContent.style.display === 'block') {
+                        dropdownContent.style.display = 'none';
+                    }
+                }
+            });
+
+            // Event listeners for wallet and buttons
+            document.getElementById('connectWallet').addEventListener('click', connectWallet);
+            document.getElementById('buyTicketsForm').addEventListener('submit', buyTickets);
             document.getElementById('drawButton').addEventListener('click', drawWinner);
         });
     </script>
@@ -451,7 +389,7 @@
                     <a href="TRC20.html">TRC20 Claim</a>
                     <a href="raffle.html">TRX Raffle</a>
                 </div>
-            </div>
+                 </div>
             <button id="connectWallet">Connect Wallet</button>
             <div id="statusMessage" class="warning hidden"></div>
             <div id="appContent">
