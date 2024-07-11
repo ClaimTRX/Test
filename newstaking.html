@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRX Raffle</title>
+    <title>TRC20 Staking DApp</title>
     <link rel="icon" href="https://raw.githubusercontent.com/ClaimTRX/Test/main/favicon-32x32.png" type="image/png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tronscan/tronweb@4.0.0/dist/TronWeb.js"></script>
     <style>
-         body {
+        body {
             text-align: center;
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
@@ -14,51 +16,84 @@
             padding: 20px;
         }
         .container {
-            background: white;
-            border-radius: 5px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            margin: auto;
+            background: white; 
+            border-radius: 5px; 
+            padding: 20px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+            width: 100%; 
+            max-width: 600px; 
+            margin: 0 auto; 
+        }
+         #language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px;
+            font-size: 14px;
         }
         h1 {
             color: #007bff;
         }
-        a {
-            display: block;
-            margin: 5px 0;
-            color: #007bff;
-            text-decoration: none;
+        #walletInfo, #actions {
+            margin: 20px auto;
+            text-align: left;
+            max-width: 400px;
         }
-        a:hover {
-            text-decoration: underline;
-        }
-        button {
-            width: calc(100% - 22px);
+        input, button {
+            width: 100%;
             margin: 10px 0;
             padding: 10px;
             font-size: 16px;
+            box-sizing: border-box;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number], button {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
+            display: block;
+            width: 100%;  /* Make buttons take full width */
+            text-align: center;
         }
         button:hover {
             background-color: #0056b3;
         }
-        .disabled {
-            background-color: #ccc;
-            color: #666;
-            cursor: not-allowed;
+        #buttonContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
         }
-        .warning {
-            color: red;
-            font-size: 20px;
+        #connectWallet {
+            display: block;
+            margin: 10px 0;
+            width: 100%;
+        }
+        .link {
+            display: block;
+            margin: 10px 0;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .link:hover, .link:focus {
+            text-decoration: underline;
         }
         .dropdown {
-            position: relative;
-            display: inline-block;
+            display: flex;
+            justify-content: center;
+            width: 100%;
         }
         .dropdown-content {
             display: none;
@@ -78,6 +113,9 @@
         .dropdown-content a:hover {
             background-color: #f1f1f1;
         }
+        .dropdown:hover .dropbtn {
+            background-color: #0056b3;
+        }
         .dropbtn {
             background-color: #007bff;
             color: white;
@@ -89,25 +127,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 200px; /* Ensure width matches the Connect Wallet button */
+            width: 200px;
         }
         .dropbtn:hover {
             background-color: #0056b3;
-        }
-        input[type="number"]::-webkit-outer-spin-button,
-        input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type="number"] {
-            -moz-appearance: textfield;
-            width: calc(100% - 20px);
-            padding: 10px;
-            font-size: 16px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
         }
     </style>
 </head>
@@ -760,21 +783,19 @@
         let tokenContract;
 
         async function connectWallet() {
-                try {
-                    if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                        tronWeb = window.tronWeb;
-                        const account = tronWeb.defaultAddress.base58;
-                        document.getElementById('connectWallet').innerText = `Connected: ${account}`;
-                        contract = await tronWeb.contract(contractABI, contractAddress);
-                        updateUI();
-                        updateTicketCount(account);
-                    } else {
-                        alert('Please install TronLink wallet!');
-                    }
-                } catch (error) {
-                    console.error('Error connecting wallet:', error);
-                }
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                tronWeb = window.tronWeb;
+                const walletAddress = tronWeb.defaultAddress.base58;
+                $('#connectWallet').text(`Connected: ${walletAddress}`);
+                $('#walletAddress').text(walletAddress);
+                stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
+                tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
+                $('#walletInfo, #actions').show();
+                await updateStakingInfo();
+            } else {
+                alert('Please install TronLink and log in.');
             }
+        }
 
         async function updateStakingInfo() {
             try {
