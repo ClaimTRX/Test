@@ -3,17 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRC20 Staking DApp</title>
+    <title>TRX Raffle</title>
     <link rel="icon" href="https://raw.githubusercontent.com/ClaimTRX/Test/main/favicon-32x32.png" type="image/png">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tronscan/tronweb@4.0.0/dist/TronWeb.js"></script>
     <style>
-        /* Global box-sizing for all elements */
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
-
-        body {
+         body {
             text-align: center;
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
@@ -21,62 +14,51 @@
             padding: 20px;
         }
         .container {
-            background: white; 
-            border-radius: 5px; 
-            padding: 20px; 
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
-            width: 100%; 
-            max-width: 600px; 
-            margin: 0 auto; 
+            background: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
         }
         h1 {
             color: #007bff;
         }
-        #walletInfo, #actions {
-            margin: 20px auto;
-            text-align: left;
-            max-width: 400px;
+        a {
+            display: block;
+            margin: 5px 0;
+            color: #007bff;
+            text-decoration: none;
         }
-        input, button {
-            width: 100%;
+        a:hover {
+            text-decoration: underline;
+        }
+        button {
+            width: calc(100% - 22px);
             margin: 10px 0;
             padding: 10px;
             font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-            display: block;
-        }
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
-        input[type=number]::-webkit-outer-spin-button,
-        input[type=number]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        button {
             background-color: #007bff;
             color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
         }
         button:hover {
             background-color: #0056b3;
         }
-        #buttonContainer {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 20px 0;
+        .disabled {
+            background-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
         }
-        #connectWallet {
-            margin: 10px 0;
-            width: 100%;
+        .warning {
+            color: red;
+            font-size: 20px;
         }
         .dropdown {
-            display: flex;
-            justify-content: center;
-            width: 100%;
+            position: relative;
+            display: inline-block;
         }
         .dropdown-content {
             display: none;
@@ -96,9 +78,6 @@
         .dropdown-content a:hover {
             background-color: #f1f1f1;
         }
-        .dropdown:hover .dropbtn {
-            background-color: #0056b3;
-        }
         .dropbtn {
             background-color: #007bff;
             color: white;
@@ -107,10 +86,28 @@
             border: none;
             cursor: pointer;
             border-radius: 5px;
-            width: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 200px; /* Ensure width matches the Connect Wallet button */
         }
         .dropbtn:hover {
             background-color: #0056b3;
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+            width: calc(100% - 20px);
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
         }
     </style>
 </head>
