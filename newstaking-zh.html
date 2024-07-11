@@ -24,7 +24,7 @@
             width: 100%;
             max-width: 600px;
         }
-         .container {
+        .container {
             background: white; 
             border-radius: 5px; 
             padding: 20px; 
@@ -172,8 +172,7 @@
         </div>
         <div id="actions" style="display:none;">
             <input type="number" id="stakeAmount" placeholder="质押数量">
-            <button id="approveButton">批准</button>
-            <button id="stakeButton" disabled>质押</button>
+            <button id="approveAndStakeButton">批准并质押</button>
             <input type="number" id="withdrawAmount" placeholder="取消质押数量">
             <button id="withdrawButton">取消质押</button>
             <button id="claimRewardsButton">领取奖励</button>
@@ -181,7 +180,7 @@
     </div>
     <script>
         const stakingContractAddress = 'TVSMKqBk12161JDAQBh9pkdxMAgCtuGrdA';
-        const stakingContractAbi = [
+         const stakingContractAbi = [
             {
                 "inputs": [
                     {
@@ -782,6 +781,7 @@
     }
 ];
 
+
         let tronWeb;
         let stakingContract;
         let tokenContract;
@@ -805,55 +805,49 @@
                 const totalStaked = await stakingContract.methods.viewTotalStaked().call();
                 const userStakedBalance = await stakingContract.methods.viewStakedAmount(tronWeb.defaultAddress.base58).call();
                 const userRewards = await stakingContract.methods.viewPendingReward(tronWeb.defaultAddress.base58).call();
+                const unstakedBalance = await tokenContract.methods.balanceOf(tronWeb.defaultAddress.base58).call();
                 const currentAPR = await stakingContract.methods.viewAPR().call();
-
-                console.log('Total Staked:', totalStaked.toString());
-                console.log('User Staked Balance:', userStakedBalance.toString());
-                console.log('User Rewards:', userRewards.toString());
-                console.log('Current APR:', currentAPR.toString());
 
                 const totalStakedValue = totalStaked / 1e6;
                 const userStakedBalanceValue = userStakedBalance / 1e6;
                 const userRewardsValue = userRewards / 1e6;
-                const currentAPRValue = (currentAPR / 1e4);
+                const unstakedBalanceValue = unstakedBalance / 1e6;
+                const currentAPRValue = currentAPR / 1e4;
 
                 $('#totalStaked').text(totalStakedValue.toFixed(2) + " CFT");
                 $('#userStakedBalance').text(userStakedBalanceValue.toFixed(2) + " CFT");
                 $('#userRewards').text(userRewardsValue.toFixed(2) + " TRX");
+                $('#unstakedBalance').text(unstakedBalanceValue.toFixed(2) + " CFT");
                 $('#currentAPR').text(currentAPRValue.toFixed(2));
             } catch (error) {
                 console.error('更新质押信息时出错:', error);
             }
         }
 
-        async function approveTokens() {
-            const amount = $('#stakeAmount').val();
-            if (amount <= 0) return alert('请输入有效的批准金额。');
-
-            try {
-                await tokenContract.methods.approve(stakingContractAddress, tronWeb.toSun(amount)).send();
-                $('#stakeButton').prop('disabled', false);
-                alert('代币批准成功。您现在可以质押了。');
-            } catch (error) {
-                console.error('批准代币时出错:', error);
-            }
-        }
-
-        async function stakeTokens() {
+        async function approveAndStakeTokens() {
             const amount = $('#stakeAmount').val();
             if (amount <= 0) return alert('请输入有效的质押金额。');
 
             try {
-                await stakingContract.methods.stake(tronWeb.toSun(amount)).send();
+                const allowance = await tokenContract.methods.allowance(tronWeb.defaultAddress.base58, stakingContractAddress).call();
+                const amountToStake = tronWeb.toSun(amount);
+                const maxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+
+                if (allowance < amountToStake) {
+                    await tokenContract.methods.approve(stakingContractAddress, maxUint256).send();
+                }
+
+                await stakingContract.methods.stake(amountToStake).send();
                 await updateStakingInfo();
+                alert('代币批准并质押成功。');
             } catch (error) {
-                console.error('质押代币时出错:', error);
+                console.error('批准并质押代币时出错:', error);
             }
         }
 
         async function withdrawTokens() {
             const amount = $('#withdrawAmount').val();
-            if (amount <= 0) return alert('请输入有效的取消质押金额。');
+            if (amount <= 0) return alert('请输入有效的取消质押数量。');
 
             try {
                 await stakingContract.methods.withdraw(tronWeb.toSun(amount)).send();
@@ -889,8 +883,7 @@
 
         $(document).ready(function() {
             $('#connectWallet').on('click', connectWallet);
-            $('#approveButton').on('click', approveTokens);
-            $('#stakeButton').on('click', stakeTokens);
+            $('#approveAndStakeButton').on('click', approveAndStakeTokens);
             $('#withdrawButton').on('click', withdrawTokens);
             $('#claimRewardsButton').on('click', claimRewards);
             $('#language-switcher').on('change', function() {
