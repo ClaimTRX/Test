@@ -15,16 +15,7 @@
             color: #333;
             padding: 20px;
         }
-        #container {
-            background: white;
-            border-radius: 5px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            display: inline-block;
-            width: 100%;
-            max-width: 600px;
-        }
-         .container {
+        .container {
             background: white; 
             border-radius: 5px; 
             padding: 20px; 
@@ -32,13 +23,6 @@
             width: 100%; 
             max-width: 600px; 
             margin: 0 auto; 
-        }
-        #language-switcher {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 5px;
-            font-size: 14px;
         }
         h1 {
             color: #007bff;
@@ -167,6 +151,7 @@
             <p>Connected Wallet: <span id="walletAddress"></span></p>
             <p>Total Staked: <span id="totalStaked"></span></p>
             <p>Your Staked Balance: <span id="userStakedBalance"></span></p>
+            <p>Your Unstaked Balance: <span id="unstakedBalance"></span></p>
             <p>Your Accumulated Rewards: <span id="userRewards"></span></p>
             <p>Current APR: <span id="currentAPR"></span>%</p>
         </div>
@@ -181,7 +166,7 @@
     </div>
     <script>
         const stakingContractAddress = 'TVSMKqBk12161JDAQBh9pkdxMAgCtuGrdA';
-        const stakingContractAbi = [
+         const stakingContractAbi = [
             {
                 "inputs": [
                     {
@@ -789,11 +774,12 @@
         async function connectWallet() {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 tronWeb = window.tronWeb;
-                $('#walletAddress').text(tronWeb.defaultAddress.base58);
+                const walletAddress = tronWeb.defaultAddress.base58;
+                $('#connectWallet').text(`Connected: ${walletAddress}`);
+                $('#walletAddress').text(walletAddress);
                 stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
                 tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
                 $('#walletInfo, #actions').show();
-                $('#connectWallet').text('Wallet Connected');
                 await updateStakingInfo();
             } else {
                 alert('Please install TronLink and log in.');
@@ -805,21 +791,19 @@
                 const totalStaked = await stakingContract.methods.viewTotalStaked().call();
                 const userStakedBalance = await stakingContract.methods.viewStakedAmount(tronWeb.defaultAddress.base58).call();
                 const userRewards = await stakingContract.methods.viewPendingReward(tronWeb.defaultAddress.base58).call();
+                const unstakedBalance = await tokenContract.methods.balanceOf(tronWeb.defaultAddress.base58).call();
                 const currentAPR = await stakingContract.methods.viewAPR().call();
-
-                console.log('Total Staked:', totalStaked.toString());
-                console.log('User Staked Balance:', userStakedBalance.toString());
-                console.log('User Rewards:', userRewards.toString());
-                console.log('Current APR:', currentAPR.toString());
 
                 const totalStakedValue = totalStaked / 1e6;
                 const userStakedBalanceValue = userStakedBalance / 1e6;
                 const userRewardsValue = userRewards / 1e6;
-                const currentAPRValue = (currentAPR / 1e4);
+                const unstakedBalanceValue = unstakedBalance / 1e6;
+                const currentAPRValue = currentAPR / 1e4;
 
                 $('#totalStaked').text(totalStakedValue.toFixed(2) + " CFT");
                 $('#userStakedBalance').text(userStakedBalanceValue.toFixed(2) + " CFT");
                 $('#userRewards').text(userRewardsValue.toFixed(2) + " TRX");
+                $('#unstakedBalance').text(unstakedBalanceValue.toFixed(2) + " CFT");
                 $('#currentAPR').text(currentAPRValue.toFixed(2));
             } catch (error) {
                 console.error('Error updating staking info:', error);
