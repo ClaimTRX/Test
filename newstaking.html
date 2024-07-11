@@ -8,6 +8,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tronscan/tronweb@4.0.0/dist/TronWeb.js"></script>
     <style>
+        /* Global box-sizing for all elements */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
         body {
             text-align: center;
             font-family: Arial, sans-serif;
@@ -37,6 +42,8 @@
             margin: 10px 0;
             padding: 10px;
             font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
             box-sizing: border-box;
         }
         input[type=number] {
@@ -47,18 +54,10 @@
             -webkit-appearance: none;
             margin: 0;
         }
-        input[type=number], button {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
         button {
             background-color: #007bff;
             color: white;
-            border: none;
             cursor: pointer;
-            display: block;
-            width: 100%;  /* Make buttons take full width */
-            text-align: center;
         }
         button:hover {
             background-color: #0056b3;
@@ -70,18 +69,8 @@
             margin: 20px 0;
         }
         #connectWallet {
-            display: block;
             margin: 10px 0;
             width: 100%;
-        }
-        .link {
-            display: block;
-            margin: 10px 0;
-            color: #007bff;
-            text-decoration: none;
-        }
-        .link:hover, .link:focus {
-            text-decoration: underline;
         }
         .dropdown {
             display: flex;
@@ -117,9 +106,6 @@
             border: none;
             cursor: pointer;
             border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             width: 200px;
         }
         .dropbtn:hover {
