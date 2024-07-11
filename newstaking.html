@@ -24,13 +24,6 @@
             max-width: 600px; 
             margin: 0 auto; 
         }
-         #language-switcher {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 5px;
-            font-size: 14px;
-        }
         h1 {
             color: #007bff;
         }
@@ -44,33 +37,28 @@
             margin: 10px 0;
             padding: 10px;
             font-size: 16px;
-            border-radius: 5px;
         }
-        input[type="number"] {
+        input[type=number] {
             -moz-appearance: textfield;
-            width: calc(100% - 20px);
-            padding: 10px;
-            font-size: 16px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
         }
         input[type=number]::-webkit-outer-spin-button,
         input[type=number]::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
+        input[type=number], button {
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
         button {
-            width: calc(100% - 22px);
-            margin: 10px 0;
-            padding: 10px;
-            font-size: 16px;
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         button:hover {
             background-color: #0056b3;
@@ -84,7 +72,7 @@
         #connectWallet {
             display: block;
             margin: 10px 0;
-            width: auto;
+            width: 100%;
         }
         .link {
             display: block;
@@ -182,7 +170,7 @@
     </div>
     <script>
         const stakingContractAddress = 'TVSMKqBk12161JDAQBh9pkdxMAgCtuGrdA';
-         const stakingContractAbi = [
+        const stakingContractAbi = [
             {
                 "inputs": [
                     {
