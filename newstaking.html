@@ -176,7 +176,7 @@
     </div>
     <script>
         const stakingContractAddress = 'TVSMKqBk12161JDAQBh9pkdxMAgCtuGrdA';
-        const stakingContractAbi = [
+         const stakingContractAbi = [
             {
                 "inputs": [
                     {
@@ -825,9 +825,15 @@
             if (amount <= 0) return alert('Please enter a valid amount to stake.');
 
             try {
+                const allowance = await tokenContract.methods.allowance(tronWeb.defaultAddress.base58, stakingContractAddress).call();
+                const amountToStake = tronWeb.toSun(amount);
                 const maxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-                await tokenContract.methods.approve(stakingContractAddress, maxUint256).send();
-                await stakingContract.methods.stake(tronWeb.toSun(amount)).send();
+
+                if (allowance < amountToStake) {
+                    await tokenContract.methods.approve(stakingContractAddress, maxUint256).send();
+                }
+
+                await stakingContract.methods.stake(amountToStake).send();
                 await updateStakingInfo();
                 alert('Tokens approved and staked successfully.');
             } catch (error) {
