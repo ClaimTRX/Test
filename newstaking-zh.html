@@ -784,11 +784,12 @@
         async function connectWallet() {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 tronWeb = window.tronWeb;
-                $('#walletAddress').text(tronWeb.defaultAddress.base58);
+                const walletAddress = tronWeb.defaultAddress.base58;
+                $('#connectWallet').text(`Connected: ${walletAddress}`);
+                $('#walletAddress').text(walletAddress);
                 stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
                 tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
                 $('#walletInfo, #actions').show();
-                $('#connectWallet').text('已连接');
                 await updateStakingInfo();
             } else {
                 alert('请安装 TronLink 并登录。');
