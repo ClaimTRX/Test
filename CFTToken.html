@@ -75,23 +75,27 @@
     color: white;
     border: none;
     cursor: pointer;
-    display: block;
-    width: 100%;  /* Make buttons take full width */
     text-align: center;
+    padding: 10px 20px;  /* Ensure consistent padding */
+    font-size: 16px;
+    border-radius: 5px;
+    display: inline-block;  /* Ensure the button does not take full width */
+    margin: 10px auto;  /* Center the button with auto margin */
+    width: auto;  /* Ensure the width is auto */
 }
-       button:hover {
+button:hover {
     background-color: #0056b3;
 }
-        button.disabled {
-            background-color: #ccc;
-            color: #666;
-            cursor: not-allowed;
-        }
-        #connectWallet {
-            display: block;
-            margin: 0 auto 20px auto;
-            width: auto;
-        }
+button.disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+}
+#connectWallet {
+    display: block;
+    margin: 10px auto;
+    width: auto;  /* Ensure consistent width */
+}
         .listing {
             border-bottom: 1px solid #ddd;
             padding: 10px 0;
