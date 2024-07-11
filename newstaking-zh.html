@@ -15,15 +15,6 @@
             color: #333;
             padding: 20px;
         }
-        #container {
-            background: white;
-            border-radius: 5px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            display: inline-block;
-            width: 100%;
-            max-width: 600px;
-        }
         .container {
             background: white; 
             border-radius: 5px; 
@@ -62,15 +53,18 @@
             -webkit-appearance: none;
             margin: 0;
         }
+        input[type=number], button {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
         button {
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: block;
+            width: 100%;  /* Make buttons take full width */
+            text-align: center;
         }
         button:hover {
             background-color: #0056b3;
@@ -84,7 +78,7 @@
         #connectWallet {
             display: block;
             margin: 10px 0;
-            width: auto;
+            width: 100%;
         }
         .link {
             display: block;
@@ -164,9 +158,10 @@
             <button id="connectWallet">连接钱包</button>
         </div>
         <div id="walletInfo" style="display:none;">
-            <p>连接的钱包：<span id="walletAddress"></span></p>
+            
             <p>总质押量：<span id="totalStaked"></span></p>
             <p>您的质押余额：<span id="userStakedBalance"></span></p>
+            <p>您的未质押余额：<span id="unstakedBalance"></span></p>
             <p>您的累计奖励：<span id="userRewards"></span></p>
             <p>当前年利率：<span id="currentAPR"></span>%</p>
         </div>
