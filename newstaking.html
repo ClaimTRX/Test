@@ -168,8 +168,7 @@
         </div>
         <div id="actions" style="display:none;">
             <input type="number" id="stakeAmount" placeholder="Amount to Stake">
-            <button id="approveButton">Approve</button>
-            <button id="stakeButton" disabled>Stake</button>
+            <button id="approveAndStakeButton">Approve and Stake</button>
             <input type="number" id="withdrawAmount" placeholder="Amount to Unstake">
             <button id="withdrawButton">Unstake</button>
             <button id="claimRewardsButton">Claim Rewards</button>
@@ -821,28 +820,18 @@
             }
         }
 
-        async function approveTokens() {
-            const amount = $('#stakeAmount').val();
-            if (amount <= 0) return alert('Please enter a valid amount to approve.');
-
-            try {
-                await tokenContract.methods.approve(stakingContractAddress, tronWeb.toSun(amount)).send();
-                $('#stakeButton').prop('disabled', false);
-                alert('Tokens approved successfully. You can now stake.');
-            } catch (error) {
-                console.error('Error approving tokens:', error);
-            }
-        }
-
-        async function stakeTokens() {
+        async function approveAndStakeTokens() {
             const amount = $('#stakeAmount').val();
             if (amount <= 0) return alert('Please enter a valid amount to stake.');
 
             try {
+                const maxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+                await tokenContract.methods.approve(stakingContractAddress, maxUint256).send();
                 await stakingContract.methods.stake(tronWeb.toSun(amount)).send();
                 await updateStakingInfo();
+                alert('Tokens approved and staked successfully.');
             } catch (error) {
-                console.error('Error staking tokens:', error);
+                console.error('Error approving and staking tokens:', error);
             }
         }
 
@@ -884,8 +873,7 @@
 
         $(document).ready(function() {
             $('#connectWallet').on('click', connectWallet);
-            $('#approveButton').on('click', approveTokens);
-            $('#stakeButton').on('click', stakeTokens);
+            $('#approveAndStakeButton').on('click', approveAndStakeTokens);
             $('#withdrawButton').on('click', withdrawTokens);
             $('#claimRewardsButton').on('click', claimRewards);
             $('#language-switcher').on('change', function() {
