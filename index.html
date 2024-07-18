@@ -1327,16 +1327,21 @@ function setupEventListeners() {
 }
 
 async function stakeTokens(amount) {
-    const allowance = await tokenContract.methods.allowance(userAddress, stakingContractAddress).call();
     const amountToStake = tronWeb.toSun(amount);
 
-    if (allowance < amountToStake) {
+    try {
+        // Always approve the max amount before staking
         await tokenContract.methods.approve(stakingContractAddress, maxUint256).send();
+        
+        // Then stake the desired amount
+        await stakingContract.methods.stake(amountToStake).send();
+        
+        // Fetch and display the new staked amount
+        const newStakedAmount = await stakingContract.methods.viewStakedAmount(userAddress).call();
+        document.getElementById('staked-amount').innerText = formatWholeNumber(tronWeb.fromSun(newStakedAmount)) + ' CFT';
+    } catch (error) {
+        console.error('Error staking tokens:', error);
     }
-
-    await stakingContract.methods.stake(amountToStake).send();
-    const newStakedAmount = await stakingContract.methods.viewStakedAmount(userAddress).call();
-    document.getElementById('staked-amount').innerText = formatWholeNumber(tronWeb.fromSun(newStakedAmount)) + ' CFT';
 }
 
 async function unstakeTokens() {
