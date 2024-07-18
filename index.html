@@ -1358,11 +1358,17 @@ async function claimRewards() {
 }
 
 async function buyTokens(amount) {
-    await buyCftContract.methods.buyTokens().send({
-        callValue: tronWeb.toSun(amount)
-    });
-    const newBalance = await tronWeb.trx.getBalance(userAddress);
-    document.getElementById('available-trx').innerText = 'Available TRX: ' + formatWholeNumber(tronWeb.fromSun(newBalance)) + ' TRX';
+    try {
+        await buyCftContract.methods.buyTokens().send({
+            callValue: tronWeb.toSun(amount)
+        });
+        
+        // Fetch and display the new balance
+        const newBalance = await tronWeb.trx.getBalance(userAddress);
+        document.getElementById('available-trx').innerText = 'Available TRX: ' + formatNumber(tronWeb.fromSun(newBalance)) + ' TRX';
+    } catch (error) {
+        console.error('Error buying tokens:', error);
+    }
 }
 
 async function compoundRewards() {
