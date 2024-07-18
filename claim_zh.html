@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>即将推出</title>
+
+  <link rel="icon" href="https://raw.githubusercontent.com/ClaimTRX/Test/main/favicon-32x32.png" type="image/png">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body {
+  background-color: #1a1a2e;
+  color: #fff;
+      font-family: Arial, sans-serif;
+}
+
+.sidebar {
+  height: 100vh;
+  background-color: #162447;
+  padding: 15px;
+  position: fixed;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sidebar a {
+  color: #fff;
+  text-decoration: none;
+  display: block;
+  padding: 10px 0;
+  width: 100%;
+  text-align: center;
+}
+
+.sidebar a:hover {
+  background-color: #1f4068;
+}
+
+.topbar {
+  background-color: #162447;
+  padding: 10px;
+  text-align: right;
+  margin-left: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.topbar button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 16px;
+}
+
+.main-content {
+  margin-left: 220px;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 60px);
+}
+
+.coming-soon {
+  font-size: 4rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+@media (max-width: 767.98px) {
+  .sidebar {
+    height: auto;
+    padding: 10px;
+    width: 100%;
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .topbar {
+    text-align: center;
+    margin-left: 0;
+    justify-content: center;
+  }
+
+  .main-content {
+    margin-left: 0;
+    height: auto;
+    display: block;
+  }
+
+  .coming-soon {
+    font-size: 2rem;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>CFT</h2>
+    <a href="index_zh.html">CFT代币</a>
+    <a href="lottery_zh.html">彩票</a>
+    <a href="draw_zh.html">开奖</a>
+    <a href="claim_zh.html">领取（即将推出）</a>
+    <div class="social-links">
+      <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
+        <i class="fab fa-twitter"></i>
+      </a>
+      <a href="https://t.me/claimfreetrxnow" target="_blank" class="social-icon">
+        <i class="fab fa-telegram-plane"></i>
+      </a>
+    </div>
+    <div class="language-switcher">
+      <button id="language-switcher" class="btn btn-secondary" onclick="switchLanguage('en')">EN</button>
+    </div>
+  </div>
+  <div class="topbar">
+    <button id="connect-button" onclick="connectWallet()">连接钱包</button>
+  </div>
+  <div class="main-content">
+    <div class="coming-soon">即将推出</div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
+  <script>
+    let tronWeb, userAddress;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (await checkTronLinkInstalled()) {
+        await initializeTronWeb();
+      }
+    });
+
+    async function checkTronLinkInstalled() {
+      return new Promise((resolve) => {
+        const interval = setInterval(() => {
+          if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+            clearInterval(interval);
+            resolve(true);
+          }
+        }, 1000);
+      });
+    }
+
+    async function initializeTronWeb() {
+      tronWeb = window.tronWeb;
+      userAddress = tronWeb.defaultAddress.base58;
+
+      document.getElementById('connect-button').style.display = 'none'; // Hide the button
+
+      console.log('Connected to TronLink.');
+      console.log('User Address:', userAddress);
+
+      try {
+        const balance = await tronWeb.trx.getBalance(userAddress);
+        console.log('Balance:', tronWeb.fromSun(balance), 'TRX');
+      } catch (error) {
+        console.error('Error fetching balance:', error);
+      }
+    }
+
+    function switchLanguage(language) {
+      if (language === 'zh') {
+        window.location.href = 'coming_soon_zh.html';
+      } else {
+        window.location.href = 'coming_soon.html';
+      }
+    }
+  </script>
+</body>
+</html>
