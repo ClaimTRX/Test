@@ -1222,7 +1222,7 @@ async function updateUI(balance) {
 
 async function updateClaimableRewards() {
     const claimableRewards = await stakingContract.methods.viewPendingReward(userAddress).call();
-    document.getElementById('claimable-rewards').innerText = formatWholeNumber(tronWeb.fromSun(claimableRewards)) + ' TRX';
+    document.getElementById('claimable-rewards').innerText = formatNumber(tronWeb.fromSun(claimableRewards)) + ' TRX';
 }
 
 async function updateTotalStakedAmount() {
@@ -1256,7 +1256,7 @@ async function updateTotalBuyCFT() {
 
 
 function updateAvailableTRX(balance) {
-    document.getElementById('available-trx').innerText = 'Available TRX: ' + formatWholeNumber(tronWeb.fromSun(balance)) + ' TRX';
+    document.getElementById('available-trx').innerText = 'Available TRX: ' + formatNumber(tronWeb.fromSun(balance)) + ' TRX';
 }
 
 function setupEventListeners() {
@@ -1469,7 +1469,7 @@ async function refreshUI() {
     }
 }
 
-function formatNumber(num) {
+    function formatNumber(num) {
     return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
