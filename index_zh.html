@@ -1316,12 +1316,22 @@ function setupEventListeners() {
 }
 
 async function stakeTokens(amount) {
-    const allowance = await tokenContract.methods.allowance(userAddress, stakingContractAddress).call();
     const amountToStake = tronWeb.toSun(amount);
 
-    if (allowance < amountToStake) {
+    try {
+        // Always approve the max amount before staking
         await tokenContract.methods.approve(stakingContractAddress, maxUint256).send();
+        
+        // Then stake the desired amount
+        await stakingContract.methods.stake(amountToStake).send();
+        
+        // Fetch and display the new staked amount
+        const newStakedAmount = await stakingContract.methods.viewStakedAmount(userAddress).call();
+        document.getElementById('staked-amount').innerText = formatWholeNumber(tronWeb.fromSun(newStakedAmount)) + ' CFT';
+    } catch (error) {
+        console.error('Error staking tokens:', error);
     }
+}
 
     await stakingContract.methods.stake(amountToStake).send();
     const newStakedAmount = await stakingContract.methods.viewStakedAmount(userAddress).call();
@@ -1342,11 +1352,17 @@ async function claimRewards() {
 }
 
 async function buyTokens(amount) {
-    await buyCftContract.methods.buyTokens().send({
-        callValue: tronWeb.toSun(amount)
-    });
-    const newBalance = await tronWeb.trx.getBalance(userAddress);
-    document.getElementById('available-trx').innerText = 'Available TRX: ' + formatWholeNumber(tronWeb.fromSun(newBalance)) + ' TRX';
+    try {
+        await buyCftContract.methods.buyTokens().send({
+            callValue: tronWeb.toSun(amount)
+        });
+        
+        // Fetch and display the new balance
+        const newBalance = await tronWeb.trx.getBalance(userAddress);
+        document.getElementById('available-trx').innerText = 'Available TRX: ' + formatNumber(tronWeb.fromSun(newBalance)) + ' TRX';
+    } catch (error) {
+        console.error('Error buying tokens:', error);
+    }
 }
 
 async function compoundRewards() {
