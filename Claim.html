@@ -9,125 +9,142 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <style>
     body {
-  background-color: #1a1a2e;
-  color: #fff;
+      background-color: #1a1a2e;
+      color: #fff;
       font-family: Arial, sans-serif;
-}
+    }
 
-.sidebar {
-  height: 100vh;
-  background-color: #162447;
-  padding: 15px;
-  position: fixed;
-  width: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+    .sidebar {
+      height: 100vh;
+      background-color: #162447;
+      padding: 15px;
+      position: fixed;
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-.sidebar a {
-  color: #fff;
-  text-decoration: none;
-  display: block;
-  padding: 10px 0;
-  width: 100%;
-  text-align: center;
-}
+    .sidebar a {
+      color: #fff;
+      text-decoration: none;
+      display: block;
+      padding: 10px 0;
+      width: 100%;
+      text-align: center;
+    }
 
-.sidebar a:hover {
-  background-color: #1f4068;
-}
+    .sidebar a:hover {
+      background-color: #1f4068;
+    }
 
-.topbar {
-  background-color: #162447;
-  padding: 10px;
-  text-align: right;
-  margin-left: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
+    .topbar {
+      background-color: #162447;
+      padding: 10px;
+      text-align: right;
+      margin-left: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
 
-.topbar button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  padding: 8px 16px;
-}
+    .topbar button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 8px 16px;
+    }
 
-.main-content {
-  margin-left: 220px;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: calc(100vh - 60px);
-}
+    .main-content {
+      margin-left: 220px;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: calc(100vh - 60px);
+    }
 
-.coming-soon {
-  font-size: 4rem;
-  font-weight: bold;
-  text-align: center;
-}
+    .coming-soon {
+      font-size: 4rem;
+      font-weight: bold;
+      text-align: center;
+    }
 
-@media (max-width: 767.98px) {
-  .sidebar {
-    height: auto;
-    padding: 10px;
-    width: 100%;
-    position: relative;
-    flex-direction: column;
-    align-items: center;
-  }
+    .sidebar .social-links {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
 
-  .topbar {
-    text-align: center;
-    margin-left: 0;
-    justify-content: center;
-  }
+    .sidebar .social-icon {
+      color: white;
+      font-size: 20px;
+      margin-right: 10px;
+      text-decoration: none;
+    }
 
-  .main-content {
-    margin-left: 0;
-    height: auto;
-    display: block;
-  }
+    .sidebar .social-icon:last-child {
+      margin-right: 0;
+    }
 
-  .coming-soon {
-    font-size: 2rem;
-  }
-  .sidebar .social-icon {
-    margin-bottom: 10px;
-  }
-   .sidebar .social-links {
+    @media (max-width: 767.98px) {
+      .sidebar {
+        height: auto;
+        padding: 10px;
+        width: 100%;
+        position: relative;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .topbar {
+        text-align: center;
+        margin-left: 0;
         justify-content: center;
       }
-}
-   
 
+      .main-content {
+        margin-left: 0;
+        height: auto;
+        display: block;
+      }
+
+      .coming-soon {
+        font-size: 2rem;
+      }
+
+      .sidebar .social-icon {
+        margin-bottom: 10px;
+      }
+
+      .sidebar .social-links {
+        justify-content: center;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="sidebar">
-  <h2>CFT</h2>
-  <a href="index.html">CFT Token</a>
-  <a href="lottery.html">Lottery</a>
-  <a href="draw.html">Draw</a>
-  <a href="claim.html">Claim (Coming Soon)</a>
-  <div class="social-links">
-    <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
-      <i class="fab fa-twitter"></i>
-    
-   href="https://t.me/claimfreetrxnow" target="_blank" class="social-icon">
-      <i class="fab fa-telegram-plane"></i>
-    </a>
+    <h2>CFT</h2>
+    <a href="index.html">CFT Token</a>
+    <a href="lottery.html">Lottery</a>
+    <a href="draw.html">Draw</a>
+    <a href="claim.html">Claim (Coming Soon)</a>
+    <div class="social-links">
+      <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
+        <i class="fab fa-twitter"></i>
+      </a>
+      <a href="https://t.me/claimfreetrxnow" target="_blank" class="social-icon">
+        <i class="fab fa-telegram-plane"></i>
+      </a>
+    </div>
+    <div class="language-switcher">
+      <button id="language-switcher" class="btn btn-secondary" onclick="switchLanguage('zh')">中文</button>
+    </div>
   </div>
-  <div class="language-switcher">
-    <button id="language-switcher" class="btn btn-secondary" onclick="switchLanguage('zh')">中文</button>
-  </div>
-</div>
   <div class="topbar">
     <button id="connect-button" onclick="connectWallet()">Connect Wallet</button>
   </div>
@@ -158,15 +175,15 @@
     }
 
     async function initializeTronWeb() {
-    tronWeb = window.tronWeb;
-    userAddress = tronWeb.defaultAddress.base58;
+      tronWeb = window.tronWeb;
+      userAddress = tronWeb.defaultAddress.base58;
 
-    document.getElementById('connect-button').style.display = 'none'; // Hide the button
+      document.getElementById('connect-button').style.display = 'none'; // Hide the button
 
-    console.log('Connected to TronLink.');
-    console.log('User Address:', userAddress);
+      console.log('Connected to TronLink.');
+      console.log('User Address:', userAddress);
 
-    try {
+      try {
         const balance = await tronWeb.trx.getBalance(userAddress);
         console.log('Balance:', tronWeb.fromSun(balance), 'TRX');
 
@@ -177,21 +194,18 @@
         marketplaceContract = await tronWeb.contract(marketplaceContractAbi, marketplaceContractAddress);
 
         updateUI(balance);
-    } catch (error) {
+      } catch (error) {
         console.error('Error fetching balance:', error);
+      }
     }
-}
 
-  
-  function switchLanguage(language) {
-    if (language === 'zh') {
-      window.location.href = 'claim_zh.html';
-    } else {
-      window.location.href = 'claim_soon.html';
+    function switchLanguage(language) {
+      if (language === 'zh') {
+        window.location.href = 'claim_zh.html';
+      } else {
+        window.location.href = 'claim_soon.html';
+      }
     }
-  }
-
-
   </script>
 </body>
 </html>
