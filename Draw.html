@@ -216,19 +216,22 @@ input[type=number]::-webkit-inner-spin-button {
 </head>
 <body>
   <div class="sidebar">
-    <h2>CFT</h2>
-    <a href="index.html">CFT Token</a>
-    <a href="lottery.html">Lottery</a>
-    <a href="draw.html">Draw</a>
-    <a href="claim.html">Claim (Coming Soon)</a>
-    <div class="social-links">
-        <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
-            <i class="fab fa-twitter"></i>
-        </a>
-        <a href="https://t.me/claimfreetrxnow" target="_blank" class="social-icon">
-            <i class="fab fa-telegram-plane"></i>
-        </a>
-    </div>
+  <h2>CFT</h2>
+  <a href="index.html">CFT Token</a>
+  <a href="lottery.html">Lottery</a>
+  <a href="draw.html">Draw</a>
+  <a href="claim.html">Claim (Coming Soon)</a>
+  <div class="social-links">
+    <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
+      <i class="fab fa-twitter"></i>
+    </a>
+    <a href="https://t.me/claimfreetrxnow" target="_blank" class="social-icon">
+      <i class="fab fa-telegram-plane"></i>
+    </a>
+  </div>
+  <div class="language-switcher">
+    <button id="language-switcher" class="btn btn-secondary" onclick="switchLanguage('zh')">中文</button>
+  </div>
 </div>
   <div class="topbar">
     <button id="connect-button" onclick="connectWallet()">Connect Wallet</button>
@@ -1386,6 +1389,14 @@ async function initializeTronWeb() {
     console.error('Error fetching balance:', error);
   }
 }
+
+    function switchLanguage(language) {
+    if (language === 'zh') {
+      window.location.href = 'draw_zh.html';
+    } else {
+      window.location.href = 'draw.html';
+    }
+  }
 
 
 
