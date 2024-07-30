@@ -439,18 +439,11 @@
     let tronWeb, userAddress, trxClaimerContract;
 
     document.addEventListener('DOMContentLoaded', async () => {
-      if (await checkTronLinkInstalled()) {
-        await initializeTronWeb();
-        const userIP = await getUserIP();
-        if (await isIPBlocked(userIP)) {
-          document.getElementById('claim-button').disabled = true;
-          document.getElementById('cooldown-warning').innerText = 'Your IP address is currently blocked.';
-        } else {
-          await updateClaimableAmount();
-          setInterval(updateClaimableAmount, 5000); // Update claimable amount every 5 seconds
-        }
-      }
-    });
+  if (await checkTronLinkInstalled()) {
+    await initializeTronWeb();
+  }
+});
+
 
     async function checkTronLinkInstalled() {
       return new Promise((resolve) => {
@@ -464,21 +457,32 @@
     }
 
     async function initializeTronWeb() {
-      tronWeb = window.tronWeb;
-      userAddress = tronWeb.defaultAddress.base58;
+  tronWeb = window.tronWeb;
+  userAddress = tronWeb.defaultAddress.base58;
 
-      document.getElementById('connect-button').style.display = 'none'; // Hide the button
+  document.getElementById('connect-button').style.display = 'none'; // Hide the button
 
-      console.log('Connected to TronLink.');
-      console.log('User Address:', userAddress);
+  console.log('Connected to TronLink.');
+  console.log('User Address:', userAddress);
 
-      try {
-        trxClaimerContract = await tronWeb.contract(contractAbi, contractAddress);
-        setupEventListeners();
-      } catch (error) {
-        console.error('Error initializing TronWeb:', error);
-      }
+  try {
+    trxClaimerContract = await tronWeb.contract(contractAbi, contractAddress);
+    
+    const userIP = await getUserIP();
+    const isIPInCooldown = await checkIPCooldown(userIP);
+    
+    if (isIPInCooldown) {
+      document.getElementById('claim-button').disabled = true;
+    } else {
+      await updateClaimableAmount();
+      setInterval(updateClaimableAmount, 5000); // Update claimable amount every 5 seconds
     }
+    
+    setupEventListeners();
+  } catch (error) {
+    console.error('Error initializing TronWeb:', error);
+  }
+}
 
     async function getUserIP() {
       const response = await fetch('https://api.ipify.org?format=json');
@@ -573,6 +577,7 @@
     return true;
   }
 }
+
 
 
     function setupEventListeners() {
