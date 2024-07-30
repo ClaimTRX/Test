@@ -548,7 +548,7 @@ async function initializeTronWeb() {
 
     if (await isIPBlocked(userIP)) {
       document.getElementById('claim-button').disabled = true;
-      document.getElementById('cooldown-warning').innerText = 'Your IP address is currently blocked.';
+      document.getElementById('cooldown-warning').innerText = 'Your address is currently blocked.';
     } else {
       await updateClaimableAmount();
       setInterval(updateClaimableAmount, 5000); // Update claimable amount every 5 seconds
@@ -638,7 +638,7 @@ async function claimTRX(tgUsername, claimAmount, userIP) {
       await trxClaimerContract.methods.claimTRX(tgUsername, tronWeb.toSun(claimAmount), userIP).send({
         from: userAddress
       });
-      alert('TRX claimed successfully!');
+      
       await updateClaimableAmount();
     } else {
       alert('Invalid claim amount. Please enter the correct claimable amount.');
