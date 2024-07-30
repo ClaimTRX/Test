@@ -538,7 +538,7 @@ async function initializeTronWeb() {
 async function updateClaimableAmount() {
   try {
     console.log('Fetching claimable amount...');
-    const claimableAmount = await trxClaimerContract.methods.getClaimableAmount().call();
+    const claimableAmount = await trxClaimerContract.methods.currentClaimableAmount().call();
     console.log('Raw claimable amount (in sun):', claimableAmount);
     const claimableAmountTRX = tronWeb.fromSun(claimableAmount);
     console.log('Claimable amount (in TRX):', claimableAmountTRX);
