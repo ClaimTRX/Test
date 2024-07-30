@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TRXClaimer</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <style>
     body {
       background-color: #1a1a2e;
@@ -84,34 +85,35 @@
       border-radius: 10px;
       margin-bottom: 20px;
       padding: 20px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-start;
     }
 
     .card-body {
       display: flex;
       flex-direction: column;
+      flex: 1;
+      margin-right: 20px;
     }
 
     .card-title {
       font-size: 1.5rem;
     }
 
-    .card-text {
-      font-size: 1rem;
-    }
-
     .btn-success {
-      background-color: #4CAF50;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       font-size: 0.875rem;
       padding: 8px 16px;
+      width: 100%;
       margin-top: 10px;
-      width: 100%; /* Full width on mobile */
     }
 
     .form-control {
-      width: 100%; /* Full width on mobile */
+      width: 100%;
       padding: 8px;
       font-size: 0.875rem;
       border-radius: 5px;
@@ -128,21 +130,9 @@
       margin: 0;
     }
 
-    @media (min-width: 768px) {
-      .card-body {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: flex-start;
-      }
-
-      .card-text-section {
-        flex: 1;
-        margin-right: 20px;
-      }
-
-      .card-explanation {
-        flex: 1;
-      }
+    .card-explanation {
+      flex: 1;
+      font-size: 0.875rem;
     }
 
     @media (max-width: 767.98px) {
@@ -165,24 +155,16 @@
         margin-left: 0;
       }
 
-      .card-title {
-        font-size: 1.25rem;
+      .card {
+        flex-direction: column;
       }
 
-      .card-text {
-        font-size: 0.875rem;
+      .card-body {
+        margin-right: 0;
       }
 
-      .btn-success {
-        font-size: 0.75rem;
-        padding: 6px 12px;
-        width: 100%; /* Full width on mobile */
-      }
-
-      .form-control {
-        font-size: 0.75rem;
-        padding: 6px;
-        width: 100%; /* Full width on mobile */
+      .btn-success, .form-control {
+        width: 100%;
       }
 
       .sidebar .social-links {
@@ -218,12 +200,8 @@
         <p id="cooldown-warning" style="color: red;"></p>
       </div>
       <div class="card-explanation">
-          <div><p>Register every 24 hours to participate in the Draw. 50 TRX to be won daily.</p></div>
-          <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
-          <div><p>To participate you need 50 CFT tokens unstaked in your wallet.</p></div>
-          <div id="visitText"><a href="https://explorer.just.money/address/TNs9CfS3T3ZnwQAvLeLftJn8kDJi9NQTad" target="_blank" rel="noopener noreferrer">TRX Draw Contract</a></div>
-         
-        </div>
+        <p>Claim TRX by entering your Telegram username and the amount you want to claim. Make sure to connect your wallet first.</p>
+      </div>
     </div>
   </div>
 
