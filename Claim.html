@@ -551,7 +551,7 @@ async function initializeTronWeb() {
       document.getElementById('cooldown-warning').innerText = 'Your address is currently blocked.';
     } else {
       await updateClaimableAmount();
-      setInterval(updateClaimableAmount, 5000); // Update claimable amount every 5 seconds
+      setInterval(checkAndDisplayCooldown, 60000); // Check cooldown every 60 seconds (1 minute)
       setupEventListeners();
     }
   } catch (error) {
@@ -576,24 +576,14 @@ async function updateClaimableAmount() {
     const claimableAmountTRX = tronWeb.fromSun(claimableAmount);
     document.getElementById('claimable-amount').innerText = `${claimableAmountTRX} TRX`;
 
-    const claimButton = document.getElementById('claim-button');
-    if (claimableAmount == 0) {
-      claimButton.disabled = true;
-    } else {
-      const isUserInCooldown = await checkCooldown();
-      if (isUserInCooldown) {
-        claimButton.disabled = true;
-      } else {
-        claimButton.disabled = false;
-      }
-    }
+    await checkAndDisplayCooldown(); // Initial cooldown check
   } catch (error) {
     console.error('Error updating claimable amount:', error);
     document.getElementById('claimable-amount').innerText = 'Error loading claimable amount';
   }
 }
 
-async function checkCooldown() {
+async function checkAndDisplayCooldown() {
   try {
     const lastClaimTime = parseInt(await trxClaimerContract.methods.lastClaimTime(userAddress).call());
     const cooldownPeriod = parseInt(await trxClaimerContract.methods.cooldownPeriod().call());
@@ -606,16 +596,15 @@ async function checkCooldown() {
     console.log(`Time Left: ${timeLeft}`);
 
     if (timeLeft > 0) {
-      document.getElementById('cooldown-warning').innerText = `You are currently on a cooldown. Time left: ${timeLeft} seconds.`;
-      return true;
+      document.getElementById('cooldown-warning').innerText = `You are currently on a cooldown. Time left: ${Math.ceil(timeLeft / 60)} minutes.`;
+      document.getElementById('claim-button').disabled = true;
     } else {
       document.getElementById('cooldown-warning').innerText = '';
-      return false;
+      document.getElementById('claim-button').disabled = false;
     }
   } catch (error) {
     console.error('Error checking cooldown:', error);
     document.getElementById('cooldown-warning').innerText = 'Error checking cooldown period';
-    return true;
   }
 }
 
