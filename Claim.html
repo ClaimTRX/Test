@@ -500,134 +500,140 @@
 ;
 
     document.addEventListener('DOMContentLoaded', async () => {
-      if (await checkTronLinkInstalled()) {
-        await initializeTronWeb();
-        await updateClaimableAmount();
-        setInterval(updateClaimableAmount, 5000); // Update claimable amount every 5 seconds
+  if (await checkTronLinkInstalled()) {
+    await initializeTronWeb();
+    await updateClaimableAmount();
+    setInterval(updateClaimableAmount, 5000); // Update claimable amount every 5 seconds
+  }
+});
+
+async function checkTronLinkInstalled() {
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+        clearInterval(interval);
+        resolve(true);
       }
-    });
+    }, 1000);
+  });
+}
 
-    async function checkTronLinkInstalled() {
-      return new Promise((resolve) => {
-        const interval = setInterval(() => {
-          if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-            clearInterval(interval);
-            resolve(true);
-          }
-        }, 1000);
-      });
-    }
+async function initializeTronWeb() {
+  tronWeb = window.tronWeb;
+  userAddress = tronWeb.defaultAddress.base58;
 
-    async function initializeTronWeb() {
-      tronWeb = window.tronWeb;
-      userAddress = tronWeb.defaultAddress.base58;
+  document.getElementById('connect-button').style.display = 'none'; // Hide the button
 
-      document.getElementById('connect-button').style.display = 'none'; // Hide the button
+  console.log('Connected to TronLink.');
+  console.log('User Address:', userAddress);
 
-      console.log('Connected to TronLink.');
-      console.log('User Address:', userAddress);
+  try {
+    trxClaimerContract = await tronWeb.contract(contractAbi, contractAddress);
+    setupEventListeners();
+  } catch (error) {
+    console.error('Error initializing TronWeb:', error);
+  }
+}
 
-      try {
-        trxClaimerContract = await tronWeb.contract(contractAbi, contractAddress);
-        setupEventListeners();
-      } catch (error) {
-        console.error('Error initializing TronWeb:', error);
-      }
-    }
+async function updateClaimableAmount() {
+  try {
+    console.log('Fetching claimable amount...');
+    const claimableAmount = await trxClaimerContract.methods.getClaimableAmount().call();
+    console.log('Claimable amount (in sun):', claimableAmount);
+    const claimableAmountTRX = tronWeb.fromSun(claimableAmount);
+    document.getElementById('claimable-amount').innerText = `Claimable Amount: ${claimableAmountTRX} TRX`;
 
-    async function updateClaimableAmount() {
-      try {
-        const claimableAmount = await trxClaimerContract.methods.getClaimableAmount().call();
-        const claimableAmountTRX = tronWeb.fromSun(claimableAmount);
-        document.getElementById('claimable-amount').innerText = `Claimable Amount: ${claimableAmountTRX} TRX`;
-
-        const claimButton = document.getElementById('claim-button');
-        if (claimableAmount == 0) {
-          claimButton.disabled = true;
-        } else {
-          const isInCooldown = await checkCooldown();
-          if (isInCooldown) {
-            claimButton.disabled = true;
-          } else {
-            claimButton.disabled = false;
-          }
-        }
-      } catch (error) {
-        console.error('Error updating claimable amount:', error);
-        document.getElementById('claimable-amount').innerText = 'Error loading claimable amount';
+    const claimButton = document.getElementById('claim-button');
+    if (claimableAmount == 0) {
+      claimButton.disabled = true;
+    } else {
+      const isInCooldown = await checkCooldown();
+      if (isInCooldown) {
+        claimButton.disabled = true;
+      } else {
+        claimButton.disabled = false;
       }
     }
+  } catch (error) {
+    console.error('Error updating claimable amount:', error);
+    document.getElementById('claimable-amount').innerText = 'Error loading claimable amount';
+  }
+}
 
-    async function checkCooldown() {
+async function checkCooldown() {
+  try {
+    console.log('Checking cooldown...');
+    const lastClaimTime = await trxClaimerContract.methods.lastClaimTime(userAddress).call();
+    console.log('Last claim time:', lastClaimTime);
+    const cooldownPeriod = await trxClaimerContract.methods.cooldownPeriod().call();
+    console.log('Cooldown period:', cooldownPeriod);
+    const currentTime = Math.floor(Date.now() / 1000);
+    const timeLeft = lastClaimTime + cooldownPeriod - currentTime;
+
+    if (timeLeft > 0) {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      document.getElementById('cooldown-warning').innerText = `You are in cooldown period. Time left: ${minutes} minutes and ${seconds} seconds.`;
+      return true;
+    } else {
+      document.getElementById('cooldown-warning').innerText = '';
+      return false;
+    }
+  } catch (error) {
+    console.error('Error checking cooldown:', error);
+    document.getElementById('cooldown-warning').innerText = 'Error checking cooldown period';
+    return true;
+  }
+}
+
+function setupEventListeners() {
+  document.getElementById('claim-button').addEventListener('click', async () => {
+    const tgUsername = document.getElementById('tg-username').value;
+    const claimAmount = document.getElementById('claim-amount').value;
+    if (tgUsername && claimAmount) {
       try {
-        const lastClaimTime = await trxClaimerContract.methods.lastClaimTime(userAddress).call();
-        const cooldownPeriod = await trxClaimerContract.methods.cooldownPeriod().call();
-        const currentTime = Math.floor(Date.now() / 1000);
-        const timeLeft = lastClaimTime + cooldownPeriod - currentTime;
-
-        if (timeLeft > 0) {
-          const minutes = Math.floor(timeLeft / 60);
-          const seconds = timeLeft % 60;
-          document.getElementById('cooldown-warning').innerText = `You are in cooldown period. Time left: ${minutes} minutes and ${seconds} seconds.`;
-          return true;
-        } else {
-          document.getElementById('cooldown-warning').innerText = '';
-          return false;
-        }
-      } catch (error) {
-        console.error('Error checking cooldown:', error);
-        document.getElementById('cooldown-warning').innerText = 'Error checking cooldown period';
-        return true;
-      }
-    }
-
-    function setupEventListeners() {
-      document.getElementById('claim-button').addEventListener('click', async () => {
-        const tgUsername = document.getElementById('tg-username').value;
-        const claimAmount = document.getElementById('claim-amount').value;
-        if (tgUsername && claimAmount) {
-          try {
-            const userIP = await getUserIP();
-            await claimTRX(tgUsername, claimAmount, userIP);
-          } catch (error) {
-            console.error('Error claiming TRX:', error);
-          }
-        } else {
-          alert('Please enter your Telegram username and the claim amount.');
-        }
-      });
-    }
-
-    async function getUserIP() {
-      const response = await fetch('https://api.ipify.org?format=json');
-      const data = await response.json();
-      return data.ip;
-    }
-
-    async function claimTRX(tgUsername, claimAmount, userIP) {
-      try {
-        const claimableAmount = await trxClaimerContract.methods.getClaimableAmount().call();
-        if (parseInt(claimAmount) === parseInt(tronWeb.fromSun(claimableAmount))) {
-          await trxClaimerContract.methods.claimTRX(tgUsername, tronWeb.toSun(claimAmount), userIP).send({
-            from: userAddress
-          });
-          alert('TRX claimed successfully!');
-          await updateClaimableAmount();
-        } else {
-          alert('Invalid claim amount. Please enter the correct claimable amount.');
-        }
+        const userIP = await getUserIP();
+        await claimTRX(tgUsername, claimAmount, userIP);
       } catch (error) {
         console.error('Error claiming TRX:', error);
       }
+    } else {
+      alert('Please enter your Telegram username and the claim amount.');
     }
+  });
+}
 
-    async function connectWallet() {
-      if (await checkTronLinkInstalled()) {
-        await initializeTronWeb();
-      } else {
-        console.log('Please install TronLink extension in your browser.');
-      }
+async function getUserIP() {
+  const response = await fetch('https://api.ipify.org?format=json');
+  const data = await response.json();
+  return data.ip;
+}
+
+async function claimTRX(tgUsername, claimAmount, userIP) {
+  try {
+    const claimableAmount = await trxClaimerContract.methods.getClaimableAmount().call();
+    if (parseInt(claimAmount) === parseInt(tronWeb.fromSun(claimableAmount))) {
+      await trxClaimerContract.methods.claimTRX(tgUsername, tronWeb.toSun(claimAmount), userIP).send({
+        from: userAddress
+      });
+      alert('TRX claimed successfully!');
+      await updateClaimableAmount();
+    } else {
+      alert('Invalid claim amount. Please enter the correct claimable amount.');
     }
+  } catch (error) {
+    console.error('Error claiming TRX:', error);
+  }
+}
+
+async function connectWallet() {
+  if (await checkTronLinkInstalled()) {
+    await initializeTronWeb();
+  } else {
+    console.log('Please install TronLink extension in your browser.');
+  }
+}
+
   </script>
 </body>
 </html>
