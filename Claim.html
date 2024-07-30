@@ -293,7 +293,7 @@
   <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
   <script>
     let tronWeb, userAddress, trxClaimerContract;
-    const contractAddress = 'TXQckkUf3tdMfuLv65iat6bx3X27ubb6AC';
+    const contractAddress = 'TDPf7XMTE8HxFV7x2NHfUQPeFc6RJsgeWo';
     const contractAbi = [
   {
     "inputs": [],
@@ -538,7 +538,7 @@ async function initializeTronWeb() {
 async function updateClaimableAmount() {
   try {
     console.log('Fetching claimable amount...');
-    const claimableAmount = await trxClaimerContract.methods.currentClaimableAmount().call();
+    const claimableAmount = await trxClaimerContract.methods.getClaimableAmount().call();
     console.log('Raw claimable amount (in sun):', claimableAmount);
     const claimableAmountTRX = tronWeb.fromSun(claimableAmount);
     console.log('Claimable amount (in TRX):', claimableAmountTRX);
@@ -639,4 +639,5 @@ async function connectWallet() {
   </script>
 </body>
 </html>
+
 
