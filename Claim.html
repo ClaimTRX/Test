@@ -595,8 +595,8 @@ async function updateClaimableAmount() {
 
 async function checkCooldown() {
   try {
-    const lastClaimTime = await trxClaimerContract.methods.lastClaimTime(userAddress).call();
-    const cooldownPeriod = await trxClaimerContract.methods.cooldownPeriod().call();
+    const lastClaimTime = parseInt(await trxClaimerContract.methods.lastClaimTime(userAddress).call());
+    const cooldownPeriod = parseInt(await trxClaimerContract.methods.cooldownPeriod().call());
     const currentTime = Math.floor(Date.now() / 1000);
     const timeLeft = lastClaimTime + cooldownPeriod - currentTime;
 
@@ -606,7 +606,7 @@ async function checkCooldown() {
     console.log(`Time Left: ${timeLeft}`);
 
     if (timeLeft > 0) {
-      document.getElementById('cooldown-warning').innerText = 'You are currently on a cooldown.';
+      document.getElementById('cooldown-warning').innerText = `You are currently on a cooldown. Time left: ${timeLeft} seconds.`;
       return true;
     } else {
       document.getElementById('cooldown-warning').innerText = '';
@@ -660,8 +660,6 @@ async function connectWallet() {
     console.log('Please install TronLink extension in your browser.');
   }
 }
-
-
 
 
   </script>
