@@ -108,12 +108,12 @@
       cursor: pointer;
       font-size: 0.875rem;
       padding: 8px 16px;
-      width: 100%;
+      width: 20%;
       margin-top: 10px;
     }
 
     .form-control {
-      width: 100%;
+      width: 20%;
       padding: 8px;
       font-size: 0.875rem;
       border-radius: 5px;
@@ -193,7 +193,7 @@
     <h1>Claim TRX</h1>
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">Claimable Amount: <span id="claimable-amount">0 TRX</span></h5>
+        <h5 class="card-title" id="claimable-amount"></h5>
         <input type="text" id="tg-username" class="form-control" placeholder="Enter your Telegram username">
         <input type="number" id="claim-amount" class="form-control" placeholder="Enter claim amount">
         <button id="claim-button" class="btn btn-success">Claim</button>
@@ -341,25 +341,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "userIP",
-        "type": "string"
-      }
-    ],
-    "name": "lastClaimTimeByIP",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "cooldownPeriod",
     "outputs": [
@@ -402,7 +383,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_cooldownHours",
+        "name": "_cooldownMinutes",
         "type": "uint256"
       }
     ],
@@ -519,8 +500,9 @@
     "name": "IPUnblocked",
     "type": "event"
   }
-];
-    const contractAddress = 'TWFHjJtugEz8dvyp5rJL8FYdNWfA6iGgYc';
+]
+;
+    const contractAddress = 'TQibtc8XWTGREKVFcsJEKkNhXBgkDPa5ZT';
     let tronWeb, userAddress, trxClaimerContract;
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -553,8 +535,15 @@
         trxClaimerContract = await tronWeb.contract(contractAbi, contractAddress);
         
         const userIP = await getUserIP();
-        await checkCooldown(userIP); // Check cooldown based on user IP and address
-        await updateClaimableAmount();
+        const isIPInCooldown = await checkIPCooldown(userIP);
+        
+        if (isIPInCooldown) {
+          document.getElementById('claim-button').disabled = true;
+        } else {
+          await updateClaimableAmount();
+          setInterval(updateClaimableAmount, 5000); // Update claimable amount every 5 seconds
+        }
+        
         setupEventListeners();
       } catch (error) {
         console.error('Error initializing TronWeb:', error);
@@ -567,30 +556,21 @@
       return data.ip;
     }
 
-    async function checkCooldown(userIP) {
+    async function checkIPCooldown(userIP) {
       try {
-        console.log('Checking cooldown...');
-        const lastClaimTime = await trxClaimerContract.methods.lastClaimTime(userAddress).call();
-        const lastClaimTimeByIP = await trxClaimerContract.methods.lastClaimTimeByIP(userIP).call();
-        console.log('Last claim time:', lastClaimTime);
-        console.log('Last claim time by IP:', lastClaimTimeByIP);
-        const cooldownPeriod = await trxClaimerContract.methods.cooldownPeriod().call();
-        console.log('Cooldown period:', cooldownPeriod);
-        const currentTime = Math.floor(Date.now() / 1000);
-        const timeLeftForUser = lastClaimTime + cooldownPeriod - currentTime;
-        const timeLeftForIP = lastClaimTimeByIP + cooldownPeriod - currentTime;
-
-        if (timeLeftForUser > 0 || timeLeftForIP > 0) {
-          document.getElementById('cooldown-warning').innerText = 'You are currently on a 48-hour cooldown.';
-          document.getElementById('claim-button').disabled = true;
+        console.log('Checking IP cooldown...');
+        const isBlocked = await trxClaimerContract.methods.isIPBlocked(userIP).call();
+        if (isBlocked) {
+          document.getElementById('cooldown-warning').innerText = 'Your IP address is currently blocked.';
+          return true;
         } else {
           document.getElementById('cooldown-warning').innerText = '';
-          document.getElementById('claim-button').disabled = false;
+          return false;
         }
       } catch (error) {
-        console.error('Error checking cooldown:', error);
+        console.error('Error checking IP cooldown:', error);
         document.getElementById('cooldown-warning').innerText = 'Error checking cooldown period';
-        document.getElementById('claim-button').disabled = true;
+        return true;
       }
     }
 
@@ -603,9 +583,46 @@
         console.log('Claimable amount (in TRX):', claimableAmountTRX);
         document.getElementById('claimable-amount').innerText = `Claimable Amount: ${claimableAmountTRX} TRX`;
 
+        const claimButton = document.getElementById('claim-button');
+        if (claimableAmount == 0) {
+          claimButton.disabled = true;
+        } else {
+          const isUserInCooldown = await checkCooldown();
+          const userIP = await getUserIP();
+          const isIPInCooldown = await checkIPCooldown(userIP);
+          if (isUserInCooldown || isIPInCooldown) {
+            claimButton.disabled = true;
+          } else {
+            claimButton.disabled = false;
+          }
+        }
       } catch (error) {
         console.error('Error updating claimable amount:', error);
         document.getElementById('claimable-amount').innerText = 'Error loading claimable amount';
+      }
+    }
+
+    async function checkCooldown() {
+      try {
+        console.log('Checking cooldown...');
+        const lastClaimTime = await trxClaimerContract.methods.lastClaimTime(userAddress).call();
+        console.log('Last claim time:', lastClaimTime);
+        const cooldownPeriod = await trxClaimerContract.methods.cooldownPeriod().call();
+        console.log('Cooldown period:', cooldownPeriod);
+        const currentTime = Math.floor(Date.now() / 1000);
+        const timeLeft = lastClaimTime + cooldownPeriod - currentTime;
+
+        if (timeLeft > 0) {
+          document.getElementById('cooldown-warning').innerText = 'You are currently on a cooldown.';
+          return true;
+        } else {
+          document.getElementById('cooldown-warning').innerText = '';
+          return false;
+        }
+      } catch (error) {
+        console.error('Error checking cooldown:', error);
+        document.getElementById('cooldown-warning').innerText = 'Error checking cooldown period';
+        return true;
       }
     }
 
@@ -653,8 +670,6 @@
   </script>
 </body>
 </html>
-
-
 
 
 
