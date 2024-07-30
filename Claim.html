@@ -552,7 +552,7 @@ async function initializeTronWeb() {
     } else {
       await updateClaimableAmount();
       setInterval(updateClaimableAmount, 5000); // Update claimable amount every 5 seconds
-      setInterval(checkAndDisplayCooldown, 60000); // Check cooldown every 60 seconds (1 minute)
+      setInterval(checkCooldown, 60000); // Check cooldown every minute
       setupEventListeners();
     }
   } catch (error) {
@@ -594,28 +594,24 @@ async function updateClaimableAmount() {
   }
 }
 
-async function checkAndDisplayCooldown() {
+async function checkCooldown() {
   try {
-    const lastClaimTime = parseInt(await trxClaimerContract.methods.lastClaimTime(userAddress).call());
-    const cooldownPeriod = parseInt(await trxClaimerContract.methods.cooldownPeriod().call());
+    const lastClaimTime = await trxClaimerContract.methods.lastClaimTime(userAddress).call();
+    const cooldownPeriod = await trxClaimerContract.methods.cooldownPeriod().call();
     const currentTime = Math.floor(Date.now() / 1000);
     const timeLeft = lastClaimTime + cooldownPeriod - currentTime;
 
-    console.log(`Last Claim Time: ${lastClaimTime}`);
-    console.log(`Cooldown Period: ${cooldownPeriod}`);
-    console.log(`Current Time: ${currentTime}`);
-    console.log(`Time Left: ${timeLeft}`);
-
     if (timeLeft > 0) {
-      document.getElementById('cooldown-warning').innerText = `You are currently on a cooldown. Time left: ${Math.ceil(timeLeft / 60)} minutes.`;
-      document.getElementById('claim-button').disabled = true;
+      document.getElementById('cooldown-warning').innerText = 'You are currently on a cooldown.';
+      return true;
     } else {
       document.getElementById('cooldown-warning').innerText = '';
-      document.getElementById('claim-button').disabled = false;
+      return false;
     }
   } catch (error) {
     console.error('Error checking cooldown:', error);
     document.getElementById('cooldown-warning').innerText = 'Error checking cooldown period';
+    return true;
   }
 }
 
@@ -660,7 +656,6 @@ async function connectWallet() {
     console.log('Please install TronLink extension in your browser.');
   }
 }
-
 
   </script>
 </body>
