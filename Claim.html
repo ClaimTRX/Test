@@ -293,7 +293,7 @@
   <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
   <script>
     let tronWeb, userAddress, trxClaimerContract;
-    const contractAddress = 'TM72jWowjy1eNrAx4G4GhMrwFfZ6apqzdp';
+    const contractAddress = 'THhmYkR3CrtkmFJauQ7RV84ezgWCdAJEaD';
     const contractAbi = [
   {
     "inputs": [],
@@ -309,6 +309,45 @@
       }
     ],
     "name": "addToBlacklist",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "removeFromBlacklist",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "userIP",
+        "type": "string"
+      }
+    ],
+    "name": "blockIP",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "userIP",
+        "type": "string"
+      }
+    ],
+    "name": "unblockIP",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -358,6 +397,25 @@
       }
     ],
     "name": "lastClaimTime",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "userIP",
+        "type": "string"
+      }
+    ],
+    "name": "lastClaimTimeByIP",
     "outputs": [
       {
         "internalType": "uint256",
@@ -501,16 +559,49 @@
     ],
     "name": "RemovedFromBlacklist",
     "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "string",
+        "name": "userIP",
+        "type": "string"
+      }
+    ],
+    "name": "IPBlocked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "string",
+        "name": "userIP",
+        "type": "string"
+      }
+    ],
+    "name": "IPUnblocked",
+    "type": "event"
   }
 ]
+
 
 ;
 
     document.addEventListener('DOMContentLoaded', async () => {
   if (await checkTronLinkInstalled()) {
     await initializeTronWeb();
-    await updateClaimableAmount();
-    setInterval(updateClaimableAmount, 5000); // Update claimable amount every 5 seconds
+    const userIP = await getUserIP();
+    if (await isIPBlocked(userIP)) {
+      document.getElementById('claim-button').disabled = true;
+      document.getElementById('cooldown-warning').innerText = 'Your IP address is currently blocked.';
+    } else {
+      await updateClaimableAmount();
+      setInterval(updateClaimableAmount, 5000); // Update claimable amount every 5 seconds
+    }
   }
 });
 
@@ -539,6 +630,23 @@ async function initializeTronWeb() {
     setupEventListeners();
   } catch (error) {
     console.error('Error initializing TronWeb:', error);
+  }
+}
+
+async function getUserIP() {
+  const response = await fetch('https://api.ipify.org?format=json');
+  const data = await response.json();
+  return data.ip;
+}
+
+async function isIPBlocked(userIP) {
+  try {
+    const isBlocked = await trxClaimerContract.methods.blockedIPs(userIP).call();
+    console.log('Is IP blocked:', isBlocked);
+    return isBlocked;
+  } catch (error) {
+    console.error('Error checking IP block status:', error);
+    return true;
   }
 }
 
@@ -579,9 +687,7 @@ async function checkCooldown() {
     const timeLeft = lastClaimTime + cooldownPeriod - currentTime;
 
     if (timeLeft > 0) {
-      const minutes = Math.floor(timeLeft / 60);
-      const seconds = timeLeft % 60;
-      document.getElementById('cooldown-warning').innerText = `You are in cooldown period. Time left: ${minutes} minutes and ${seconds} seconds.`;
+      document.getElementById('cooldown-warning').innerText = 'You are currently on a 48-hour cooldown.';
       return true;
     } else {
       document.getElementById('cooldown-warning').innerText = '';
@@ -598,9 +704,9 @@ function setupEventListeners() {
   document.getElementById('claim-button').addEventListener('click', async () => {
     const tgUsername = document.getElementById('tg-username').value;
     const claimAmount = document.getElementById('claim-amount').value;
+    const userIP = await getUserIP();
     if (tgUsername && claimAmount) {
       try {
-        const userIP = await getUserIP();
         await claimTRX(tgUsername, claimAmount, userIP);
       } catch (error) {
         console.error('Error claiming TRX:', error);
@@ -609,12 +715,6 @@ function setupEventListeners() {
       alert('Please enter your Telegram username and the claim amount.');
     }
   });
-}
-
-async function getUserIP() {
-  const response = await fetch('https://api.ipify.org?format=json');
-  const data = await response.json();
-  return data.ip;
 }
 
 async function claimTRX(tgUsername, claimAmount, userIP) {
@@ -641,7 +741,6 @@ async function connectWallet() {
     console.log('Please install TronLink extension in your browser.');
   }
 }
-
 
 
   </script>
