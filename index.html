@@ -387,6 +387,7 @@
   <script>
     let tronWeb, userAddress, stakingContract, tokenContract, buyCftContract, marketplaceContract;
     const stakingContractAddress = 'TVSMKqBk12161JDAQBh9pkdxMAgCtuGrdA';
+    const newStakingContractAddress = 'TE72MtgxryBwKMhH9MMnDmdCtPZFYiZdDL';
     const tokenContractAddress = 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA';
     const buyCftContractAddress = 'TNd9QQNUUENTQWCs81yan3ttzahQXHJhAC';
     const marketplaceContractAddress = 'TQaF95pNKxZp8HEVKT7Y4V9WMJYofsEKra';
@@ -1188,389 +1189,643 @@
         }
     ];
 
+    const newStakingContractAbi = [
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_stakingToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_rewardToken",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_dailyReward",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "RewardClaimed",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "Staked",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "Withdrawn",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "OwnerWithdrawn",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "stake",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "withdraw",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "claimReward",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "ownerWithdraw",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "viewAPR",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "viewTotalStaked",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "viewStakedAmount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "viewPendingReward",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "viewTotalClaimedRewards",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "viewDailyReward",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_dailyReward",
+                "type": "uint256"
+            }
+        ],
+        "name": "setDailyReward",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "receive"
+    }
+];
+
     document.addEventListener('DOMContentLoaded', async () => {
-        if (await checkTronLinkInstalled()) {
-            await initializeTronWeb();
+    if (await checkTronLinkInstalled()) {
+        await initializeTronWeb();
+    }
+});
+
+async function checkTronLinkInstalled() {
+    return new Promise((resolve) => {
+        const interval = setInterval(() => {
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                clearInterval(interval);
+                resolve(true);
+            }
+        }, 1000);
+    });
+}
+
+async function initializeTronWeb() {
+    tronWeb = window.tronWeb;
+    userAddress = tronWeb.defaultAddress.base58;
+
+    document.getElementById('connect-button').style.display = 'none'; // Hide the button
+
+    console.log('Connected to TronLink.');
+    console.log('User Address:', userAddress);
+
+    try {
+        const balance = await tronWeb.trx.getBalance(userAddress);
+        console.log('Balance:', tronWeb.fromSun(balance), 'TRX');
+
+        // Initialize contracts
+        stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
+        tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
+        buyCftContract = await tronWeb.contract(buyCftContractAbi, buyCftContractAddress);
+        marketplaceContract = await tronWeb.contract(marketplaceContractAbi, marketplaceContractAddress);
+        newStakingContract = await tronWeb.contract(newStakingContractAbi, newStakingContractAddress);
+
+        updateUI(balance);
+    } catch (error) {
+        console.error('Error fetching balance:', error);
+    }
+}
+
+function switchLanguage(language) {
+    if (language === 'zh') {
+        window.location.href = 'index_zh.html';
+    } else {
+        window.location.href = 'index.html';
+    }
+}
+
+async function updateUI(balance) {
+    try {
+        await updateClaimableRewards();
+        await updateAPR();
+        await updateStakedAmount();
+        await updateAvailableCFT();
+        await updateTotalStakedAmount();
+        await updateTotalBuyCFT();
+        updateAvailableTRX(balance);
+        fetchMarketplaceListings();
+
+        setupEventListeners();
+    } catch (error) {
+        console.error('Error updating UI:', error);
+    }
+}
+
+async function updateClaimableRewards() {
+    const claimableRewards = await stakingContract.methods.viewPendingReward(userAddress).call();
+    document.getElementById('claimable-rewards').innerText = formatNumber(tronWeb.fromSun(claimableRewards)) + ' TRX';
+}
+
+async function updateTotalStakedAmount() {
+    const totalStakedAmount = await stakingContract.methods.viewTotalStaked().call();
+    document.getElementById('total-staked-amount').innerText = formatWholeNumber(tronWeb.fromSun(totalStakedAmount)) + ' CFT';
+}
+
+async function updateAPR() {
+    const currentAPR = await stakingContract.methods.viewAPR().call();
+    document.getElementById('current-apr').innerText = formatAPR(currentAPR) + ' %';
+}
+
+async function updateStakedAmount() {
+    const stakedAmount = await stakingContract.methods.viewStakedAmount(userAddress).call();
+    document.getElementById('staked-amount').innerText = formatWholeNumber(tronWeb.fromSun(stakedAmount)) + ' CFT';
+}
+
+async function updateAvailableCFT() {
+    const availableCFT = await tokenContract.methods.balanceOf(userAddress).call();
+    document.getElementById('available-cft').innerText = 'Available CFT: ' + formatWholeNumber(tronWeb.fromSun(availableCFT)) + ' CFT';
+}
+
+async function updateTotalBuyCFT() {
+    try {
+        const totalBuyCFT = await tokenContract.methods.balanceOf(buyCftContractAddress).call();
+        document.getElementById('total-buy-cft').innerText = formatWholeNumber(tronWeb.fromSun(totalBuyCFT)) + ' CFT';
+    } catch (error) {
+        console.error('Error fetching total CFT tokens in buy contract:', error);
+    }
+}
+
+function updateAvailableTRX(balance) {
+    document.getElementById('available-trx').innerText = 'Available TRX: ' + formatNumber(tronWeb.fromSun(balance)) + ' TRX';
+}
+
+function setupEventListeners() {
+    document.getElementById('stake-button').addEventListener('click', async () => {
+        const stakeAmount = document.getElementById('stake-amount').value;
+        if (stakeAmount) {
+            try {
+                await stakeTokens(stakeAmount);
+                setTimeout(refreshUI, 3000);
+            } catch (error) {
+                console.error('Error staking tokens:', error);
+            }
         }
     });
 
-    async function checkTronLinkInstalled() {
-        return new Promise((resolve) => {
-            const interval = setInterval(() => {
-                if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                    clearInterval(interval);
-                    resolve(true);
-                }
-            }, 1000);
-        });
-    }
-
-    async function initializeTronWeb() {
-        tronWeb = window.tronWeb;
-        userAddress = tronWeb.defaultAddress.base58;
-
-        document.getElementById('connect-button').style.display = 'none'; // Hide the button
-
-        console.log('Connected to TronLink.');
-        console.log('User Address:', userAddress);
-
+    document.getElementById('unstake-button').addEventListener('click', async () => {
         try {
-            const balance = await tronWeb.trx.getBalance(userAddress);
-            console.log('Balance:', tronWeb.fromSun(balance), 'TRX');
-
-            // Initialize contracts
-            stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
-            tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
-            buyCftContract = await tronWeb.contract(buyCftContractAbi, buyCftContractAddress);
-            marketplaceContract = await tronWeb.contract(marketplaceContractAbi, marketplaceContractAddress);
-
-            updateUI(balance);
+            await unstakeTokens();
+            setTimeout(refreshUI, 3000);
         } catch (error) {
-            console.error('Error fetching balance:', error);
+            console.error('Error unstaking tokens:', error);
         }
-    }
+    });
 
-    function switchLanguage(language) {
-        if (language === 'zh') {
-            window.location.href = 'index_zh.html';
-        } else {
-            window.location.href = 'index.html';
-        }
-    }
-
-    async function updateUI(balance) {
+    document.getElementById('claim-rewards-button').addEventListener('click', async () => {
         try {
-            await updateClaimableRewards();
-            await updateAPR();
-            await updateStakedAmount();
-            await updateAvailableCFT();
-            await updateTotalStakedAmount();
-            await updateTotalBuyCFT();
-            updateAvailableTRX(balance);
-            fetchMarketplaceListings();
-
-            setupEventListeners();
+            await claimRewards();
+            setTimeout(refreshUI, 3000);
         } catch (error) {
-            console.error('Error updating UI:', error);
+            console.error('Error claiming rewards:', error);
         }
-    }
+    });
 
-    async function updateClaimableRewards() {
-        const claimableRewards = await stakingContract.methods.viewPendingReward(userAddress).call();
-        document.getElementById('claimable-rewards').innerText = formatNumber(tronWeb.fromSun(claimableRewards)) + ' TRX';
-    }
-
-    async function updateTotalStakedAmount() {
-        const totalStakedAmount = await stakingContract.methods.viewTotalStaked().call();
-        document.getElementById('total-staked-amount').innerText = formatWholeNumber(tronWeb.fromSun(totalStakedAmount)) + ' CFT';
-    }
-
-    async function updateAPR() {
-        const currentAPR = await stakingContract.methods.viewAPR().call();
-        document.getElementById('current-apr').innerText = formatAPR(currentAPR) + ' %';
-    }
-
-    async function updateStakedAmount() {
-        const stakedAmount = await stakingContract.methods.viewStakedAmount(userAddress).call();
-        document.getElementById('staked-amount').innerText = formatWholeNumber(tronWeb.fromSun(stakedAmount)) + ' CFT';
-    }
-
-    async function updateAvailableCFT() {
-        const availableCFT = await tokenContract.methods.balanceOf(userAddress).call();
-        document.getElementById('available-cft').innerText = 'Available CFT: ' + formatWholeNumber(tronWeb.fromSun(availableCFT)) + ' CFT';
-    }
-
-    async function updateTotalBuyCFT() {
-        try {
-            const totalBuyCFT = await tokenContract.methods.balanceOf(buyCftContractAddress).call();
-            document.getElementById('total-buy-cft').innerText = formatWholeNumber(tronWeb.fromSun(totalBuyCFT)) + ' CFT';
-        } catch (error) {
-            console.error('Error fetching total CFT tokens in buy contract:', error);
-        }
-    }
-
-    function updateAvailableTRX(balance) {
-        document.getElementById('available-trx').innerText = 'Available TRX: ' + formatNumber(tronWeb.fromSun(balance)) + ' TRX';
-    }
-
-    function setupEventListeners() {
-        document.getElementById('stake-button').addEventListener('click', async () => {
-            const stakeAmount = document.getElementById('stake-amount').value;
-            if (stakeAmount) {
-                try {
-                    await stakeTokens(stakeAmount);
-                    setTimeout(refreshUI, 3000);
-                } catch (error) {
-                    console.error('Error staking tokens:', error);
-                }
-            }
-        });
-
-        document.getElementById('unstake-button').addEventListener('click', async () => {
+    document.getElementById('buy-button').addEventListener('click', async () => {
+        const buyAmount = document.getElementById('buy-amount').value;
+        if (buyAmount) {
             try {
-                await unstakeTokens();
+                await buyTokens(buyAmount);
                 setTimeout(refreshUI, 3000);
             } catch (error) {
-                console.error('Error unstaking tokens:', error);
+                console.error('Error buying tokens:', error);
             }
-        });
-
-        document.getElementById('claim-rewards-button').addEventListener('click', async () => {
-            try {
-                await claimRewards();
-                setTimeout(refreshUI, 3000);
-            } catch (error) {
-                console.error('Error claiming rewards:', error);
-            }
-        });
-
-        document.getElementById('buy-button').addEventListener('click', async () => {
-            const buyAmount = document.getElementById('buy-amount').value;
-            if (buyAmount) {
-                try {
-                    await buyTokens(buyAmount);
-                    setTimeout(refreshUI, 3000);
-                } catch (error) {
-                    console.error('Error buying tokens:', error);
-                }
-            }
-        });
-
-        document.getElementById('compound-button').addEventListener('click', async () => {
-            try {
-                await compoundRewards();
-                setTimeout(refreshUI, 3000);
-            } catch (error) {
-                console.error('Error compounding rewards:', error);
-            }
-        });
-
-        document.getElementById('approveAndListButton').addEventListener('click', async () => {
-            const tokenAmount = document.getElementById('tokenAmount').value;
-            const pricePerTokenInTRX = document.getElementById('pricePerTokenInTRX').value;
-
-            if (tokenAmount && pricePerTokenInTRX) {
-                try {
-                    await approveAndListTokens(tokenAmount, pricePerTokenInTRX);
-                    setTimeout(refreshUI, 3000);
-                } catch (error) {
-                    console.error('Error listing tokens:', error);
-                }
-            }
-        });
-
-        document.getElementById('new-stake-button').addEventListener('click', async () => {
-            const stakeAmount = document.getElementById('new-stake-amount').value;
-            if (stakeAmount) {
-                try {
-                    await newStakeTokens(stakeAmount);
-                    setTimeout(refreshUI, 3000);
-                } catch (error) {
-                    console.error('Error staking tokens:', error);
-                }
-            }
-        });
-
-        document.getElementById('new-unstake-button').addEventListener('click', async () => {
-            try {
-                await newUnstakeTokens();
-                setTimeout(refreshUI, 3000);
-            } catch (error) {
-                console.error('Error unstaking tokens:', error);
-            }
-        });
-    }
-
-    async function stakeTokens(amount) {
-        const amountToStake = tronWeb.toSun(amount);
-
-        try {
-            // Always approve the max amount before staking
-            await tokenContract.methods.approve(stakingContractAddress, maxUint256).send();
-            
-            // Then stake the desired amount
-            await stakingContract.methods.stake(amountToStake).send();
-            
-            // Fetch and display the new staked amount
-            const newStakedAmount = await stakingContract.methods.viewStakedAmount(userAddress).call();
-            document.getElementById('staked-amount').innerText = formatWholeNumber(tronWeb.fromSun(newStakedAmount)) + ' CFT';
-        } catch (error) {
-            console.error('Error staking tokens:', error);
         }
-    }
+    });
 
-    async function unstakeTokens() {
-        const unstakeAmount = document.getElementById('stake-amount').value;
-        await stakingContract.methods.withdraw(tronWeb.toSun(unstakeAmount)).send();
+    document.getElementById('compound-button').addEventListener('click', async () => {
+        try {
+            await compoundRewards();
+            setTimeout(refreshUI, 3000);
+        } catch (error) {
+            console.error('Error compounding rewards:', error);
+        }
+    });
+
+    document.getElementById('approveAndListButton').addEventListener('click', async () => {
+        const tokenAmount = document.getElementById('tokenAmount').value;
+        const pricePerTokenInTRX = document.getElementById('pricePerTokenInTRX').value;
+
+        if (tokenAmount && pricePerTokenInTRX) {
+            try {
+                await approveAndListTokens(tokenAmount, pricePerTokenInTRX);
+                setTimeout(refreshUI, 3000);
+            } catch (error) {
+                console.error('Error listing tokens:', error);
+            }
+        }
+    });
+
+    document.getElementById('new-stake-button').addEventListener('click', async () => {
+        const stakeAmount = document.getElementById('new-stake-amount').value;
+        if (stakeAmount) {
+            try {
+                await newStakeTokens(stakeAmount);
+                setTimeout(refreshUI, 3000);
+            } catch (error) {
+                console.error('Error staking tokens:', error);
+            }
+        }
+    });
+
+    document.getElementById('new-unstake-button').addEventListener('click', async () => {
+        try {
+            await newUnstakeTokens();
+            setTimeout(refreshUI, 3000);
+        } catch (error) {
+            console.error('Error unstaking tokens:', error);
+        }
+    });
+}
+
+async function stakeTokens(amount) {
+    const amountToStake = tronWeb.toSun(amount);
+
+    try {
+        // Always approve the max amount before staking
+        await tokenContract.methods.approve(stakingContractAddress, maxUint256).send();
+        
+        // Then stake the desired amount
+        await stakingContract.methods.stake(amountToStake).send();
+        
+        // Fetch and display the new staked amount
         const newStakedAmount = await stakingContract.methods.viewStakedAmount(userAddress).call();
         document.getElementById('staked-amount').innerText = formatWholeNumber(tronWeb.fromSun(newStakedAmount)) + ' CFT';
+    } catch (error) {
+        console.error('Error staking tokens:', error);
     }
+}
 
-    async function claimRewards() {
-        await stakingContract.methods.claimReward().send();
-        const newClaimableRewards = await stakingContract.methods.viewPendingReward(userAddress).call();
-        document.getElementById('claimable-rewards').innerText = formatWholeNumber(tronWeb.fromSun(newClaimableRewards)) + ' TRX';
-    }
+async function unstakeTokens() {
+    const unstakeAmount = document.getElementById('stake-amount').value;
+    await stakingContract.methods.withdraw(tronWeb.toSun(unstakeAmount)).send();
+    const newStakedAmount = await stakingContract.methods.viewStakedAmount(userAddress).call();
+    document.getElementById('staked-amount').innerText = formatWholeNumber(tronWeb.fromSun(newStakedAmount)) + ' CFT';
+}
 
-    async function buyTokens(amount) {
-        try {
-            await buyCftContract.methods.buyTokens().send({
-                callValue: tronWeb.toSun(amount)
-            });
-            
-            // Fetch and display the new balance
-            const newBalance = await tronWeb.trx.getBalance(userAddress);
-            document.getElementById('available-trx').innerText = 'Available TRX: ' + formatNumber(tronWeb.fromSun(newBalance)) + ' TRX';
-        } catch (error) {
-            console.error('Error buying tokens:', error);
-        }
-    }
+async function claimRewards() {
+    await stakingContract.methods.claimReward().send();
+    const newClaimableRewards = await stakingContract.methods.viewPendingReward(userAddress).call();
+    document.getElementById('claimable-rewards').innerText = formatWholeNumber(tronWeb.fromSun(newClaimableRewards)) + ' TRX';
+}
 
-    async function compoundRewards() {
-        await stakingContract.methods.claimReward().send();
-        const claimableRewards = await stakingContract.methods.viewPendingReward(userAddress).call();
-
+async function buyTokens(amount) {
+    try {
         await buyCftContract.methods.buyTokens().send({
-            callValue: claimableRewards
+            callValue: tronWeb.toSun(amount)
+        });
+        
+        // Fetch and display the new balance
+        const newBalance = await tronWeb.trx.getBalance(userAddress);
+        document.getElementById('available-trx').innerText = 'Available TRX: ' + formatNumber(tronWeb.fromSun(newBalance)) + ' TRX';
+    } catch (error) {
+        console.error('Error buying tokens:', error);
+    }
+}
+
+async function compoundRewards() {
+    await stakingContract.methods.claimReward().send();
+    const claimableRewards = await stakingContract.methods.viewPendingReward(userAddress).call();
+
+    await buyCftContract.methods.buyTokens().send({
+        callValue: claimableRewards
+    });
+
+    setTimeout(refreshUI, 3000);
+}
+
+async function fetchMarketplaceListings() {
+    try {
+        const result = await marketplaceContract.methods.getActiveListings().call();
+        const listingIds = result[0];
+        const listings = result[1];
+
+        const listingsContainer = document.getElementById('listings');
+        listingsContainer.innerHTML = '';
+
+        for (let i = 0; i < listingIds.length; i++) {
+            const listingId = listingIds[i];
+            const listing = listings[i];
+
+            if (listing.isActive) {
+                const tokenAmount = tronWeb.fromSun(listing.tokenAmount);
+                const totalPrice = tronWeb.fromSun(listing.priceInTRX);
+                const isSeller = listing.seller.trim().toLowerCase() === userAddress.trim().toLowerCase();
+
+                const listingElement = document.createElement('div');
+                listingElement.className = 'listing';
+                listingElement.innerHTML = `
+                    <p>Seller: ${listing.seller}</p>
+                    <p>Token Amount: ${tokenAmount}</p>
+                    <p>Total Price: ${totalPrice} TRX</p>
+                    <button class="btn btn-success mb-2" onclick="buyToken(${listingId}, ${totalPrice})">Buy</button>
+                    ${isSeller ? `<button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel</button>` : ''}
+                `;
+                listingsContainer.appendChild(listingElement);
+            }
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Failed to fetch listings.');
+    }
+}
+
+async function buyToken(listingId, totalPrice) {
+    try {
+        await marketplaceContract.methods.buyToken(listingId).send({
+            callValue: tronWeb.toSun(totalPrice)
         });
 
-        setTimeout(refreshUI, 3000);
+        alert('Token purchased successfully!');
+        fetchMarketplaceListings();
+    } catch (error) {
+        console.error('Error buying token:', error);
+        alert('Failed to buy tokens.');
     }
+}
 
-    async function fetchMarketplaceListings() {
-        try {
-            const result = await marketplaceContract.methods.getActiveListings().call();
-            const listingIds = result[0];
-            const listings = result[1];
-
-            const listingsContainer = document.getElementById('listings');
-            listingsContainer.innerHTML = '';
-
-            for (let i = 0; i < listingIds.length; i++) {
-                const listingId = listingIds[i];
-                const listing = listings[i];
-
-                if (listing.isActive) {
-                    const tokenAmount = tronWeb.fromSun(listing.tokenAmount);
-                    const totalPrice = tronWeb.fromSun(listing.priceInTRX);
-                    const isSeller = listing.seller.trim().toLowerCase() === userAddress.trim().toLowerCase();
-
-                    const listingElement = document.createElement('div');
-                    listingElement.className = 'listing';
-                    listingElement.innerHTML = `
-                        <p>Seller: ${listing.seller}</p>
-                        <p>Token Amount: ${tokenAmount}</p>
-                        <p>Total Price: ${totalPrice} TRX</p>
-                        <button class="btn btn-success mb-2" onclick="buyToken(${listingId}, ${totalPrice})">Buy</button>
-                        ${isSeller ? `<button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel</button>` : ''}
-                    `;
-                    listingsContainer.appendChild(listingElement);
-                }
-            }
-        } catch (error) {
-            console.error(error);
-            alert('Failed to fetch listings.');
-        }
+async function cancelListing(listingId) {
+    try {
+        await marketplaceContract.methods.cancelListing(listingId).send();
+        alert('Listing cancelled successfully!');
+        fetchMarketplaceListings();
+    } catch (error) {
+        console.error('Error cancelling listing:', error);
+        alert('Failed to cancel listing.');
     }
+}
 
-    async function buyToken(listingId, totalPrice) {
-        try {
-            await marketplaceContract.methods.buyToken(listingId).send({
-                callValue: tronWeb.toSun(totalPrice)
-            });
+async function approveAndListTokens(tokenAmount, priceInTRX) {
+    const adjustedTokenAmount = tronWeb.toSun(tokenAmount);
+    const adjustedPriceInTRX = tronWeb.toSun(priceInTRX);
 
-            alert('Token purchased successfully!');
-            fetchMarketplaceListings();
-        } catch (error) {
-            console.error('Error buying token:', error);
-            alert('Failed to buy tokens.');
-        }
+    try {
+        await tokenContract.methods.approve(marketplaceContractAddress, adjustedTokenAmount).send();
+        await marketplaceContract.methods.listToken(adjustedTokenAmount, adjustedPriceInTRX).send();
+        alert('Tokens listed successfully!');
+        fetchMarketplaceListings();
+    } catch (error) {
+        console.error(error);
+        alert('Failed to list tokens.');
     }
+}
 
-    async function cancelListing(listingId) {
-        try {
-            await marketplaceContract.methods.cancelListing(listingId).send();
-            alert('Listing cancelled successfully!');
-            fetchMarketplaceListings();
-        } catch (error) {
-            console.error('Error cancelling listing:', error);
-            alert('Failed to cancel listing.');
-        }
+async function connectWallet() {
+    if (await checkTronLinkInstalled()) {
+        await initializeTronWeb();
+    } else {
+        console.log('Please install TronLink extension in your browser.');
     }
+}
 
-    async function approveAndListTokens(tokenAmount, priceInTRX) {
-        const adjustedTokenAmount = tronWeb.toSun(tokenAmount);
-        const adjustedPriceInTRX = tronWeb.toSun(priceInTRX);
+async function refreshUI() {
+    try {
+        const balance = await tronWeb.trx.getBalance(userAddress);
+        updateUI(balance);
 
-        try {
-            await tokenContract.methods.approve(marketplaceContractAddress, adjustedTokenAmount).send();
-            await marketplaceContract.methods.listToken(adjustedTokenAmount, adjustedPriceInTRX).send();
-            alert('Tokens listed successfully!');
-            fetchMarketplaceListings();
-        } catch (error) {
-            console.error(error);
-            alert('Failed to list tokens.');
-        }
+        document.getElementById('stake-amount').value = '';
+        document.getElementById('buy-amount').value = '';
+        document.getElementById('tokenAmount').value = '';
+        document.getElementById('pricePerTokenInTRX').value = '';
+    } catch (error) {
+        console.error('Error refreshing UI:', error);
     }
+}
 
-    async function connectWallet() {
-        if (await checkTronLinkInstalled()) {
-            await initializeTronWeb();
-        } else {
-            console.log('Please install TronLink extension in your browser.');
-        }
-    }
+async function newStakeTokens(amount) {
+    const amountToStake = tronWeb.toSun(amount);
 
-    async function refreshUI() {
-        try {
-            const balance = await tronWeb.trx.getBalance(userAddress);
-            updateUI(balance);
-
-            document.getElementById('stake-amount').value = '';
-            document.getElementById('buy-amount').value = '';
-            document.getElementById('tokenAmount').value = '';
-            document.getElementById('pricePerTokenInTRX').value = '';
-        } catch (error) {
-            console.error('Error refreshing UI:', error);
-        }
-    }
-
-    async function newStakeTokens(amount) {
-        const amountToStake = tronWeb.toSun(amount);
-
-        try {
-            // Always approve the max amount before staking
-            await tokenContract.methods.approve(stakingContractAddress, maxUint256).send();
-            
-            // Then stake the desired amount
-            await stakingContract.methods.stake(amountToStake).send();
-            
-            // Fetch and display the new staked amount
-            const newStakedAmount = await stakingContract.methods.viewStakedAmount(userAddress).call();
-            document.getElementById('new-staked-amount').innerText = formatWholeNumber(tronWeb.fromSun(newStakedAmount)) + ' CFT';
-        } catch (error) {
-            console.error('Error staking tokens:', error);
-        }
-    }
-
-    async function newUnstakeTokens() {
-        const unstakeAmount = document.getElementById('new-stake-amount').value;
-        await stakingContract.methods.withdraw(tronWeb.toSun(unstakeAmount)).send();
-        const newStakedAmount = await stakingContract.methods.viewStakedAmount(userAddress).call();
+    try {
+        // Always approve the max amount before staking
+        await tokenContract.methods.approve(newStakingContractAddress, maxUint256).send();
+        
+        // Then stake the desired amount
+        await newStakingContract.methods.stake(amountToStake).send();
+        
+        // Fetch and display the new staked amount
+        const newStakedAmount = await newStakingContract.methods.viewStakedAmount(userAddress).call();
         document.getElementById('new-staked-amount').innerText = formatWholeNumber(tronWeb.fromSun(newStakedAmount)) + ' CFT';
+    } catch (error) {
+        console.error('Error staking tokens:', error);
     }
+}
 
-    function formatNumber(num) {
-        return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
+async function newUnstakeTokens() {
+    const unstakeAmount = document.getElementById('new-stake-amount').value;
+    await newStakingContract.methods.withdraw(tronWeb.toSun(unstakeAmount)).send();
+    const newStakedAmount = await newStakingContract.methods.viewStakedAmount(userAddress).call();
+    document.getElementById('new-staked-amount').innerText = formatWholeNumber(tronWeb.fromSun(newStakedAmount)) + ' CFT';
+}
 
-    function formatWholeNumber(num) {
-        return Math.floor(parseFloat(num)).toLocaleString('en-US');
-    }
+function formatNumber(num) {
+    return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
-    function formatAPR(apr) {
-        return (parseFloat(apr) / 10000).toFixed(2);
-    }
+function formatWholeNumber(num) {
+    return Math.floor(parseFloat(num)).toLocaleString('en-US');
+}
+
+function formatAPR(apr) {
+    return (parseFloat(apr) / 10000).toFixed(2);
+}
   </script>
 </body>
 </html>
