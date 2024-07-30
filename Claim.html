@@ -554,6 +554,8 @@ async function initializeTronWeb() {
       setInterval(updateClaimableAmount, 5000); // Update claimable amount every 5 seconds
       setupEventListeners();
     }
+
+    await checkCooldown(); // Initial check for cooldown status
   } catch (error) {
     console.error('Error initializing TronWeb:', error);
   }
@@ -606,7 +608,10 @@ async function checkCooldown() {
     console.log(`Time Left: ${timeLeft}`);
 
     if (timeLeft > 0) {
-      document.getElementById('cooldown-warning').innerText = `You are currently on a cooldown. Time left: ${timeLeft} seconds.`;
+      const hours = Math.floor(timeLeft / 3600);
+      const minutes = Math.floor((timeLeft % 3600) / 60);
+      document.getElementById('cooldown-warning').innerText = `You are currently on a cooldown. Time left: ${hours}h ${minutes}m.`;
+      setTimeout(checkCooldown, 60000); // Check cooldown status every minute
       return true;
     } else {
       document.getElementById('cooldown-warning').innerText = '';
@@ -618,6 +623,7 @@ async function checkCooldown() {
     return true;
   }
 }
+
 
 function setupEventListeners() {
   document.getElementById('claim-button').addEventListener('click', async () => {
