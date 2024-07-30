@@ -539,8 +539,9 @@ async function updateClaimableAmount() {
   try {
     console.log('Fetching claimable amount...');
     const claimableAmount = await trxClaimerContract.methods.getClaimableAmount().call();
-    console.log('Claimable amount (in sun):', claimableAmount);
+    console.log('Raw claimable amount (in sun):', claimableAmount);
     const claimableAmountTRX = tronWeb.fromSun(claimableAmount);
+    console.log('Claimable amount (in TRX):', claimableAmountTRX);
     document.getElementById('claimable-amount').innerText = `Claimable Amount: ${claimableAmountTRX} TRX`;
 
     const claimButton = document.getElementById('claim-button');
@@ -633,6 +634,7 @@ async function connectWallet() {
     console.log('Please install TronLink extension in your browser.');
   }
 }
+
 
   </script>
 </body>
