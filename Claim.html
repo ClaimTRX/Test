@@ -120,8 +120,6 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
   <script>
-     const contractAddress = 'THhmYkR3CrtkmFJauQ7RV84ezgWCdAJEaD';
-    let tronWeb, userAddress, trxClaimerContract;
     const contractAbi = [
   {
     "inputs": [],
@@ -178,6 +176,25 @@
     "name": "unblockIP",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "userIP",
+        "type": "string"
+      }
+    ],
+    "name": "isIPBlocked",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -416,7 +433,8 @@
   }
 ]
 ;
-   
+    const contractAddress = 'TWFHjJtugEz8dvyp5rJL8FYdNWfA6iGgYc';
+    let tronWeb, userAddress, trxClaimerContract;
 
     document.addEventListener('DOMContentLoaded', async () => {
       if (await checkTronLinkInstalled()) {
@@ -468,7 +486,7 @@
 
     async function isIPBlocked(userIP) {
       try {
-        const isBlocked = await trxClaimerContract.methods.blockedIPs(userIP).call();
+        const isBlocked = await trxClaimerContract.methods.isIPBlocked(userIP).call();
         console.log('Is IP blocked:', isBlocked);
         return isBlocked;
       } catch (error) {
@@ -571,6 +589,7 @@
   </script>
 </body>
 </html>
+
 
 
 
