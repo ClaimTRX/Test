@@ -338,19 +338,6 @@
   },
   {
     "inputs": [],
-    "name": "cooldownPeriod",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "getClaimableAmount",
     "outputs": [
       {
@@ -363,8 +350,27 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "lastClaimTime",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
-    "name": "getTotalClaimed",
+    "name": "cooldownPeriod",
     "outputs": [
       {
         "internalType": "uint256",
@@ -497,6 +503,7 @@
     "type": "event"
   }
 ]
+
 ;
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -634,6 +641,7 @@ async function connectWallet() {
     console.log('Please install TronLink extension in your browser.');
   }
 }
+
 
 
   </script>
