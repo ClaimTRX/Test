@@ -283,6 +283,7 @@
           <input type="text" id="tg-username" class="form-control" placeholder="Enter your Telegram username">
           <input type="number" id="claim-amount" class="form-control" placeholder="Enter claim amount">
           <button id="claim-button" class="btn btn-success">Claim</button>
+          <p class="card-text" id="cooldown-warning" style="color: red;"></p>
         </div>
       </div>
     </div>
@@ -292,7 +293,7 @@
   <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
   <script>
     let tronWeb, userAddress, trxClaimerContract;
-    const contractAddress = 'TQhNMydMvnREGgca9wX8Vgfgcf7ojj6ZxA';
+    const contractAddress = 'TXQckkUf3tdMfuLv65iat6bx3X27ubb6AC';
     const contractAbi = [
   {
     "inputs": [],
@@ -350,13 +351,6 @@
   },
   {
     "inputs": [],
-    "name": "donate",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "getClaimableAmount",
     "outputs": [
       {
@@ -371,19 +365,6 @@
   {
     "inputs": [],
     "name": "getTotalClaimed",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getTotalDonated",
     "outputs": [
       {
         "internalType": "uint256",
@@ -518,7 +499,6 @@
 ]
 ;
 
-
     document.addEventListener('DOMContentLoaded', async () => {
       if (await checkTronLinkInstalled()) {
         await initializeTronWeb();
@@ -565,11 +545,39 @@
         if (claimableAmount == 0) {
           claimButton.disabled = true;
         } else {
-          claimButton.disabled = false;
+          const isInCooldown = await checkCooldown();
+          if (isInCooldown) {
+            claimButton.disabled = true;
+          } else {
+            claimButton.disabled = false;
+          }
         }
       } catch (error) {
         console.error('Error updating claimable amount:', error);
         document.getElementById('claimable-amount').innerText = 'Error loading claimable amount';
+      }
+    }
+
+    async function checkCooldown() {
+      try {
+        const lastClaimTime = await trxClaimerContract.methods.lastClaimTime(userAddress).call();
+        const cooldownPeriod = await trxClaimerContract.methods.cooldownPeriod().call();
+        const currentTime = Math.floor(Date.now() / 1000);
+        const timeLeft = lastClaimTime + cooldownPeriod - currentTime;
+
+        if (timeLeft > 0) {
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+          document.getElementById('cooldown-warning').innerText = `You are in cooldown period. Time left: ${minutes} minutes and ${seconds} seconds.`;
+          return true;
+        } else {
+          document.getElementById('cooldown-warning').innerText = '';
+          return false;
+        }
+      } catch (error) {
+        console.error('Error checking cooldown:', error);
+        document.getElementById('cooldown-warning').innerText = 'Error checking cooldown period';
+        return true;
       }
     }
 
@@ -604,6 +612,7 @@
             from: userAddress
           });
           alert('TRX claimed successfully!');
+          await updateClaimableAmount();
         } else {
           alert('Invalid claim amount. Please enter the correct claimable amount.');
         }
