@@ -600,6 +600,11 @@ async function checkCooldown() {
     const currentTime = Math.floor(Date.now() / 1000);
     const timeLeft = lastClaimTime + cooldownPeriod - currentTime;
 
+    console.log(`Last Claim Time: ${lastClaimTime}`);
+    console.log(`Cooldown Period: ${cooldownPeriod}`);
+    console.log(`Current Time: ${currentTime}`);
+    console.log(`Time Left: ${timeLeft}`);
+
     if (timeLeft > 0) {
       document.getElementById('cooldown-warning').innerText = 'You are currently on a cooldown.';
       return true;
@@ -655,6 +660,7 @@ async function connectWallet() {
     console.log('Please install TronLink extension in your browser.');
   }
 }
+
 
 
 
