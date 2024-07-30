@@ -511,6 +511,17 @@
   }
 });
 
+async function checkTronLinkInstalled() {
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+        clearInterval(interval);
+        resolve(true);
+      }
+    }, 1000);
+  });
+}
+
 async function getUserIP() {
   try {
     const response = await fetch('https://api.ipify.org?format=json');
@@ -644,6 +655,7 @@ async function connectWallet() {
     console.log('Please install TronLink extension in your browser.');
   }
 }
+
 
   </script>
 </body>
