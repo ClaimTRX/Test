@@ -948,7 +948,6 @@ async function calculateApr() {
         if (!dailyReward || !totalStaked || !trxPriceInUsdt) {
             console.error('Invalid data received for APR calculation');
             document.getElementById('apr').innerText = 'APR: Unable to calculate';
-            document.getElementById('apy').innerText = 'APY: Unable to calculate';
             return;
         }
 
@@ -959,24 +958,19 @@ async function calculateApr() {
         if (isNaN(dailyRewardInUsdt) || isNaN(totalStakedInUsdt) || totalStakedInUsdt == 0) {
             console.error('Invalid numerical values for APR calculation');
             document.getElementById('apr').innerText = 'APR: Unable to calculate';
-            document.getElementById('apy').innerText = 'APY: Unable to calculate';
             return;
         }
 
         const yearlyRewardInUsdt = dailyRewardInUsdt * 365;
         const apr = (yearlyRewardInUsdt / totalStakedInUsdt) * 100;
 
-        // Calculate APY
-        const apy = (Math.pow((1 + dailyRewardInUsdt / totalStakedInUsdt), 365) - 1) * 100;
-
         document.getElementById('apr').innerText = `APR: ${apr.toFixed(2)} %`;
-        document.getElementById('apy').innerText = `APY: ${apy.toFixed(2)} %`;
     } catch (error) {
         console.error('Error calculating APR:', error);
         document.getElementById('apr').innerText = 'APR: Unable to calculate';
-        document.getElementById('apy').innerText = 'APY: Unable to calculate';
     }
 }
+
 
 
 
