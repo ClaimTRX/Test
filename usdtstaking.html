@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TRC20 Staking</title>
+  <title>CFT Token</title>
   <link rel="icon" href="https://raw.githubusercontent.com/ClaimTRX/Test/main/favicon-32x32.png" type="image/png">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -12,6 +12,7 @@
       background-color: #1a1a2e;
       color: #fff;
       font-family: Arial, sans-serif;
+        
     }
 
     .sidebar {
@@ -52,6 +53,33 @@
 
     .sidebar .social-icon:last-child {
       margin-right: 0;
+    }
+
+    .topbar {
+      background-color: #162447;
+      padding: 10px;
+      text-align: right;
+      margin-left: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .topbar a.social-icon {
+      color: white;
+      margin-left: 15px;
+      font-size: 20px;
+      text-decoration: none;
+    }
+
+    .topbar button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 8px 16px;
     }
 
     .main-content {
@@ -113,28 +141,154 @@
       margin-top: 10px;
       font-size: 0.875rem;
     }
+
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .listing {
+      background-color: #1f4068;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .listing button {
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      padding: 8px 16px;
+      width: 20%;
+      margin-top: 10px;
+    }
+
+    .listing .btn-success {
+      background-color: #4CAF50;
+    }
+
+    .listing .btn-danger {
+      background-color: #ff4c4c;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 767.98px) {
+      .listing button {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        width: 100%;
+      }
+
+      .sidebar {
+        height: auto;
+        padding: 10px;
+        width: 100%;
+        position: relative;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .topbar {
+        text-align: center;
+        margin-left: 0;
+        justify-content: center;
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .card-title {
+        font-size: 1.25rem;
+      }
+
+      .card-text {
+        font-size: 0.875rem;
+      }
+
+      .btn-success,
+      .btn-danger,
+      .btn-primary {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        width: 100%;
+      }
+
+      .form-control {
+        font-size: 0.75rem;
+        padding: 6px;
+        width: 100%;
+      }
+
+      .card-explanation {
+        margin-top: 20px;
+      }
+
+      .sidebar .social-links {
+        justify-content: center;
+      }
+
+      .sidebar .social-icon {
+        margin-bottom: 10px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .card-body {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+
+      .card-text-section {
+        flex: 1;
+        margin-right: 20px;
+      }
+
+      .card-explanation {
+        flex: 1;
+      }
+    }
+
   </style>
 </head>
-<body>
-  <div class="sidebar">
-    <h2>TRC20 Staking</h2>
-    <a href="#">Home</a>
-    <a href="#">Stake</a>
-    <a href="#">Unstake</a>
+<div class="sidebar">
+    <h2>CFT</h2>
+    <a href="index.html">CFT Token</a>
+    <a href="lottery.html">Lottery</a>
+    <a href="draw.html">Draw</a>
+    <a href="claim.html">Claim</a>
     <div class="social-links">
-      <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-      <a href="#" class="social-icon"><i class="fab fa-telegram-plane"></i></a>
-    </div>
+        <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
+            <i class="fab fa-twitter"></i>
+        </a>
+        <a href="https://t.me/claimfreetrxnow" target="_blank" class="social-icon">
+            <i class="fab fa-telegram-plane"></i>
+        </a>
+       </div>
+      <div class="language-switcher">
+    <button id="language-switcher" class="btn btn-secondary" onclick="switchLanguage('zh')">中文</button>
+  </div>
+  </div>
+  <div class="topbar">
+    <button id="connect-button" onclick="connectWallet()">Connect Wallet</button>
+    
   </div>
 
   <div class="main-content">
-    <h1>TRC20 Staking</h1>
+    <h1>Stake CFT for USDT rewards</h1>
 
     <!-- New Staking Contract Card -->
     <div class="card mt-4">
       <div class="card-body">
         <div class="card-text-section">
-          <h5 class="card-title">Stake/Unstake CFT with USDT Rewards</h5>
+          <h5 class="card-title">Stake CFT with USDT Rewards</h5>
           <p class="card-text" id="new-available-cft">Loading...</p>
           <input type="number" id="new-stake-amount" class="form-control" placeholder="Enter amount to stake">
           <button id="new-stake-button" class="btn btn-success">Stake</button><br>
