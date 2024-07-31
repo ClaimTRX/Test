@@ -54,6 +54,33 @@
       margin-right: 0;
     }
 
+    .topbar {
+      background-color: #162447;
+      padding: 10px;
+      text-align: right;
+      margin-left: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .topbar a.social-icon {
+      color: white;
+      margin-left: 15px;
+      font-size: 20px;
+      text-decoration: none;
+    }
+
+    .topbar button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 8px 16px;
+    }
+
     .main-content {
       margin-left: 220px;
       padding: 20px;
@@ -113,6 +140,23 @@
       margin-top: 10px;
       font-size: 0.875rem;
     }
+
+    @media (min-width: 768px) {
+      .card-body {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+
+      .card-text-section {
+        flex: 1;
+        margin-right: 20px;
+      }
+
+      .card-explanation {
+        flex: 1;
+      }
+    }
   </style>
 </head>
 <body>
@@ -125,6 +169,10 @@
       <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
       <a href="#" class="social-icon"><i class="fab fa-telegram-plane"></i></a>
     </div>
+  </div>
+
+  <div class="topbar">
+    <button id="connect-button" onclick="connectWallet()">Connect Wallet</button>
   </div>
 
   <div class="main-content">
