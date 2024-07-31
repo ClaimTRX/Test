@@ -855,8 +855,14 @@
 ];
 
    document.addEventListener('DOMContentLoaded', async () => {
-        document.getElementById('connect-button').addEventListener('click', connectWallet);
-    });
+    document.getElementById('connect-button').addEventListener('click', connectWallet);
+    // Call calculateApr after initializing TronWeb
+    if (await checkTronLinkInstalled()) {
+        await initializeTronWeb();
+        await calculateApr();
+    }
+});
+
 
     async function checkTronLinkInstalled() {
         return new Promise((resolve) => {
@@ -915,11 +921,18 @@
     }
 
     async function getTrxPriceInUsdt() {
+    const apiKey = '7de9e801-0e7c-49f7-985d-26df150d4f37';
+    const url = `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=TRX&convert=USDT`;
+
     try {
-        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tron&vs_currencies=usdt');
+        const response = await fetch(url, {
+            headers: {
+                'X-CMC_PRO_API_KEY': apiKey,
+            },
+        });
         const data = await response.json();
-        if (data.tron && data.tron.usdt) {
-            return data.tron.usdt;
+        if (data && data.data && data.data.TRX && data.data.TRX.quote && data.data.TRX.quote.USDT) {
+            return data.data.TRX.quote.USDT.price;
         } else {
             console.error('Invalid data structure:', data);
             return null;
@@ -929,6 +942,7 @@
         return null;
     }
 }
+
 
 async function calculateApr() {
     try {
