@@ -920,23 +920,44 @@
         return data.tron.usdt;
     }
 
-    async function calculateApr() {
-        try {
-            const dailyReward = await newStakingContract.methods.viewDailyReward().call();
-            const totalStaked = await newStakingContract.methods.viewTotalStaked().call();
-            const trxPriceInUsdt = await getTrxPriceInUsdt();
+   async function calculateApr() {
+    try {
+        const dailyReward = await newStakingContract.methods.viewDailyReward().call();
+        const totalStaked = await newStakingContract.methods.viewTotalStaked().call();
+        const trxPriceInUsdt = await getTrxPriceInUsdt();
 
-            const dailyRewardInUsdt = tronWeb.fromSun(dailyReward) * trxPriceInUsdt;
-            const totalStakedInUsdt = tronWeb.fromSun(totalStaked) * trxPriceInUsdt;
+        // Log the values to debug
+        console.log('Daily Reward:', dailyReward);
+        console.log('Total Staked:', totalStaked);
+        console.log('TRX Price in USDT:', trxPriceInUsdt);
 
-            const yearlyRewardInUsdt = dailyRewardInUsdt * 365;
-            const apr = (yearlyRewardInUsdt / totalStakedInUsdt) * 100;
-
-            document.getElementById('apr').innerText = `APR: ${apr.toFixed(2)} %`;
-        } catch (error) {
-            console.error('Error calculating APR:', error);
+        // Ensure the values are valid numbers
+        if (!dailyReward || !totalStaked || !trxPriceInUsdt) {
+            console.error('Invalid data received for APR calculation');
+            document.getElementById('apr').innerText = 'APR: Unable to calculate';
+            return;
         }
+
+        const dailyRewardInUsdt = tronWeb.fromSun(dailyReward) * trxPriceInUsdt;
+        const totalStakedInUsdt = tronWeb.fromSun(totalStaked) * trxPriceInUsdt;
+
+        // Ensure the values are valid numbers
+        if (isNaN(dailyRewardInUsdt) || isNaN(totalStakedInUsdt) || totalStakedInUsdt == 0) {
+            console.error('Invalid numerical values for APR calculation');
+            document.getElementById('apr').innerText = 'APR: Unable to calculate';
+            return;
+        }
+
+        const yearlyRewardInUsdt = dailyRewardInUsdt * 365;
+        const apr = (yearlyRewardInUsdt / totalStakedInUsdt) * 100;
+
+        document.getElementById('apr').innerText = `APR: ${apr.toFixed(2)} %`;
+    } catch (error) {
+        console.error('Error calculating APR:', error);
+        document.getElementById('apr').innerText = 'APR: Unable to calculate';
     }
+}
+
 
     async function updateNewClaimableRewards() {
         try {
