@@ -855,11 +855,7 @@ const maxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 ];
 
     document.addEventListener('DOMContentLoaded', async () => {
-        if (await checkTronLinkInstalled()) {
-            await initializeTronWeb();
-        } else {
-            console.error('TronLink is not installed.');
-        }
+        document.getElementById('connect-button').addEventListener('click', connectWallet);
     });
 
     async function checkTronLinkInstalled() {
@@ -873,6 +869,14 @@ const maxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
         });
     }
 
+    async function connectWallet() {
+        if (await checkTronLinkInstalled()) {
+            await initializeTronWeb();
+        } else {
+            console.error('TronLink is not installed.');
+        }
+    }
+
     async function initializeTronWeb() {
         try {
             tronWeb = window.tronWeb;
@@ -880,6 +884,9 @@ const maxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 
             console.log('Connected to TronLink.');
             console.log('User Address:', userAddress);
+
+            // Hide connect button after successful connection
+            document.getElementById('connect-button').style.display = 'none';
 
             // Initialize contracts
             tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
