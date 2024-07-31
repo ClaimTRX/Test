@@ -915,12 +915,22 @@
     }
 
     async function getTrxPriceInUsdt() {
+    try {
         const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tron&vs_currencies=usdt');
         const data = await response.json();
-        return data.tron.usdt;
+        if (data.tron && data.tron.usdt) {
+            return data.tron.usdt;
+        } else {
+            console.error('Invalid data structure:', data);
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching TRX price:', error);
+        return null;
     }
+}
 
-   async function calculateApr() {
+async function calculateApr() {
     try {
         const dailyReward = await newStakingContract.methods.viewDailyReward().call();
         const totalStaked = await newStakingContract.methods.viewTotalStaked().call();
@@ -957,6 +967,7 @@
         document.getElementById('apr').innerText = 'APR: Unable to calculate';
     }
 }
+
 
 
     async function updateNewClaimableRewards() {
