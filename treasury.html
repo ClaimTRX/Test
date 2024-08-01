@@ -291,11 +291,11 @@
         for (const contractAddress of contractAddresses) {
           const contract = await tronWeb.contract().at(contractAddress);
           const stakedHex = await contract.viewTotalStaked().call();
-          const staked = tronWeb.toBigNumber(stakedHex).toNumber();
+          const staked = tronWeb.toDecimal(stakedHex) / 1e6; // Convert from Sun to TRX considering 6 decimals
           totalStaked += staked;
         }
 
-        document.getElementById('total-staked').innerText = totalStaked + ' CFT';
+        document.getElementById('total-staked').innerText = totalStaked.toFixed(6) + ' CFT';
       } catch (error) {
         console.error('Error fetching total staked:', error);
 
@@ -308,5 +308,6 @@
   </script>
 </body>
 </html>
+
 
 
