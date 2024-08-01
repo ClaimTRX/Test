@@ -236,18 +236,17 @@
     <div class="card">
       <div class="card-body">
         <div class="card-text-section">
-          <h5 class="card-title">Total TRX (Staked)</h5>
+          <h5 class="card-title">Total TRX Balance</h5>
           <p class="card-text" id="total-trx">Loading...</p>
-          <h5 class="card-title">Total Voting Power</h5>
-          <p class="card-text" id="total-voting-power">Loading...</p>
-          <h5 class="card-title">Used Voting Power</h5>
-          <p class="card-text" id="used-voting-power">Loading...</p>
-          <h5 class="card-title">Unused Voting Power</h5>
-          <p class="card-text" id="unused-voting-power">Loading...</p>
+          <h5 class="card-title">Staked TRX</h5>
+          <p class="card-text" id="staked-trx">Loading...</p>
+          <h5 class="card-title">Unstaked TRX</h5>
+          <p class="card-text" id="unstaked-trx">Loading...</p>
         </div>
       </div>
     </div>
 </div>
+
 
 
 
@@ -265,51 +264,37 @@
         const data = await response.json();
         console.log(data); // Log the response for debugging
 
-        // Fetching total frozen TRX in the original staking mechanism
-        const frozenTRX = data.data[0].frozen ? data.data[0].frozen.reduce((acc, freeze) => acc + freeze.frozen_balance, 0) : 0; // frozen balance is in SUN
+        // Fetch the total TRX balance
+        const totalTRX = data.data[0].balance / 1000000; // Convert from SUN to TRX
 
-        // Fetching frozen balance for energy
-        const frozenForEnergy = data.data[0].account_resource && data.data[0].account_resource.frozen_balance_for_energy 
-            ? data.data[0].account_resource.frozen_balance_for_energy.frozen_balance 
-            : 0;
-
-        // Fetching delegated frozen balances for energy
-        const delegatedFrozenForEnergy = data.data[0].account_resource && data.data[0].account_resource.delegated_frozen_balance_for_energy 
-            ? data.data[0].account_resource.delegated_frozen_balance_for_energy 
-            : 0;
-
-        // Fetching delegated frozen balances for bandwidth
-        const delegatedFrozenForBandwidth = data.data[0].delegated_frozen_balance_for_bandwidth 
-            ? data.data[0].delegated_frozen_balance_for_bandwidth 
-            : 0;
-
-        // Fetching total frozen TRX in Stake 2.0
+        // Calculate the staked balance in Stake 2.0
         const frozenV2TRX = data.data[0].frozenV2 ? data.data[0].frozenV2.reduce((acc, freeze) => acc + freeze.amount, 0) : 0;
+        const delegatedFrozenV2ForBandwidth = data.data[0].delegated_frozenV2_balance_for_bandwidth 
+            ? data.data[0].delegated_frozenV2_balance_for_bandwidth 
+            : 0;
+        const delegatedFrozenV2ForEnergy = data.data[0].account_resource && data.data[0].account_resource.delegated_frozenV2_balance_for_energy 
+            ? data.data[0].account_resource.delegated_frozenV2_balance_for_energy 
+            : 0;
 
-        // Summing all frozen amounts
-        const totalFrozenTRX = (frozenTRX + frozenForEnergy + delegatedFrozenForEnergy + delegatedFrozenForBandwidth + frozenV2TRX) / 1000000; // Convert from SUN to TRX
+        const staked2_0 = (frozenV2TRX + delegatedFrozenV2ForBandwidth + delegatedFrozenV2ForEnergy) / 1000000; // Convert from SUN to TRX
 
-        // Calculating voting power
-        const usedVotingPower = data.data[0].votes ? data.data[0].votes.reduce((acc, vote) => acc + vote.vote_count, 0) : 0;
+        // Calculate the unstaked TRX
+        const unstakedTRX = totalTRX - staked2_0;
 
-        // The unused voting power should be the difference between totalFrozenTRX and usedVotingPower
-        const unusedVotingPower = totalFrozenTRX - usedVotingPower;
-
-        document.getElementById('total-trx').innerText = totalFrozenTRX + ' TRX';
-        document.getElementById('total-voting-power').innerText = totalFrozenTRX + ' votes'; // Total TRX is equivalent to total voting power
-        document.getElementById('used-voting-power').innerText = usedVotingPower + ' votes';
-        document.getElementById('unused-voting-power').innerText = unusedVotingPower + ' votes';
+        document.getElementById('total-trx').innerText = totalTRX.toFixed(2) + ' TRX';
+        document.getElementById('staked-trx').innerText = staked2_0.toFixed(2) + ' TRX';
+        document.getElementById('unstaked-trx').innerText = unstakedTRX.toFixed(2) + ' TRX';
       } catch (error) {
         console.error('Error fetching account data:', error);
         document.getElementById('total-trx').innerText = 'Error loading data';
-        document.getElementById('total-voting-power').innerText = 'Error loading data';
-        document.getElementById('used-voting-power').innerText = 'Error loading data';
-        document.getElementById('unused-voting-power').innerText = 'Error loading data';
+        document.getElementById('staked-trx').innerText = 'Error loading data';
+        document.getElementById('unstaked-trx').innerText = 'Error loading data';
       }
     }
 
     fetchAccountData();
 </script>
+
 
 
 
