@@ -232,7 +232,7 @@
   <div class="topbar">
     <button>Login</button>
   </div>
- <div class="main-content">
+<div class="main-content">
     <div class="card">
       <div class="card-body">
         <div class="card-text-section">
@@ -252,7 +252,8 @@
 
 
 
-  <script>
+
+ <script>
     const apiKey = '1b226541-bba1-48cf-b6f7-d6cd75be7b7e';
     const address = 'TFvHNqDqttkXSS8ZTdC4c4W7q97SFW3iKq';
 
@@ -265,29 +266,37 @@
         console.log(data); // Log the response for debugging
 
         // Fetching total frozen TRX in the original staking mechanism
-        const totalFrozenTRX = data.data[0].frozen ? data.data[0].frozen.reduce((acc, freeze) => acc + freeze.frozen_balance, 0) / 1000000 : 0; // frozen balance is in SUN
+        const frozenTRX = data.data[0].frozen ? data.data[0].frozen.reduce((acc, freeze) => acc + freeze.frozen_balance, 0) : 0; // frozen balance is in SUN
+
+        // Fetching frozen balance for energy
+        const frozenForEnergy = data.data[0].account_resource && data.data[0].account_resource.frozen_balance_for_energy 
+            ? data.data[0].account_resource.frozen_balance_for_energy.frozen_balance 
+            : 0;
+
+        // Fetching delegated frozen balances for energy
+        const delegatedFrozenForEnergy = data.data[0].account_resource && data.data[0].account_resource.delegated_frozen_balance_for_energy 
+            ? data.data[0].account_resource.delegated_frozen_balance_for_energy 
+            : 0;
+
+        // Fetching delegated frozen balances for bandwidth
+        const delegatedFrozenForBandwidth = data.data[0].delegated_frozen_balance_for_bandwidth 
+            ? data.data[0].delegated_frozen_balance_for_bandwidth 
+            : 0;
 
         // Fetching total frozen TRX in Stake 2.0
-        const stake2Response = await fetch(`https://api.trongrid.io/v1/stake2/${address}`, {
-          headers: { 'TRON-PRO-API-KEY': apiKey }
-        });
-        const stake2Data = await stake2Response.json();
-        console.log(stake2Data); // Log the response for debugging
+        const frozenV2TRX = data.data[0].frozenV2 ? data.data[0].frozenV2.reduce((acc, freeze) => acc + freeze.amount, 0) : 0;
 
-        const stake2FrozenTRX = stake2Data.data ? stake2Data.data.reduce((acc, stake) => acc + stake.stake_amount, 0) / 1000000 : 0; // stake_amount is in SUN
-
-        // Summing both frozen amounts
-        const totalFrozenTRXCombined = totalFrozenTRX + stake2FrozenTRX;
+        // Summing all frozen amounts
+        const totalFrozenTRX = (frozenTRX + frozenForEnergy + delegatedFrozenForEnergy + delegatedFrozenForBandwidth + frozenV2TRX) / 1000000; // Convert from SUN to TRX
 
         // Calculating voting power
         const usedVotingPower = data.data[0].votes ? data.data[0].votes.reduce((acc, vote) => acc + vote.vote_count, 0) : 0;
-        const totalVotingPower = usedVotingPower; // From your second image, it seems totalVotingPower is usedVotingPower
 
-        // The unused voting power should be the difference between totalFrozenTRXCombined and usedVotingPower
-        const unusedVotingPower = totalFrozenTRXCombined - usedVotingPower;
+        // The unused voting power should be the difference between totalFrozenTRX and usedVotingPower
+        const unusedVotingPower = totalFrozenTRX - usedVotingPower;
 
-        document.getElementById('total-trx').innerText = totalFrozenTRXCombined + ' TRX';
-        document.getElementById('total-voting-power').innerText = totalVotingPower + ' votes';
+        document.getElementById('total-trx').innerText = totalFrozenTRX + ' TRX';
+        document.getElementById('total-voting-power').innerText = totalFrozenTRX + ' votes'; // Total TRX is equivalent to total voting power
         document.getElementById('used-voting-power').innerText = usedVotingPower + ' votes';
         document.getElementById('unused-voting-power').innerText = unusedVotingPower + ' votes';
       } catch (error) {
@@ -301,7 +310,6 @@
 
     fetchAccountData();
 </script>
-
 
 
 
