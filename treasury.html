@@ -263,14 +263,29 @@
         const data = await response.json();
         console.log(data); // Log the response for debugging
 
+        // Fetching total frozen TRX in the original staking mechanism
         const totalFrozenTRX = data.data[0].frozen ? data.data[0].frozen.reduce((acc, freeze) => acc + freeze.frozen_balance, 0) / 1000000 : 0; // frozen balance is in SUN
+
+        // Fetching total frozen TRX in Stake 2.0
+        const stake2Response = await fetch(`https://api.trongrid.io/v1/stake2/${address}`, {
+          headers: { 'TRON-PRO-API-KEY': apiKey }
+        });
+        const stake2Data = await stake2Response.json();
+        console.log(stake2Data); // Log the response for debugging
+
+        const stake2FrozenTRX = stake2Data.data ? stake2Data.data.reduce((acc, stake) => acc + stake.stake_amount, 0) / 1000000 : 0; // stake_amount is in SUN
+
+        // Summing both frozen amounts
+        const totalFrozenTRXCombined = totalFrozenTRX + stake2FrozenTRX;
+
+        // Calculating voting power
         const usedVotingPower = data.data[0].votes ? data.data[0].votes.reduce((acc, vote) => acc + vote.vote_count, 0) : 0;
         const totalVotingPower = usedVotingPower; // From your second image, it seems totalVotingPower is usedVotingPower
 
-        // The unused voting power should be the difference between totalFrozenTRX and usedVotingPower
-        const unusedVotingPower = totalFrozenTRX - usedVotingPower;
+        // The unused voting power should be the difference between totalFrozenTRXCombined and usedVotingPower
+        const unusedVotingPower = totalFrozenTRXCombined - usedVotingPower;
 
-        document.getElementById('total-trx').innerText = totalFrozenTRX + ' TRX';
+        document.getElementById('total-trx').innerText = totalFrozenTRXCombined + ' TRX';
         document.getElementById('total-voting-power').innerText = totalVotingPower + ' votes';
         document.getElementById('used-voting-power').innerText = usedVotingPower + ' votes';
         document.getElementById('unused-voting-power').innerText = unusedVotingPower + ' votes';
