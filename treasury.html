@@ -232,12 +232,14 @@
   <div class="topbar">
     <button>Login</button>
   </div>
-  <div class="main-content">
+ <div class="main-content">
     <div class="card">
       <div class="card-body">
         <div class="card-text-section">
           <h5 class="card-title">Total TRX (Staked)</h5>
           <p class="card-text" id="total-trx">Loading...</p>
+          <h5 class="card-title">Total Voting Power</h5>
+          <p class="card-text" id="total-voting-power">Loading...</p>
           <h5 class="card-title">Used Voting Power</h5>
           <p class="card-text" id="used-voting-power">Loading...</p>
           <h5 class="card-title">Unused Voting Power</h5>
@@ -246,6 +248,7 @@
       </div>
     </div>
 </div>
+
 
 
   <script>
@@ -270,18 +273,21 @@
         const totalTRX = totalVotingPower;
 
         document.getElementById('total-trx').innerText = totalTRX + ' TRX';
-        document.getElementById('used-voting-power').innerText = usedVotingPower + ' TRX';
-        document.getElementById('unused-voting-power').innerText = unusedVotingPower + ' TRX';
+        document.getElementById('used-voting-power').innerText = usedVotingPower + ' votes';
+        document.getElementById('unused-voting-power').innerText = unusedVotingPower + ' votes';
+        document.getElementById('total-voting-power').innerText = totalVotingPower + ' votes';
       } catch (error) {
         console.error('Error fetching account data:', error);
         document.getElementById('total-trx').innerText = 'Error loading data';
         document.getElementById('used-voting-power').innerText = 'Error loading data';
         document.getElementById('unused-voting-power').innerText = 'Error loading data';
+        document.getElementById('total-voting-power').innerText = 'Error loading data';
       }
     }
 
     fetchAccountData();
 </script>
+
 
 
 </body>  
