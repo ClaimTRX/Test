@@ -236,12 +236,14 @@
     <div class="card">
       <div class="card-body">
         <div class="card-text-section">
-          <h5 class="card-title">Total TRX Staked</h5>
-          <p class="card-text" id="used-votes">Loading...</p>
+  
+          <h5 class="card-title">Staked TRX</h5>
+          <p class="card-text" id="voting-power">Loading...</p>
         </div>
       </div>
     </div>
 </div>
+
 
 
 
@@ -261,23 +263,21 @@
         const data = await response.json();
         console.log(data); // Log the response for debugging
 
-        // Fetch the total TRX balance
-        const totalTRX = data.data[0].balance / 1000000; // Convert from SUN to TRX
+        const stakedTRX = data.data[0].frozen ? data.data[0].frozen[0].frozen_balance : 0;
+        const votingPower = data.data[0].votes ? data.data[0].votes.reduce((acc, vote) => acc + vote.vote_count, 0) : 0;
 
-        // Calculate the total votes used
-        const usedVotes = data.data[0].votes ? data.data[0].votes.reduce((acc, vote) => acc + vote.vote_count, 0) : 0;
-
-        document.getElementById('total-trx').innerText = totalTRX.toFixed(2) + ' TRX';
-        document.getElementById('used-votes').innerText = usedVotes + ' votes';
+        document.getElementById('staked-trx-amount').innerText = stakedTRX / 1000000 + ' TRX';
+        document.getElementById('voting-power').innerText = votingPower + ' votes';
       } catch (error) {
         console.error('Error fetching account data:', error);
-        document.getElementById('total-trx').innerText = 'Error loading data';
-        document.getElementById('used-votes').innerText = 'Error loading data';
+        document.getElementById('staked-trx-amount').innerText = 'Error loading data';
+        document.getElementById('voting-power').innerText = 'Error loading data';
       }
     }
 
     fetchAccountData();
 </script>
+
 
 
 
