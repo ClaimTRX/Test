@@ -236,7 +236,7 @@
     <div class="card">
       <div class="card-body">
         <div class="card-text-section">
-          <h5 class="card-title">Voting Power Used</h5>
+          <h5 class="card-title">Staked TRX</h5>
           <p class="card-text" id="voting-power">Loading...</p>
         </div>
       </div>
@@ -265,7 +265,7 @@
 
         const votingPower = data.data[0].votes ? data.data[0].votes.reduce((acc, vote) => acc + vote.vote_count, 0) : 0;
 
-        document.getElementById('voting-power').innerText = votingPower.toLocaleString() + ' votes';
+        document.getElementById('voting-power').innerText = votingPower.toLocaleString() + ' TRX';
       } catch (error) {
         console.error('Error fetching account data:', error);
         document.getElementById('voting-power').innerText = 'Error loading data';
