@@ -253,7 +253,6 @@
 
 <script>
     const apiKey = '1b226541-bba1-48cf-b6f7-d6cd75be7b7e';
-    const address = 'TFvHNqDqttkXSS8ZTdC4c4W7q97SFW3iKq';
     const tokenAddress = 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA';
     const contractAddresses = ['TVSMKqBk12161JDAQBh9pkdxMAgCtuGrdA', 'TLtHsWbFXt7oTgBBef1pqQMWehztt71atU'];
 
@@ -273,31 +272,32 @@
       }
     }
 
-    async function fetchStakedData() {
+    async function fetchTokenBalances() {
       try {
-        let totalStaked = 0;
+        let totalBalance = 0;
 
-        for (const contract of contractAddresses) {
-          const response = await fetch(`https://api.trongrid.io/v1/accounts/${contract}`, {
+        for (const address of contractAddresses) {
+          const response = await fetch(`https://api.trongrid.io/v1/accounts/${address}`, {
             headers: { 'TRON-PRO-API-KEY': apiKey }
           });
           const data = await response.json();
           console.log(data); // Log the response for debugging
 
           const tokenInfo = data.data[0].trc20[tokenAddress];
-          totalStaked += tokenInfo ? parseInt(tokenInfo, 10) : 0;
+          totalBalance += tokenInfo ? parseInt(tokenInfo, 10) : 0;
         }
 
-        document.getElementById('total-staked').innerText = totalStaked + ' CFT';
+        document.getElementById('total-staked').innerText = totalBalance + ' CFT';
       } catch (error) {
-        console.error('Error fetching staked data:', error);
+        console.error('Error fetching token balances:', error);
         document.getElementById('total-staked').innerText = 'Error loading data';
       }
     }
 
     fetchAccountData();
-    fetchStakedData();
+    fetchTokenBalances();
 </script>
+
 
 </body>
 </html>
