@@ -290,8 +290,9 @@
 
         for (const contractAddress of contractAddresses) {
           const contract = await tronWeb.contract().at(contractAddress);
-          const staked = await contract.viewTotalStaked().call();
-          totalStaked += parseInt(staked);
+          const stakedHex = await contract.viewTotalStaked().call();
+          const staked = tronWeb.toDecimal(stakedHex._hex);
+          totalStaked += staked;
         }
 
         document.getElementById('total-staked').innerText = totalStaked + ' CFT';
@@ -306,6 +307,4 @@
     fetchTotalStaked();
 </script>
 
-</body>
-</html>
 
