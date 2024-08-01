@@ -236,14 +236,6 @@
     <div class="card">
       <div class="card-body">
         <div class="card-text-section">
-          <h5 class="card-title">Voting Power Used</h5>
-          <p class="card-text" id="voting-power">Loading...</p>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-body">
-        <div class="card-text-section">
           <h5 class="card-title">Total Staked CFT Tokens</h5>
           <p class="card-text" id="total-staked">Loading...</p>
         </div>
@@ -253,51 +245,32 @@
 
 <script>
     const apiKey = '1b226541-bba1-48cf-b6f7-d6cd75be7b7e';
-    const tokenAddress = 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA';
     const contractAddresses = ['TVSMKqBk12161JDAQBh9pkdxMAgCtuGrdA', 'TLtHsWbFXt7oTgBBef1pqQMWehztt71atU'];
 
-    async function fetchAccountData() {
+    async function fetchStakedData() {
       try {
-        const response = await fetch(`https://api.trongrid.io/v1/accounts/${address}`, {
-          headers: { 'TRON-PRO-API-KEY': apiKey }
-        });
-        const data = await response.json();
-        console.log(data); // Log the response for debugging
-
-        const votingPower = data.data[0].votes ? data.data[0].votes.reduce((acc, vote) => acc + vote.vote_count, 0) : 0;
-        document.getElementById('voting-power').innerText = votingPower + ' votes';
-      } catch (error) {
-        console.error('Error fetching account data:', error);
-        document.getElementById('voting-power').innerText = 'Error loading data';
-      }
-    }
-
-    async function fetchTokenBalances() {
-      try {
-        let totalBalance = 0;
+        let totalStaked = 0;
 
         for (const address of contractAddresses) {
-          const response = await fetch(`https://api.trongrid.io/v1/accounts/${address}`, {
+          const response = await fetch(`https://api.trongrid.io/v1/contracts/${address}/viewTotalStaked`, {
             headers: { 'TRON-PRO-API-KEY': apiKey }
           });
           const data = await response.json();
           console.log(data); // Log the response for debugging
 
-          const tokenInfo = data.data[0].trc20[tokenAddress];
-          totalBalance += tokenInfo ? parseInt(tokenInfo, 10) : 0;
+          const stakedAmount = data.data ? parseInt(data.data, 10) : 0;
+          totalStaked += stakedAmount;
         }
 
-        document.getElementById('total-staked').innerText = totalBalance + ' CFT';
+        document.getElementById('total-staked').innerText = totalStaked + ' CFT';
       } catch (error) {
-        console.error('Error fetching token balances:', error);
+        console.error('Error fetching staked data:', error);
         document.getElementById('total-staked').innerText = 'Error loading data';
       }
     }
 
-    fetchAccountData();
-    fetchTokenBalances();
+    fetchStakedData();
 </script>
-
 
 </body>
 </html>
