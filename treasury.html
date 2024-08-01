@@ -251,9 +251,9 @@
     </div>
   </div>
   
-    <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
 
-    <script>
+  <script>
     const apiKey = '1b226541-bba1-48cf-b6f7-d6cd75be7b7e';
     const address = 'TFvHNqDqttkXSS8ZTdC4c4W7q97SFW3iKq';
     const contractAddresses = [
@@ -291,7 +291,7 @@
         for (const contractAddress of contractAddresses) {
           const contract = await tronWeb.contract().at(contractAddress);
           const stakedHex = await contract.viewTotalStaked().call();
-          const staked = tronWeb.toDecimal(stakedHex._hex);
+          const staked = tronWeb.toBigNumber(stakedHex).toNumber();
           totalStaked += staked;
         }
 
@@ -305,7 +305,7 @@
 
     fetchAccountData();
     fetchTotalStaked();
-</script>
+  </script>
 </body>
 </html>
 
