@@ -296,7 +296,7 @@
 
         const contract = await tronWeb.contract().at(contractAddress);
         const stakedHex = await contract.viewTotalStaked().call();
-        const staked = tronWeb.toDecimal(stakedHex) / 1e6; // Convert from Sun to TRX considering 6 decimals
+        const staked = tronWeb.toBigNumber(stakedHex).dividedBy(1e6); // Convert from Sun to TRX considering 6 decimals
 
         document.getElementById(elementId).innerText = staked.toFixed(6) + ' CFT';
       } catch (error) {
