@@ -291,7 +291,7 @@
         for (const contractAddress of contractAddresses) {
           const contract = await tronWeb.contract().at(contractAddress);
           const stakedHex = await contract.viewTotalStaked().call();
-          const staked = tronWeb.toDecimal(stakedHex) / 1e6; // Convert from Sun to TRX considering 6 decimals
+          const staked = parseInt(stakedHex._hex, 16) / 1e6; // Convert from Sun to TRX considering 6 decimals
           totalStaked += staked;
         }
 
