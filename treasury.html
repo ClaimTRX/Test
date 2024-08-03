@@ -258,24 +258,33 @@
 </head>
 <body>
   <div class="sidebar">
-    <a href="#">Home</a>
-    <a href="#">Dashboard</a>
-    <a href="#">Staking</a>
-    <a href="#">Contact</a>
+    <h2>CFT</h2>
+    <a href="index.html">CFT Token</a>
+      <a href="usdt.html">USDT Rewards</a>
+    <a href="lottery.html">Lottery</a>
+    <a href="draw.html">Draw</a>
+    <a href="claim.html">Claim</a>
     <div class="social-links">
-      <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-      <a href="#" class="social-icon"><i class="fab fa-telegram"></i></a>
-      <a href="#" class="social-icon"><i class="fab fa-discord"></i></a>
-    </div>
+        <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
+            <i class="fab fa-twitter"></i>
+        </a>
+        <a href="https://t.me/claimfreetrxnow" target="_blank" class="social-icon">
+            <i class="fab fa-telegram-plane"></i>
+        </a>
+       </div>
+      <div class="language-switcher">
+    <button id="language-switcher" class="btn btn-secondary" onclick="switchLanguage('zh')">中文</button>
+  </div>
   </div>
   <div class="topbar">
     <button id="connect-button" onclick="connectWallet()">Connect Wallet</button>
+    
   </div>
   <div class="main-content">
     <div class="card">
       <div class="card-body">
         <div class="card-text-section">
-          <h5 class="card-title">Staked TRX</h5>
+          <h5 class="card-title">Staked TRX in CFT Treasury</h5>
           <p class="card-text" id="voting-power">Loading...</p>
         </div>
       </div>
@@ -283,7 +292,7 @@
     <div class="card">
       <div class="card-body">
         <div class="card-text-section">
-          <h5 class="card-title">Total Staked CFT</h5>
+          <h5 class="card-title">Total Staked CFT in TRX Reward Contract</h5>
           <p class="card-text" id="total-staked-cft">Loading...</p>
           <h5 class="card-title">Current APR</h5>
           <p class="card-text" id="current-apr-cft">Loading...</p>
@@ -294,9 +303,9 @@
     <div class="card">
       <div class="card-body">
         <div class="card-text-section">
-          <h5 class="card-title">Total Staked CFT (New)</h5>
+          <h5 class="card-title">Total Staked CFT in USDT Reward Contract</h5>
           <p class="card-text" id="new-total-staked-cft">Loading...</p>
-          <h5 class="card-title">Current APR (New)</h5>
+          <h5 class="card-title">Current APR</h5>
           <p class="card-text" id="new-current-apr">Loading...</p>
         </div>
       </div>
