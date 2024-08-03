@@ -232,26 +232,31 @@
   <div class="topbar">
     <button>Login</button>
   </div>
-<div class="main-content">
+  <div class="main-content">
     <div class="card">
       <div class="card-body">
         <div class="card-text-section">
-  
           <h5 class="card-title">Staked TRX</h5>
           <p class="card-text" id="voting-power">Loading...</p>
         </div>
       </div>
     </div>
-</div>
 
+    <!-- New Card for Total Staked CFT and APR -->
+    <div class="card">
+      <div class="card-body">
+        <div class="card-text-section">
+          <h5 class="card-title">Total Staked CFT</h5>
+          <p class="card-text" id="total-staked-cft">Loading...</p>
+          <h5 class="card-title">Current APR</h5>
+          <p class="card-text" id="current-apr-cft">Loading...</p>
+        </div>
+      </div>
+    </div>
 
+  </div>
 
-
-
-
-
-
-<script>
+  <script>
     const apiKey = '1b226541-bba1-48cf-b6f7-d6cd75be7b7e';
     const address = 'TFvHNqDqttkXSS8ZTdC4c4W7q97SFW3iKq';
 
@@ -273,15 +278,249 @@
       }
     }
 
-
     fetchAccountData();
-</script>
 
+    // Existing code for updating CFT total staked amount and APR
+    const stakingContractAddress = 'TVSMKqBk12161JDAQBh9pkdxMAgCtuGrdA';
+    const stakingContractAbi = [
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_stakingToken",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "RewardClaimed",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Staked",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Withdrawn",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "OwnerWithdrawn",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "stake",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "withdraw",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "claimReward",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "ownerWithdraw",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "viewAPR",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "viewTotalStaked",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "account",
+                        "type": "address"
+                    }
+                ],
+                "name": "viewStakedAmount",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "account",
+                        "type": "address"
+                    }
+                ],
+                "name": "viewPendingReward",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_dailyReward",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setDailyReward",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "stateMutability": "payable",
+                "type": "receive"
+            }
+        ];
 
+    async function fetchStakingData() {
+      try {
+        const tronWeb = window.tronWeb;
+        const stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
+        
+        // Fetch total staked amount
+        const totalStakedAmount = await stakingContract.methods.viewTotalStaked().call();
+        document.getElementById('total-staked-cft').innerText = formatWholeNumber(tronWeb.fromSun(totalStakedAmount)) + ' CFT';
 
+        // Fetch current APR
+        const currentAPR = await stakingContract.methods.viewAPR().call();
+        document.getElementById('current-apr-cft').innerText = formatAPR(currentAPR) + ' %';
+      } catch (error) {
+        console.error('Error fetching staking data:', error);
+      }
+    }
 
+    fetchStakingData();
 
-</body>  
+    function formatWholeNumber(num) {
+      return Math.floor(parseFloat(num)).toLocaleString('en-US');
+    }
+
+    function formatAPR(apr) {
+      return (parseFloat(apr) / 10000).toFixed(2);
+    }
+  </script>
+</body>
 </html>
 
 
