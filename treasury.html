@@ -294,10 +294,9 @@
     <div class="card">
       <div class="card-body">
         <div class="card-text-section">
-          <h5 class="card-title">New Staking Contract Data</h5>
-          <h5 class="card-title mt-3">Total Staked CFT</h5>
+          <h5 class="card-title">Total Staked CFT (New)</h5>
           <p class="card-text" id="new-total-staked-cft">Loading...</p>
-          <h5 class="card-title mt-3">Current APR</h5>
+          <h5 class="card-title">Current APR (New)</h5>
           <p class="card-text" id="new-current-apr">Loading...</p>
         </div>
       </div>
@@ -776,97 +775,128 @@ const newStakingContractAbi = [
 ];
 
 document.addEventListener('DOMContentLoaded', async () => {
-  if (await checkTronLinkInstalled()) {
-    await initializeTronWeb();
-  }
-});
-
-async function checkTronLinkInstalled() {
-  return new Promise((resolve) => {
-    const interval = setInterval(() => {
-      if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-        clearInterval(interval);
-        resolve(true);
+      if (await checkTronLinkInstalled()) {
+        await initializeTronWeb();
+        await calculateApr(); // Calculate APR for the new staking contract
       }
-    }, 1000);
-  });
-}
+    });
 
-async function initializeTronWeb() {
-  tronWeb = window.tronWeb;
-  userAddress = tronWeb.defaultAddress.base58;
+    async function checkTronLinkInstalled() {
+      return new Promise((resolve) => {
+        const interval = setInterval(() => {
+          if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+            clearInterval(interval);
+            resolve(true);
+          }
+        }, 1000);
+      });
+    }
 
-  document.getElementById('connect-button').style.display = 'none'; // Hide the button
+    async function initializeTronWeb() {
+      tronWeb = window.tronWeb;
+      userAddress = tronWeb.defaultAddress.base58;
 
-  console.log('Connected to TronLink.');
-  console.log('User Address:', userAddress);
+      document.getElementById('connect-button').style.display = 'none'; // Hide the button
 
-  try {
-    const balance = await tronWeb.trx.getBalance(userAddress);
-    console.log('Balance:', tronWeb.fromSun(balance), 'TRX');
+      console.log('Connected to TronLink.');
+      console.log('User Address:', userAddress);
 
-    // Initialize contracts
-    stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
-    newStakingContract = await tronWeb.contract(newStakingContractAbi, newStakingContractAddress);
+      try {
+        const balance = await tronWeb.trx.getBalance(userAddress);
+        console.log('Balance:', tronWeb.fromSun(balance), 'TRX');
 
-    // Fetch and display data
-    fetchStakingData();
-    fetchNewStakingData();
-  } catch (error) {
-    console.error('Error fetching balance:', error);
-  }
-}
+        // Initialize contracts
+        stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
+        newStakingContract = await tronWeb.contract(newStakingContractAbi, newStakingContractAddress);
 
-async function fetchStakingData() {
-  try {
-    const stakedTRX = 236112; // Replace with actual contract call
-    document.getElementById('voting-power').innerText = `${formatNumber(stakedTRX)} TRX`;
+        // Fetch and display data
+        fetchStakingData();
+        fetchNewStakingData(); // Fetch data for the new staking contract
+      } catch (error) {
+        console.error('Error fetching balance:', error);
+      }
+    }
 
-    const totalStakedCFT = await stakingContract.methods.viewTotalStaked().call();
-    document.getElementById('total-staked-cft').innerText = `${formatWholeNumber(tronWeb.fromSun(totalStakedCFT))} CFT`;
+    async function fetchStakingData() {
+      try {
+        const stakedTRX = 236112; // Replace with actual contract call
+        document.getElementById('voting-power').innerText = `${formatNumber(stakedTRX)} TRX`;
 
-    const currentAPR = await stakingContract.methods.viewAPR().call();
-    document.getElementById('current-apr-cft').innerText = `${(currentAPR / 10000).toFixed(2)}%`;
-  } catch (error) {
-    console.error('Error fetching staking data:', error);
-  }
-}
+        const totalStakedCFT = await stakingContract.methods.viewTotalStaked().call();
+        document.getElementById('total-staked-cft').innerText = `${formatWholeNumber(tronWeb.fromSun(totalStakedCFT))} CFT`;
 
-async function fetchNewStakingData() {
-  try {
-    const totalStakedCFT = await newStakingContract.methods.viewTotalStaked().call();
-    document.getElementById('new-total-staked-cft').innerText = `${formatWholeNumber(tronWeb.fromSun(totalStakedCFT))} CFT`;
+        const currentAPR = await stakingContract.methods.viewAPR().call();
+        document.getElementById('current-apr-cft').innerText = `${(currentAPR / 10000).toFixed(2)}%`;
+      } catch (error) {
+        console.error('Error fetching staking data:', error);
+      }
+    }
 
-    const currentAPR = await newStakingContract.methods.viewAPR().call();
-    document.getElementById('new-current-apr').innerText = `${(currentAPR / 10000).toFixed(2)}%`;
-  } catch (error) {
-    console.error('Error fetching new staking data:', error);
-  }
-}
+    async function fetchNewStakingData() {
+      try {
+        const totalStakedCFT = await newStakingContract.methods.viewTotalStaked().call();
+        document.getElementById('new-total-staked-cft').innerText = `${formatWholeNumber(tronWeb.fromSun(totalStakedCFT))} CFT`;
+      } catch (error) {
+        console.error('Error fetching new staking data:', error);
+      }
+    }
 
-async function connectWallet() {
-  if (await checkTronLinkInstalled()) {
-    await initializeTronWeb();
-  } else {
-    console.log('Please install TronLink extension in your browser.');
-  }
-}
+    async function calculateApr() {
+      try {
+        const dailyReward = await newStakingContract.methods.viewDailyReward().call();
+        const totalStaked = await newStakingContract.methods.viewTotalStaked().call();
+        const tokenPriceInUsdt = 0.13; // Price of each token in USDT
 
-function formatNumber(num) {
-  return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-}
+        // Ensure the values are valid numbers
+        if (!dailyReward || !totalStaked || !tokenPriceInUsdt) {
+          console.error('Invalid data received for APR calculation');
+          document.getElementById('new-current-apr').innerText = 'APR: Unable to calculate';
+          return;
+        }
 
-function formatWholeNumber(num) {
-  return parseInt(num).toLocaleString('en-US');
-}
+        // Convert daily reward to USDT considering 6 decimals
+        const dailyRewardInUsdt = dailyReward / 1e6;
+        const totalStakedInUsdt = tronWeb.fromSun(totalStaked) * tokenPriceInUsdt;
 
-function formatAPR(apr) {
-  return parseInt(apr).toLocaleString('en-US');
-}
+        // Ensure the values are valid numbers
+        if (isNaN(dailyRewardInUsdt) || isNaN(totalStakedInUsdt) || totalStakedInUsdt == 0) {
+          console.error('Invalid numerical values for APR calculation');
+          document.getElementById('new-current-apr').innerText = 'APR: Unable to calculate';
+          return;
+        }
+
+        const yearlyRewardInUsdt = dailyRewardInUsdt * 365;
+        const apr = (yearlyRewardInUsdt / totalStakedInUsdt) * 100;
+
+        document.getElementById('new-current-apr').innerText = `${apr.toFixed(2)}%`;
+      } catch (error) {
+        console.error('Error calculating APR:', error);
+        document.getElementById('new-current-apr').innerText = 'APR: Unable to calculate';
+      }
+    }
+
+    async function connectWallet() {
+      if (await checkTronLinkInstalled()) {
+        await initializeTronWeb();
+      } else {
+        console.log('Please install TronLink extension in your browser.');
+      }
+    }
+
+    function formatNumber(num) {
+      return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
+
+    function formatWholeNumber(num) {
+      return parseInt(num).toLocaleString('en-US');
+    }
+
+    function formatAPR(apr) {
+      return parseInt(apr).toLocaleString('en-US');
+    }
   </script>
 </body>
 </html>
-
 
 
 
