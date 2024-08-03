@@ -552,13 +552,13 @@
     async function fetchStakingData() {
       try {
         const stakedTRX = 236112; // Replace with actual contract call
-        document.getElementById('voting-power').innerText = `${stakedTRX} TRX`;
+        document.getElementById('voting-power').innerText = `${formatNumber(stakedTRX)} TRX`;
 
         const totalStakedCFT = await stakingContract.methods.viewTotalStaked().call();
-        document.getElementById('total-staked-cft').innerText = `${tronWeb.fromSun(totalStakedCFT)} CFT`;
+        document.getElementById('total-staked-cft').innerText = `${formatWholeNumber(tronWeb.fromSun(totalStakedCFT))} CFT`;
 
         const currentAPR = await stakingContract.methods.viewAPR().call();
-        document.getElementById('current-apr-cft').innerText = `${currentAPR}%`;
+        document.getElementById('current-apr-cft').innerText = `${formatAPR(currentAPR)}`;
       } catch (error) {
         console.error('Error fetching staking data:', error);
       }
@@ -571,9 +571,22 @@
         console.log('Please install TronLink extension in your browser.');
       }
     }
+
+    function formatNumber(num) {
+      return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
+
+    function formatWholeNumber(num) {
+      return parseInt(num).toLocaleString('en-US');
+    }
+
+    function formatAPR(apr) {
+      return parseInt(apr).toLocaleString('en-US');
+    }
   </script>
 </body>
 </html>
+
 
 
 
