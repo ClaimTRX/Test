@@ -244,8 +244,16 @@
     <div class="card">
       <div class="card-body">
         <div class="card-text-section">
-          <h5 class="card-title">Total Staked CFT Tokens</h5>
-          <p class="card-text" id="total-staked">Loading...</p>
+          <h5 class="card-title">Total Staked CFT Tokens (Contract 1)</h5>
+          <p class="card-text" id="total-staked-1">Loading...</p>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="card-text-section">
+          <h5 class="card-title">Total Staked CFT Tokens (Contract 2)</h5>
+          <p class="card-text" id="total-staked-2">Loading...</p>
         </div>
       </div>
     </div>
@@ -279,32 +287,28 @@
       }
     }
 
-    async function fetchTotalStaked() {
+    async function fetchTotalStaked(contractAddress, elementId) {
       try {
         const tronWeb = new TronWeb({
           fullHost: 'https://api.trongrid.io',
           headers: { 'TRON-PRO-API-KEY': apiKey }
         });
 
-        let totalStaked = 0;
+        const contract = await tronWeb.contract().at(contractAddress);
+        const stakedHex = await contract.viewTotalStaked().call();
+        const staked = tronWeb.toDecimal(stakedHex) / 1e6; // Convert from Sun to TRX considering 6 decimals
 
-        for (const contractAddress of contractAddresses) {
-          const contract = await tronWeb.contract().at(contractAddress);
-          const stakedHex = await contract.viewTotalStaked().call();
-          const staked = parseInt(stakedHex._hex, 16) / 1e6; // Convert from Sun to TRX considering 6 decimals
-          totalStaked += staked;
-        }
-
-        document.getElementById('total-staked').innerText = totalStaked.toFixed(6) + ' CFT';
+        document.getElementById(elementId).innerText = staked.toFixed(6) + ' CFT';
       } catch (error) {
-        console.error('Error fetching total staked:', error);
+        console.error(`Error fetching total staked from contract ${contractAddress}:`, error);
 
-        document.getElementById('total-staked').innerText = 'Error loading data';
+        document.getElementById(elementId).innerText = 'Error loading data';
       }
     }
 
     fetchAccountData();
-    fetchTotalStaked();
+    fetchTotalStaked(contractAddresses[0], 'total-staked-1');
+    fetchTotalStaked(contractAddresses[1], 'total-staked-2');
   </script>
 </body>
 </html>
