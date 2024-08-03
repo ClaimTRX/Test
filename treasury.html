@@ -550,19 +550,20 @@
     }
 
     async function fetchStakingData() {
-      try {
-        const stakedTRX = 236112; // Replace with actual contract call
-        document.getElementById('voting-power').innerText = `${formatNumber(stakedTRX)} TRX`;
+  try {
+    const stakedTRX = 236112; // Replace with actual contract call
+    document.getElementById('voting-power').innerText = `${formatNumber(stakedTRX)} TRX`;
 
-        const totalStakedCFT = await stakingContract.methods.viewTotalStaked().call();
-        document.getElementById('total-staked-cft').innerText = `${formatWholeNumber(tronWeb.fromSun(totalStakedCFT))} CFT`;
+    const totalStakedCFT = await stakingContract.methods.viewTotalStaked().call();
+    document.getElementById('total-staked-cft').innerText = `${formatWholeNumber(tronWeb.fromSun(totalStakedCFT))} CFT`;
 
-        const currentAPR = await stakingContract.methods.viewAPR().call();
-        document.getElementById('current-apr-cft').innerText = `${formatAPR(currentAPR)}`;
-      } catch (error) {
-        console.error('Error fetching staking data:', error);
-      }
-    }
+    const currentAPR = await stakingContract.methods.viewAPR().call();
+    document.getElementById('current-apr-cft').innerText = `${(currentAPR / 10000).toFixed(2)}%`;
+  } catch (error) {
+    console.error('Error fetching staking data:', error);
+  }
+}
+
 
     async function connectWallet() {
       if (await checkTronLinkInstalled()) {
