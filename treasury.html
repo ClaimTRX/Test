@@ -260,10 +260,12 @@
   <div class="sidebar">
     <h2>CFT</h2>
     <a href="index.html">CFT Token</a>
-      <a href="usdt.html">USDT Rewards</a>
+    <a href="usdt.html">USDT Rewards</a>
     <a href="lottery.html">Lottery</a>
     <a href="draw.html">Draw</a>
     <a href="claim.html">Claim</a>
+    <a href="treasury.html">Treasury</a>
+    
     <div class="social-links">
         <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
             <i class="fab fa-twitter"></i>
@@ -883,6 +885,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('new-current-apr').innerText = 'APR: Unable to calculate';
       }
     }
+
+    function switchLanguage(language) {
+    if (language === 'zh') {
+      window.location.href = 'treasury_zh.html';
+    } else {
+      window.location.href = 'treasury.html';
+    }
+  }
 
     async function connectWallet() {
       if (await checkTronLinkInstalled()) {
