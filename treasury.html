@@ -290,14 +290,27 @@
         </div>
       </div>
     </div>
+    <!-- New Card for New Staking Contract Data -->
+    <div class="card">
+      <div class="card-body">
+        <div class="card-text-section">
+          <h5 class="card-title">New Staking Contract Data</h5>
+          <h5 class="card-title mt-3">Total Staked CFT</h5>
+          <p class="card-text" id="new-total-staked-cft">Loading...</p>
+          <h5 class="card-title mt-3">Current APR</h5>
+          <p class="card-text" id="new-current-apr">Loading...</p>
+        </div>
+      </div>
+    </div>
   </div>
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
   <script>
-    let tronWeb, userAddress, stakingContract;
+    let tronWeb, userAddress, stakingContract, newStakingContract;
 
     const stakingContractAddress = 'TVSMKqBk12161JDAQBh9pkdxMAgCtuGrdA';
+    const newStakingContractAddress = 'TLtHsWbFXt7oTgBBef1pqQMWehztt71atU';
     const stakingContractAbi = [
             {
                 "inputs": [
@@ -509,47 +522,302 @@
             }
         ];
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      if (await checkTronLinkInstalled()) {
-        await initializeTronWeb();
-      }
-    });
-
-    async function checkTronLinkInstalled() {
-      return new Promise((resolve) => {
-        const interval = setInterval(() => {
-          if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-            clearInterval(interval);
-            resolve(true);
-          }
-        }, 1000);
-      });
+const newStakingContractAbi = [
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_stakingToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_rewardToken",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_dailyReward",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "RewardClaimed",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "Staked",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "Withdrawn",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "OwnerWithdrawn",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "stake",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "withdraw",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "claimReward",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "ownerWithdraw",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "viewAPR",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "viewTotalStaked",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "viewStakedAmount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "viewPendingReward",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "viewTotalClaimedRewards",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "viewDailyReward",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_dailyReward",
+                "type": "uint256"
+            }
+        ],
+        "name": "setDailyReward",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "receive"
     }
+];
 
-    async function initializeTronWeb() {
-      tronWeb = window.tronWeb;
-      userAddress = tronWeb.defaultAddress.base58;
+document.addEventListener('DOMContentLoaded', async () => {
+  if (await checkTronLinkInstalled()) {
+    await initializeTronWeb();
+  }
+});
 
-      document.getElementById('connect-button').style.display = 'none'; // Hide the button
-
-      console.log('Connected to TronLink.');
-      console.log('User Address:', userAddress);
-
-      try {
-        const balance = await tronWeb.trx.getBalance(userAddress);
-        console.log('Balance:', tronWeb.fromSun(balance), 'TRX');
-
-        // Initialize contracts
-        stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
-
-        // Fetch and display data
-        fetchStakingData();
-      } catch (error) {
-        console.error('Error fetching balance:', error);
+async function checkTronLinkInstalled() {
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+        clearInterval(interval);
+        resolve(true);
       }
-    }
+    }, 1000);
+  });
+}
 
-    async function fetchStakingData() {
+async function initializeTronWeb() {
+  tronWeb = window.tronWeb;
+  userAddress = tronWeb.defaultAddress.base58;
+
+  document.getElementById('connect-button').style.display = 'none'; // Hide the button
+
+  console.log('Connected to TronLink.');
+  console.log('User Address:', userAddress);
+
+  try {
+    const balance = await tronWeb.trx.getBalance(userAddress);
+    console.log('Balance:', tronWeb.fromSun(balance), 'TRX');
+
+    // Initialize contracts
+    stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
+    newStakingContract = await tronWeb.contract(newStakingContractAbi, newStakingContractAddress);
+
+    // Fetch and display data
+    fetchStakingData();
+    fetchNewStakingData();
+  } catch (error) {
+    console.error('Error fetching balance:', error);
+  }
+}
+
+async function fetchStakingData() {
   try {
     const stakedTRX = 236112; // Replace with actual contract call
     document.getElementById('voting-power').innerText = `${formatNumber(stakedTRX)} TRX`;
@@ -564,30 +832,40 @@
   }
 }
 
+async function fetchNewStakingData() {
+  try {
+    const totalStakedCFT = await newStakingContract.methods.viewTotalStaked().call();
+    document.getElementById('new-total-staked-cft').innerText = `${formatWholeNumber(tronWeb.fromSun(totalStakedCFT))} CFT`;
 
-    async function connectWallet() {
-      if (await checkTronLinkInstalled()) {
-        await initializeTronWeb();
-      } else {
-        console.log('Please install TronLink extension in your browser.');
-      }
-    }
+    const currentAPR = await newStakingContract.methods.viewAPR().call();
+    document.getElementById('new-current-apr').innerText = `${(currentAPR / 10000).toFixed(2)}%`;
+  } catch (error) {
+    console.error('Error fetching new staking data:', error);
+  }
+}
 
-    function formatNumber(num) {
-      return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-    }
+async function connectWallet() {
+  if (await checkTronLinkInstalled()) {
+    await initializeTronWeb();
+  } else {
+    console.log('Please install TronLink extension in your browser.');
+  }
+}
 
-    function formatWholeNumber(num) {
-      return parseInt(num).toLocaleString('en-US');
-    }
+function formatNumber(num) {
+  return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
 
-    function formatAPR(apr) {
-      return parseInt(apr).toLocaleString('en-US');
-    }
+function formatWholeNumber(num) {
+  return parseInt(num).toLocaleString('en-US');
+}
+
+function formatAPR(apr) {
+  return parseInt(apr).toLocaleString('en-US');
+}
   </script>
 </body>
 </html>
-
 
 
 
