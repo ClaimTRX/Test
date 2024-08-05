@@ -9,219 +9,221 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
-          background-color: #1a1a2e;
-          color: #fff;
-          font-family: Arial, sans-serif;
+            background-color: #1a1a2e;
+            color: #fff;
+            font-family: Arial, sans-serif;
         }
 
         .sidebar {
-          height: 100vh;
-          background-color: #162447;
-          padding: 15px;
-          position: fixed;
-          width: 200px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+            height: 100vh;
+            background-color: #162447;
+            padding: 15px;
+            position: fixed;
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .sidebar a {
-          color: #fff;
-          text-decoration: none;
-          display: block;
-          padding: 10px 0;
-          width: 100%;
-          text-align: center;
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            padding: 10px 0;
+            width: 100%;
+            text-align: center;
         }
 
         .sidebar a:hover {
-          background-color: #1f4068;
+            background-color: #1f4068;
         }
 
         .sidebar .social-links {
-          display: flex;
-          margin-top: 20px;
+            display: flex;
+            margin-top: 20px;
         }
 
         .sidebar .social-icon {
-          color: white;
-          font-size: 20px;
-          margin-right: 10px;
-          text-decoration: none;
+            color: white;
+            font-size: 20px;
+            margin-right: 10px;
+            text-decoration: none;
         }
 
         .sidebar .social-icon:last-child {
-          margin-right: 0;
+            margin-right: 0;
         }
 
         .topbar {
-          background-color: #162447;
-          padding: 10px;
-          text-align: right;
-          margin-left: 200px;
-          display: flex;
-          align-items: center;
-          justify-content: flex-end;
+            background-color: #162447;
+            padding: 10px;
+            text-align: right;
+            margin-left: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
         }
 
         .topbar button {
-          background-color: #4CAF50;
-          color: white;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-          font-size: 14px;
-          padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 8px 16px;
         }
 
         .main-content {
-          margin-left: 220px;
-          padding: 20px;
+            margin-left: 220px;
+            padding: 20px;
         }
 
         .card {
-          background-color: #2c3e50;
-          color: white;
-          border: none;
-          border-radius: 10px;
-          margin-bottom: 20px;
-          padding: 20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            padding: 20px;
         }
 
         .card-body {
-          display: flex;
-          flex-direction: column;
+            display: flex;
+            flex-direction: column;
         }
 
         .card-title {
-          font-size: 1.5rem;
+            font-size: 1.5rem;
         }
 
         .card-text {
-          font-size: 1rem;
+            font-size: 1rem;
         }
 
         .btn-success,
         .btn-danger,
         .btn-primary {
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-          font-size: 0.875rem;
-          padding: 8px 16px;
-          width: 20%;
-          margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            padding: 8px 16px;
+            width: 20%;
+            margin-top: 10px;
         }
 
         .btn-danger {
-          background-color: #ff4c4c;
+            background-color: #ff4c4c;
         }
 
         .btn-primary {
-          background-color: #007bff;
+            background-color: #007bff;
         }
 
         .form-control {
-          width: 20%;
-          padding: 8px;
-          font-size: 0.875rem;
-          border-radius: 5px;
-          margin-bottom: 10px;
+            width: 20%;
+            padding: 8px;
+            font-size: 0.875rem;
+            border-radius: 5px;
+            margin-bottom: 10px;
         }
 
         .card-explanation {
-          margin-top: 10px;
-          font-size: 0.875rem;
+            margin-top: 10px;
+            font-size: 0.875rem;
         }
 
         input[type=number] {
-          -moz-appearance: textfield;
+            -moz-appearance: textfield;
         }
 
         input[type=number]::-webkit-outer-spin-button,
         input[type=number]::-webkit-inner-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
+            -webkit-appearance: none;
+            margin: 0;
         }
 
         @media (min-width: 768px) {
-          .card-body {
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: flex-start;
-          }
+            .card-body {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
 
-          .card-text-section {
-            flex: 1;
-            margin-right: 20px;
-          }
+            .card-text-section {
+                flex: 1;
+                margin-right: 20px;
+            }
 
-          .card-explanation {
-            flex: 1;
-          }
+            .card-explanation {
+                flex: 1;
+            }
         }
 
         @media (max-width: 767.98px) {
-          .sidebar {
-            height: auto;
-            padding: 10px;
-            width: 100%;
-            position: relative;
-            flex-direction: column;
-            align-items: center;
-          }
+            .sidebar {
+                height: auto;
+                padding: 10px;
+                width: 100%;
+                position: relative;
+                flex-direction: column;
+                align-items: center;
+            }
 
-          .topbar {
-            text-align: center;
-            margin-left: 0;
-            justify-content: center;
-          }
+            .topbar {
+                text-align: center;
+                margin-left: 0;
+                justify-content: center;
+            }
 
-          .main-content {
-            margin-left: 0;
-          }
+            .main-content {
+                margin-left: 0;
+            }
 
-          .card-title {
-            font-size: 1.25rem;
-          }
+            .card-title {
+                font-size: 1.25rem;
+            }
 
-          .card-text {
-            font-size: 0.875rem;
-          }
+            .card-text {
+                font-size: 0.875rem;
+            }
 
-          .btn-success,
-          .btn-danger,
-          .btn-primary {
-            font-size: 0.75rem;
-            padding: 6px 12px;
-            width: 100%;
-          }
+            .btn-success,
+            .btn-danger,
+            .btn-primary {
+                font-size: 0.75rem;
+                padding: 6px 12px;
+                width: 100%;
+            }
 
-          .form-control {
-            font-size: 0.75rem;
-            padding: 6px;
-            width: 100%;
-          }
+            .form-control {
+                font-size: 0.75rem;
+                padding: 6px;
+                width: 100%;
+            }
 
-          .card-explanation {
-            margin-top: 20px;
-          }
+            .card-explanation {
+                margin-top: 20px;
+            }
 
-          .sidebar .social-links {
-            justify-content: center;
-          }
+            .sidebar .social-links {
+                justify-content: center;
+            }
 
-          .sidebar .social-icon {
-            margin-bottom: 10px;
-          }
+            .sidebar .social-icon {
+                margin-bottom: 10px;
+            }
         }
-
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@tronweb3/tronweb/dist/TronWeb.min.js"></script>
     <script>
-        let tronWeb, userAddress, contract;
+        let tronWeb;
+        let contract1;
+        let contract2;
 
-        const contractAddress = "TMUDuMwYd94M6k7bhKgo6kqBKiDkjAFPDV";
+        const contractAddress1 = "TMUDuMwYd94M6k7bhKgo6kqBKiDkjAFPDV";
+        const contractAddress2 = "TWR9VQrzTi9iQGCG7R25cnqifAXFy9SWLs";
         const contractABI = [
             {
                 "inputs": [
@@ -384,12 +386,6 @@
             }
         ];
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            if (await checkTronLinkInstalled()) {
-                await initializeTronWeb();
-            }
-        });
-
         async function checkTronLinkInstalled() {
             return new Promise((resolve) => {
                 const interval = setInterval(() => {
@@ -403,145 +399,209 @@
 
         async function initializeTronWeb() {
             tronWeb = window.tronWeb;
-            userAddress = tronWeb.defaultAddress.base58;
+            const account = tronWeb.defaultAddress.base58;
+            document.getElementById('connectWallet').innerText = 'Connected';
+            document.getElementById('connectWallet').style.display = 'none';
+            contract1 = await tronWeb.contract(contractABI, contractAddress1);
+            contract2 = await tronWeb.contract(contractABI, contractAddress2);
+            updateUI();
+            updateTicketCount(account);
+        }
 
-            // Hide the connect button
-            document.getElementById('connect-button').style.display = 'none';
-
-            console.log('Connected to TronLink.');
-            console.log('User Address:', userAddress);
-
+        async function connectWallet() {
             try {
-                const balance = await tronWeb.trx.getBalance(userAddress);
-                console.log('Balance:', tronWeb.fromSun(balance), 'TRX');
-
-                contract = await tronWeb.contract(contractABI, contractAddress);
-
-                updateUI(balance);
+                if (await checkTronLinkInstalled()) {
+                    await initializeTronWeb();
+                } else {
+                    alert('Please install TronLink wallet!');
+                }
             } catch (error) {
-                console.error('Error fetching balance:', error);
+                console.error('Error connecting wallet:', error);
             }
         }
 
-        async function updateUI(balance) {
+        async function updateUI() {
             try {
-                updateLotteryUI();
-                updateAvailableTRX(balance);
-                setupEventListeners();
+                const ticketsSold1 = await contract1.methods.ticketsSold().call();
+                const prizeAmount1 = await contract1.methods.prizeAmount().call();
+                const ticketsSoldElement1 = document.getElementById('ticketsSold');
+                const prizeAmountElement1 = document.getElementById('prizeAmount');
+                const drawButton1 = document.getElementById('drawButton');
+
+                if (ticketsSoldElement1) {
+                    ticketsSoldElement1.innerText = `Tickets sold: ${ticketsSold1}`;
+                }
+
+                if (prizeAmountElement1) {
+                    prizeAmountElement1.innerText = `Current prize: ${tronWeb.fromSun(prizeAmount1)} TRX`;
+                }
+
+                if (drawButton1) {
+                    if (ticketsSold1 >= 25) {
+                        drawButton1.disabled = false;
+                        drawButton1.classList.remove('disabled');
+                    } else {
+                        drawButton1.disabled = true;
+                        drawButton1.classList.add('disabled');
+                    }
+                }
+
+                const ticketsSold2 = await contract2.methods.ticketsSold().call();
+                const prizeAmount2 = await contract2.methods.prizeAmount().call();
+                const ticketsSoldElement2 = document.getElementById('ticketsSold2');
+                const prizeAmountElement2 = document.getElementById('prizeAmount2');
+                const drawButton2 = document.getElementById('drawButton2');
+
+                if (ticketsSoldElement2) {
+                    ticketsSoldElement2.innerText = `Tickets sold: ${ticketsSold2}`;
+                }
+
+                if (prizeAmountElement2) {
+                    prizeAmountElement2.innerText = `Current prize: ${tronWeb.fromSun(prizeAmount2)} TRX`;
+                }
+
+                if (drawButton2) {
+                    if (ticketsSold2 >= 25) {
+                        drawButton2.disabled = false;
+                        drawButton2.classList.remove('disabled');
+                    } else {
+                        drawButton2.disabled = true;
+                        drawButton2.classList.add('disabled');
+                    }
+                }
             } catch (error) {
                 console.error('Error updating UI:', error);
             }
         }
 
-        async function updateLotteryUI() {
-            try {
-                const ticketsSold = await contract.methods.ticketsSold().call();
-                const prizeAmount = await contract.methods.prizeAmount().call();
-                console.log('Tickets Sold:', ticketsSold);
-                console.log('Prize Amount:', prizeAmount);
-
-                document.getElementById('ticketsSold').innerText = `Tickets sold: ${ticketsSold}`;
-                document.getElementById('prizeAmount').innerText = `Current prize: ${tronWeb.fromSun(prizeAmount)} TRX`;
-
-                const drawButton = document.getElementById('drawButton');
-                if (ticketsSold >= 25) {
-                    drawButton.disabled = false;
-                    drawButton.classList.remove('disabled');
-                } else {
-                    drawButton.disabled = true;
-                    drawButton.classList.add('disabled');
-                }
-
-                const ticketsCount = await contract.methods.getTickets(userAddress).call();
-                document.getElementById('ticketsCount').innerText = `Your tickets: ${ticketsCount}`;
-            } catch (error) {
-                console.error('Error updating lottery UI:', error);
+        function switchLanguage(language) {
+            if (language === 'zh') {
+                window.location.href = 'lottery_zh.html';
+            } else {
+                window.location.href = 'lottery.html';
             }
         }
 
-        function updateAvailableTRX(balance) {
-            document.getElementById('available-trx').innerText = 'Available TRX: ' + formatNumber(tronWeb.fromSun(balance)) + ' TRX';
+        async function updateTicketCount(account) {
+            try {
+                const ticketsCount1 = await contract1.methods.getTickets(account).call();
+                const ticketsCountElement1 = document.getElementById('ticketsCount');
+                if (ticketsCountElement1) {
+                    ticketsCountElement1.innerText = `Your tickets: ${ticketsCount1}`;
+                }
+
+                const ticketsCount2 = await contract2.methods.getTickets(account).call();
+                const ticketsCountElement2 = document.getElementById('ticketsCount2');
+                if (ticketsCountElement2) {
+                    ticketsCountElement2.innerText = `Your tickets: ${ticketsCount2}`;
+                }
+            } catch (error) {
+                console.error('Error getting ticket count:', error);
+            }
         }
 
-        function setupEventListeners() {
-            document.getElementById('buyTicketsForm').addEventListener('submit', (event) => {
-                event.preventDefault();
-                buyTickets();
-            });
-            document.getElementById('drawButton').addEventListener('click', drawWinner);
-        }
-
-        async function buyTickets() {
+        async function buyTickets1() {
             try {
                 const amount = document.getElementById('ticketAmount').value;
-                const ticketPrice = await contract.methods.ticketPrice().call();
+                const ticketPrice = await contract1.methods.ticketPrice().call();
                 const totalCost = ticketPrice * amount;
 
-                await contract.methods.buyTickets(amount).send({
+                await contract1.methods.buyTickets(amount).send({
                     from: tronWeb.defaultAddress.base58,
                     callValue: totalCost
                 });
 
-                setTimeout(updateLotteryUI, 3000);
+                updateUI();
+                updateTicketCount(tronWeb.defaultAddress.base58);
             } catch (error) {
                 console.error('Error buying tickets:', error);
             }
         }
 
-        async function drawWinner() {
+        async function buyTickets2() {
             try {
-                await contract.methods.drawWinner().send({
+                const amount = document.getElementById('ticketAmount2').value;
+                const ticketPrice = await contract2.methods.ticketPrice().call();
+                const totalCost = ticketPrice * amount;
+
+                await contract2.methods.buyTickets(amount).send({
+                    from: tronWeb.defaultAddress.base58,
+                    callValue: totalCost
+                });
+
+                updateUI();
+                updateTicketCount(tronWeb.defaultAddress.base58);
+            } catch (error) {
+                console.error('Error buying tickets:', error);
+            }
+        }
+
+        async function drawWinner1() {
+            try {
+                await contract1.methods.drawWinner().send({
                     from: tronWeb.defaultAddress.base58
                 });
 
-                setTimeout(updateLotteryUI, 3000);
+                updateUI();
             } catch (error) {
                 console.error('Error drawing winner:', error);
             }
         }
 
-        async function connectWallet() {
-            if (await checkTronLinkInstalled()) {
-                await initializeTronWeb();
-            } else {
-                console.log('Please install TronLink extension in your browser.');
+        async function drawWinner2() {
+            try {
+                await contract2.methods.drawWinner().send({
+                    from: tronWeb.defaultAddress.base58
+                });
+
+                updateUI();
+            } catch (error) {
+                console.error('Error drawing winner:', error);
             }
         }
-        function switchLanguage(language) {
-    if (language === 'zh') {
-      window.location.href = 'lottery_zh.html';
-    } else {
-      window.location.href = 'lottery.html';
-    }
-  }
 
-        function formatNumber(num) {
-            return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (await checkTronLinkInstalled()) {
+                await initializeTronWeb();
+            }
+
+            document.getElementById('connectWallet').addEventListener('click', connectWallet);
+            document.getElementById('buyTicketsForm').addEventListener('submit', (event) => {
+                event.preventDefault();
+                buyTickets1();
+            });
+            document.getElementById('buyTicketsForm2').addEventListener('submit', (event) => {
+                event.preventDefault();
+                buyTickets2();
+            });
+            document.getElementById('drawButton').addEventListener('click', drawWinner1);
+            document.getElementById('drawButton2').addEventListener('click', drawWinner2);
+        });
     </script>
 </head>
 <body>
     <div class="sidebar">
-  <h2>CFT</h2>
-  <a href="index.html">CFT Token</a>
-  <a href="lottery.html">Lottery</a>
-  <a href="draw.html">Draw</a>
-  <a href="claim.html">Claim (Coming Soon)</a>
-  <div class="social-links">
-    <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
-      <i class="fab fa-twitter"></i>
-    </a>
-    <a href="https://t.me/claimfreetrxnow" target="_blank" class="social-icon">
-      <i class="fab fa-telegram-plane"></i>
-    </a>
-  </div>
-  <div class="language-switcher">
-    <button id="language-switcher" class="btn btn-secondary" onclick="switchLanguage('zh')">中文</button>
-  </div>
-</div>
+        <h2>CFT</h2>
+        <a href="index.html">CFT Token</a>
+        <a href="usdt.html">USDT Rewards</a>
+        <a href="lottery.html">Lottery</a>
+        <a href="draw.html">Draw</a>
+        <a href="claim.html">Claim</a>
+        <a href="treasury.html">Treasury</a>
+        <div class="social-links">
+            <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a href="https://t.me/claimfreetrxnow" target="_blank" class="social-icon">
+                <i class="fab fa-telegram-plane"></i>
+            </a>
+        </div>
+        <div class="language-switcher">
+            <button id="language-switcher" class="btn btn-secondary" onclick="switchLanguage('zh')">中文</button>
+        </div>
+    </div>
     <div class="topbar">
-        
-        <button id="connect-button" onclick="connectWallet()">Connect Wallet</button>
+        <button id="connectWallet">Connect Wallet</button>
     </div>
     <div class="main-content">
         <h1>Lottery</h1>
@@ -552,55 +612,45 @@
                     <div id="lotteryWarningMessage" class="card-text" style="color: red; display: none;">To participate, please have 10 TRX unstaked in your wallet.</div>
                     <div id="lotteryStatusMessage" class="card-text hidden" style="color: green;"></div>
                     <form id="buyTicketsForm">
-                        <input type="number" id="ticketAmount" min="1" required class="form-control" placeholder="Amount of tickets"><br>
+                        <input type="number" id="ticketAmount" min="1" required placeholder="Amount of tickets"><br>
                         <button type="submit" class="btn btn-success">Buy Tickets</button>
                     </form>
-                    <button id="drawButton" class="btn btn-primary disabled" disabled>Draw Winner</button><br>
+                    <button id="drawButton" class="btn btn-primary disabled" disabled>Draw Winner</button>
                     <div id="prizeAmount">Current prize: 0 TRX</div>
                     <div id="ticketsSold">Tickets sold: 0</div>
-                    <div id="ticketsCount">Your tickets: 0</div><br>
-                    <div id="visitText"><a href="https://explorer.just.money/address/TMUDuMwYd94M6k7bhKgo6kqBKiDkjAFPDV" target="_blank" rel="noopener noreferrer">Lottery Contract</a></div>
+                    <div id="ticketsCount">Your tickets: 0</div>
+                    <div id="visitText"><a href="https://explorer.just.money/address/TMUDuMwYd94M6k7bhKgo6kqBKiDkjAFPDV" target="_blank" rel="noopener noreferrer">Contract</a></div>
                 </div>
                 <div class="card-explanation">
-                   <div>
-                        <p>Tickets cost 10 TRX each, and you can buy as many tickets as you like for each round.</p>
-                    </div>
-                    <div>
-                        <p>The draw button is enabled once a minimum of 25 tickets are sold, ensuring a minimum prize of 187.5 TRX.<br> However, the draw will only occur when someone presses the draw button after it is enabled.</p>
-                    </div>
-                    <div>
-                        <p>75% of the ticket sales go to the winner, and the remaining 25% is used to buy and burn CFT.</p>
-                    </div>
-                    <div>
-                        <p>The contract owner covers energy fees, so only bandwidth costs will be taken from the user.</p>
-                    </div>
+                    <div><p>Buy tickets to participate in the Lottery. Minimum 187 TRX to be won each Draw</p></div>
+                    <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user.</p></div>
+                    <div><p>To participate you need 10 TRX in your wallet.</p></div>
+                    <div><p>Tickets cost 10 TRX each. 75% of the ticket sales go to the winner, and 25% is used to buy and burn CFT.</p></div>
+                    <div><p>The draw button is enabled when a minimum of 25 tickets are sold.</p></div>
                 </div>
             </div>
         </div>
         <div class="card mt-4">
             <div class="card-body">
                 <div class="card-text-section">
-                    <h5 class="card-title">50 TRX Lottery (Coming Soon)</h5>
+                    <h5 class="card-title">10 TRX Lottery</h5>
                     <div id="lotteryStatusMessage2" class="card-text hidden" style="color: green;"></div>
-                    <button class="btn btn-success disabled" disabled>Buy Tickets</button><br>
-                    <button class="btn btn-primary disabled" disabled>Draw Winner</button><br><br>
-                    <div id="prizeAmount2">Current prize: Coming Soon</div>
-                    <div id="ticketsSold2">Tickets sold: Coming Soon</div>
-                    <div id="ticketsCount2">Your tickets: Coming Soon</div>
+                    <form id="buyTicketsForm2">
+                        <input type="number" id="ticketAmount2" min="1" required placeholder="Amount of tickets"><br>
+                        <button type="submit" class="btn btn-success">Buy Tickets</button>
+                    </form>
+                    <button id="drawButton2" class="btn btn-primary disabled" disabled>Draw Winner</button>
+                    <div id="prizeAmount2">Current prize: 0 TRX</div>
+                    <div id="ticketsSold2">Tickets sold: 0</div>
+                    <div id="ticketsCount2">Your tickets: 0</div>
+                    <div id="visitText2"><a href="https://explorer.just.money/address/TWR9VQrzTi9iQGCG7R25cnqifAXFy9SWLs" target="_blank" rel="noopener noreferrer">Contract</a></div>
                 </div>
                 <div class="card-explanation">
-                    <div>
-                        <p>Tickets cost 50 TRX each, and you can buy as many tickets as you like for each round.</p>
-                    </div>
-                    <div>
-                        <p>The draw button is enabled once a minimum of 25 tickets are sold, ensuring a minimum prize of 937.5 TRX.<br> However, the draw will only occur when someone presses the draw button after it is enabled.</p>
-                    </div>
-                    <div>
-                        <p>75% of the ticket sales go to the winner, and the remaining 25% is used to buy and burn CFT.</p>
-                    </div>
-                    <div>
-                        <p>The contract owner covers energy fees, so only bandwidth costs will be taken from the user.</p>
-                    </div>
+                    <div><p>Buy tickets to participate in the Lottery. </p></div>
+                    <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user.</p></div>
+                    <div><p>To participate you need 10 TRX in your wallet.</p></div>
+                    <div><p>Tickets cost 10 TRX each. 80% of the ticket sales go to the winner, and 10% is used to buy and burn Jm.</p></div>
+                    <div><p>And 10% is used to buy and burn CFT. The draw button is enabled when a minimum of 25 tickets are sold.</p></div>
                 </div>
             </div>
         </div>
@@ -609,28 +659,22 @@
                 <div class="card-text-section">
                     <h5 class="card-title">100 TRX Lottery (Coming Soon)</h5>
                     <div id="lotteryStatusMessage3" class="card-text hidden" style="color: green;"></div>
-                    <button class="btn btn-success disabled" disabled>Buy Tickets</button><br>
+                    <button class="btn btn-success disabled" disabled>Buy Tickets</button>
                     <button class="btn btn-primary disabled" disabled>Draw Winner</button>
                     <div id="prizeAmount3">Current prize: Coming Soon</div>
                     <div id="ticketsSold3">Tickets sold: Coming Soon</div>
                     <div id="ticketsCount3">Your tickets: Coming Soon</div>
                 </div>
                 <div class="card-explanation">
-                    <div>
-                        <p>Tickets cost 100 TRX each, and you can buy as many tickets as you like for each round.</p>
-                    </div>
-                    <div>
-                        <p>The draw button is enabled once a minimum of 25 tickets are sold, ensuring a minimum prize of 1875 TRX. <br>However, the draw will only occur when someone presses the draw button after it is enabled.</p>
-                    </div>
-                    <div>
-                        <p>75% of the ticket sales go to the winner, and the remaining 25% is used to buy and burn CFT.</p>
-                    </div>
-                    <div>
-                        <p>The contract owner covers energy fees, so only bandwidth costs will be taken from the user.</p>
-                    </div>
+                    <div><p>Buy tickets to participate in the Lottery. .</p></div>
+                    <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user.</p></div>
+                    <div><p>To participate you need 100 TRX tokens unstaked in your wallet.</p></div>
+                    <div><p>Tickets cost 100 TRX each. 75% of the ticket sales go to the winner, and 25% is used to buy and burn CFT.</p></div>
+                    <div><p>The draw button is enabled when a minimum of 25 tickets are sold.</p></div>
                 </div>
             </div>
         </div>
     </div>
 </body>
 </html>
+
