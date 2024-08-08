@@ -275,74 +275,53 @@
         </a>
        </div>
       <div class="language-switcher">
-    <button id="language-switcher" class="btn btn-secondary" onclick="switchLanguage('zh')">中文</button>
-  </div>
+        <button id="language-switcher" class="btn btn-secondary" onclick="switchLanguage('zh')">中文</button>
+      </div>
   </div>
   <div class="topbar">
     <button id="connect-button" onclick="connectWallet()">Connect Wallet</button>
-    
   </div>
   <div class="main-content">
     <div class="card">
       <div class="card-body">
         <script src="https://just.money/assets/js/widgetLib-1.1.js"></script>
-<script type="application/javascript">
-window.JmApi.createSwapWidget('jmSwapFrame',
-    {
-	type: "SINGLECHAIN",
-	network: "TRON",
-	tokens: [
-		"TRX",
-		"JM",
-		"USDT",
-		"BBC",
-		"BBT",
-		"BTC",
-		"BTT",
-		"CCC",
-		"ERG",
-		"ETH",
-		"PROS",
-		"TBT",
-		"TNT",
-		"TEM",
-		"TRNGUY",
-		"USTX"
-	],
-	fromToken: "",
-	toToken: "",
-	affiliateFeeAddressTron: "TD8cr22eszx9gHb4D3GhDNAPhEJo6bUYZV",
-	liquidityTab: false,
-	showChart: true,
-	chartBackgroundColor: "#353740",
-	lightBranding: true,
-	backgroundColor: "#e8e5f2",
-	buttonStyle: "background-color:#754ef9;color:#ffffff;",
-	maxButtonStyle: "background-color:#ffffff;color:#000000;",
-	headingStyle: "color:#754ef9;",
-	textColor: "#000000",
-	inputContainerStyle: "background-color:#754ef9;color:#ffffff;",
-	inputContainerInputStyle: "color: #ffffff;",
-	inputContainerInputPlaceholderStyle: "color: #ffffff;opacity: 0.5;"
-});
-</script>
-        </div>
+        <script type="application/javascript">
+          window.JmApi.createSwapWidget('jmSwapFrame', {
+            type: "SINGLECHAIN",
+            network: "TRON",
+            tokens: [
+              "TRX", "JM", "USDT", "BBC", "BBT", "BTC", "BTT", "CCC", "ERG", "ETH", "PROS", "TBT", "TNT", "TEM", "TRNGUY", "USTX"
+            ],
+            fromToken: "",
+            toToken: "",
+            affiliateFeeAddressTron: "TD8cr22eszx9gHb4D3GhDNAPhEJo6bUYZV",
+            liquidityTab: false,
+            showChart: true,
+            chartBackgroundColor: "#353740",
+            lightBranding: true,
+            backgroundColor: "#e8e5f2",
+            buttonStyle: "background-color:#754ef9;color:#ffffff;",
+            maxButtonStyle: "background-color:#ffffff;color:#000000;",
+            headingStyle: "color:#754ef9;",
+            textColor: "#000000",
+            inputContainerStyle: "background-color:#754ef9;color:#ffffff;",
+            inputContainerInputStyle: "color: #ffffff;",
+            inputContainerInputPlaceholderStyle: "color: #ffffff;opacity: 0.5;"
+          });
+        </script>
       </div>
     </div>
-   
   </div>
+   
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
   <script>
     let tronWeb, userAddress, stakingContract, newStakingContract;
 
-
-
-document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       if (await checkTronLinkInstalled()) {
         await initializeTronWeb();
-       
       }
     });
 
@@ -369,17 +348,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         const balance = await tronWeb.trx.getBalance(userAddress);
         console.log('Balance:', tronWeb.fromSun(balance), 'TRX');
-
-     
-
+      } catch (error) {
+        console.error('Error getting balance:', error);
+      }
+    }
 
     function switchLanguage(language) {
-    if (language === 'zh') {
-      window.location.href = 'treasury_zh.html';
-    } else {
-      window.location.href = 'treasury.html';
+      if (language === 'zh') {
+        window.location.href = 'treasury_zh.html';
+      } else {
+        window.location.href = 'treasury.html';
+      }
     }
-  }
 
     async function connectWallet() {
       if (await checkTronLinkInstalled()) {
@@ -388,11 +368,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log('Please install TronLink extension in your browser.');
       }
     }
-
-
-    
   </script>
 </body>
 </html>
-
 
