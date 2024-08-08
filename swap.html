@@ -97,7 +97,7 @@
 
     .card-body {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
     }
 
     .card-title {
@@ -203,6 +203,11 @@
         margin-left: 0;
       }
 
+      .card-body {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
       .card-title {
         font-size: 1.25rem;
       }
@@ -251,11 +256,11 @@
 
       .card-text-section {
         flex: 1;
-        margin-right: 20px;
+        margin-left: 20px;
       }
 
-      .card-explanation {
-        flex: 1;
+      .widget-container {
+        flex: 0 0 50%;
       }
 
       .widget-container iframe {
@@ -290,6 +295,7 @@
     <a href="draw.html">Draw</a>
     <a href="claim.html">Claim</a>
     <a href="treasury.html">Treasury</a>
+    <a href="Swap.html">Swap</a>
     
     <div class="social-links">
         <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
@@ -312,6 +318,10 @@
         <div class="widget-container">
           <div id="jmSwapFrame"></div>
         </div>
+        <div class="card-text-section">
+          <p class="card-title">Card Title</p>
+          <p class="card-text">Additional content can go here.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -333,13 +343,13 @@
         ],
         fromToken: "TRX",
         toToken: "USDT",
-        affiliateFeeAddressTron: "TD8cr22eszx9gHb4D3GhDNAPhEJo6bUYZV",
+        affiliateFeeAddressTron: "TMLURq9ZZpiMxT2auN1vNCkLvfkXAPanHY",
         liquidityTab: false,
         showChart: true,
         chartBackgroundColor: "#353740",
         lightBranding: true,
         backgroundColor: "#e8e5f2",
-        buttonStyle: "background-color:#1a1a2e;color:#fff;",
+        buttonStyle: "background-color:#754ef9;color:#ffffff;",
         maxButtonStyle: "background-color:#ffffff;color:#000000;",
         headingStyle: "color:#754ef9;",
         textColor: "#000000",
