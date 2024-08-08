@@ -245,7 +245,7 @@
     @media (min-width: 768px) {
       .card-body {
         flex-direction: row;
-        justify-content: space-between;
+        justify-content: flex-start;
         align-items: flex-start;
       }
 
@@ -324,6 +324,30 @@
     let tronWeb, userAddress, stakingContract, newStakingContract;
 
     document.addEventListener('DOMContentLoaded', async () => {
+      // Create the swap widget
+      window.JmApi.createSwapWidget('jmSwapFrame', {
+        type: "SINGLECHAIN",
+        network: "TRON",
+        tokens: [
+          "TRX", "JM", "USDT", "BBC", "BBT", "BTC", "BTT", "CCC", "ERG", "ETH", "PROS", "TBT", "TNT", "TEM", "TRNGUY", "USTX"
+        ],
+        fromToken: "TRX",
+        toToken: "USDT",
+        affiliateFeeAddressTron: "TD8cr22eszx9gHb4D3GhDNAPhEJo6bUYZV",
+        liquidityTab: false,
+        showChart: true,
+        chartBackgroundColor: "#353740",
+        lightBranding: true,
+        backgroundColor: "#e8e5f2",
+        buttonStyle: "background-color:#754ef9;color:#ffffff;",
+        maxButtonStyle: "background-color:#ffffff;color:#000000;",
+        headingStyle: "color:#754ef9;",
+        textColor: "#000000",
+        inputContainerStyle: "background-color:#754ef9;color:#ffffff;",
+        inputContainerInputStyle: "color: #ffffff;",
+        inputContainerInputPlaceholderStyle: "color: #ffffff;opacity: 0.5;"
+      });
+
       if (await checkTronLinkInstalled()) {
         await initializeTronWeb();
       }
@@ -352,30 +376,6 @@
       try {
         const balance = await tronWeb.trx.getBalance(userAddress);
         console.log('Balance:', tronWeb.fromSun(balance), 'TRX');
-        
-        // Create the swap widget after successful wallet connection
-        window.JmApi.createSwapWidget('jmSwapFrame', {
-          type: "SINGLECHAIN",
-          network: "TRON",
-          tokens: [
-            "TRX", "JM", "USDT", "BBC", "BBT", "BTC", "BTT", "CCC", "ERG", "ETH", "PROS", "TBT", "TNT", "TEM", "TRNGUY", "USTX"
-          ],
-          fromToken: "",
-          toToken: "",
-          affiliateFeeAddressTron: "TD8cr22eszx9gHb4D3GhDNAPhEJo6bUYZV",
-          liquidityTab: false,
-          showChart: true,
-          chartBackgroundColor: "#353740",
-          lightBranding: true,
-          backgroundColor: "#e8e5f2",
-          buttonStyle: "background-color:#754ef9;color:#ffffff;",
-          maxButtonStyle: "background-color:#ffffff;color:#000000;",
-          headingStyle: "color:#754ef9;",
-          textColor: "#000000",
-          inputContainerStyle: "background-color:#754ef9;color:#ffffff;",
-          inputContainerInputStyle: "color: #ffffff;",
-          inputContainerInputPlaceholderStyle: "color: #ffffff;opacity: 0.5;"
-        });
       } catch (error) {
         console.error('Error getting balance:', error);
       }
@@ -399,5 +399,4 @@
   </script>
 </body>
 </html>
-
 
