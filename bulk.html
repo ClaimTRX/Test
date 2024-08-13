@@ -194,50 +194,53 @@
         });
 
         document.getElementById('bulkSenderForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+    e.preventDefault();
 
-            const tokenAddress = document.getElementById('contractAddress').value.trim();
+    const tokenAddress = document.getElementById('contractAddress').value.trim();
 
-            const fileInput = document.getElementById('csvFile');
-            if (fileInput.files.length === 0) {
-                alert("Please upload a CSV file.");
-                return;
-            }
+    const fileInput = document.getElementById('csvFile');
+    if (fileInput.files.length === 0) {
+        alert("Please upload a CSV file.");
+        return;
+    }
 
-            Papa.parse(fileInput.files[0], {
-                complete: async function(results) {
-                    const data = results.data;
-                    const wallets = [];
-                    const amounts = [];
+    Papa.parse(fileInput.files[0], {
+        complete: async function(results) {
+            const data = results.data;
+            const wallets = [];
+            const amounts = [];
 
-                    data.forEach((row) => {
-                        if (row.length >= 2) {
-                            const address = row[0].trim();
-                            const amount = parseFloat(row[1].trim());
+            data.forEach((row) => {
+                if (row.length >= 2) {
+                    const address = row[0].trim();
+                    const amount = parseFloat(row[1].trim());
 
-                            if (tronWeb.isAddress(address) && !isNaN(amount) && amount > 0) {
-                                wallets.push(address);
-                                amounts.push(amount);
-                            } else {
-                                console.error("Invalid address or amount:", address, amount);
-                            }
-                        }
-                    });
-
-                    const tokenContract = await tronWeb.contract().at(tokenAddress);
-                    const scaledAmounts = amounts.map(amount => amount * (10 ** tokenDecimals));
-
-                    try {
-                        const bulkSenderContract = await tronWeb.contract().at(contractAddress);
-                        const transaction = await bulkSenderContract.bulksendTokenSimple(tokenContract.address, wallets, scaledAmounts, tronWeb.toHex(Date.now())).send();
-                        document.getElementById('result').innerHTML = `<p>Transaction successful! Transaction ID: ${transaction}</p>`;
-                    } catch (error) {
-                        console.error("Error in transaction:", error);
-                        document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
+                    if (tronWeb.isAddress(address) && !isNaN(amount) && amount > 0) {
+                        wallets.push(address);
+                        amounts.push(amount);
+                    } else {
+                        console.error("Invalid address or amount:", address, amount);
                     }
                 }
             });
-        });
+
+            const tokenContract = await tronWeb.contract().at(tokenAddress);
+            const scaledAmounts = amounts.map(amount => amount * (10 ** tokenDecimals));
+
+            try {
+                const bulkSenderContract = await tronWeb.contract().at(contractAddress);
+                // Generate a unique ID and ensure it's of even length
+                const uniqueId = tronWeb.toHex(Date.now().toString(16).padStart(16, '0'));
+                const transaction = await bulkSenderContract.bulksendTokenSimple(tokenContract.address, wallets, scaledAmounts, uniqueId).send();
+                document.getElementById('result').innerHTML = `<p>Transaction successful! Transaction ID: ${transaction}</p>`;
+            } catch (error) {
+                console.error("Error in transaction:", error);
+                document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+    });
+});
+
     </script>
 </body>
 </html>
