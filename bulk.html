@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRC20 Token Bulk Sender</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="file"], input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #connectButton {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        #connectButton:hover {
+            background-color: #218838;
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script> <!-- CSV Parsing Library -->
+</head>
+<body>
+    <h1>TRC20 Token Bulk Sender</h1>
+    <button id="connectButton">Connect Wallet</button>
+
+    <form id="bulkSenderForm" style="display:none;">
+        <label for="contractAddress">TRC20 Token Contract Address:</label>
+        <input type="text" id="contractAddress" placeholder="Enter the token contract address" required>
+
+        <label for="csvFile">Upload CSV File:</label>
+        <input type="file" id="csvFile" accept=".csv" required>
+
+        <label for="trxFee">TRX Fee Per Transaction:</label>
+        <input type="number" id="trxFee" placeholder="Enter the TRX fee per transaction" required>
+
+        <button type="submit">Send Tokens</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        let tronWeb;
+        const contractAddress = "TTHvTen3qu7xMBd1dXJPZ9YqZsyuFwGB61"; // Replace with your deployed smart contract address
+
+        document.getElementById('connectButton').addEventListener('click', async () => {
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                tronWeb = window.tronWeb;
+                const address = tronWeb.defaultAddress.base58;
+                document.getElementById('connectButton').innerText = `Connected: ${address}`;
+                document.getElementById('bulkSenderForm').style.display = 'block';
+            } else {
+                alert("Please install TronLink or open this in a dApp browser.");
+            }
+        });
+
+        document.getElementById('bulkSenderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const tokenAddress = document.getElementById('contractAddress').value.trim();
+            const trxFee = parseFloat(document.getElementById('trxFee').value.trim());
+
+            const fileInput = document.getElementById('csvFile');
+            if (fileInput.files.length === 0) {
+                alert("Please upload a CSV file.");
+                return;
+            }
+
+            Papa.parse(fileInput.files[0], {
+                complete: async function(results) {
+                    const data = results.data;
+                    const wallets = [];
+                    const amounts = [];
+
+                    // Parsing CSV Data
+                    data.forEach((row) => {
+                        if (row.length >= 2) {
+                            wallets.push(row[0].trim());
+                            amounts.push(parseFloat(row[1].trim()));
+                        }
+                    });
+
+                    try {
+                        // Convert amounts to on-chain format (handling decimals)
+                        const tokenContract = await tronWeb.contract().at(tokenAddress);
+                        const decimals = await tokenContract.decimals().call();
+                        const scaledAmounts = amounts.map(amount => amount * (10 ** decimals));
+
+                        const bulkSenderContract = await tronWeb.contract().at(contractAddress);
+
+                        const transaction = await bulkSenderContract.bulkSend(tokenAddress, wallets, scaledAmounts).send({
+                            callValue: tronWeb.toSun(trxFee * wallets.length), // Total TRX fee in SUN
+                            shouldPollResponse: true
+                        });
+
+                        document.getElementById('result').innerHTML = `<p>Transaction successful! Transaction ID: ${transaction}</p>`;
+                    } catch (error) {
+                        console.error(error);
+                        document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
