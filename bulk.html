@@ -17,7 +17,7 @@
         }
 
         form {
-            max-width: 500px;
+            max-width: 600px;
             margin: 0 auto;
             padding: 20px;
             background: #fff;
@@ -68,6 +68,21 @@
             background-color: #218838;
         }
 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script> <!-- CSV Parsing Library -->
@@ -89,11 +104,13 @@
         <button type="submit">Approve and Send Tokens</button>
     </form>
 
+    <div id="csvTable"></div> <!-- Div to display the CSV content -->
+
     <div id="result"></div>
 
     <script>
         let tronWeb;
-        const contractAddress = "TGjScbQioY3EfpcDn7bUYdnf8Y3ZZK13oj"; // Replace with your deployed smart contract address
+        const contractAddress = "TREqXNBy9s73PhE9xMVLhMvcYTfR2xmJUk"; // Replace with your deployed smart contract address
 
         document.getElementById('connectButton').addEventListener('click', async () => {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
@@ -105,6 +122,29 @@
                 alert("Please install TronLink or open this in a dApp browser.");
             }
         });
+
+        document.getElementById('csvFile').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                Papa.parse(file, {
+                    complete: function(results) {
+                        displayCSV(results.data);
+                    }
+                });
+            }
+        });
+
+        function displayCSV(data) {
+            let table = "<table>";
+            table += "<tr><th>Recipient Address</th><th>Amount</th></tr>";
+            data.forEach(row => {
+                if (row.length >= 2) {
+                    table += `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`;
+                }
+            });
+            table += "</table>";
+            document.getElementById('csvTable').innerHTML = table;
+        }
 
         document.getElementById('bulkSenderForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -177,6 +217,7 @@
     </script>
 </body>
 </html>
+
 
 
 
