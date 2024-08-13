@@ -98,10 +98,8 @@
         <label for="csvFile">Upload CSV File:</label>
         <input type="file" id="csvFile" accept=".csv" required>
 
-        <label for="trxFee">TRX Fee Per Transaction:</label>
-        <input type="number" id="trxFee" placeholder="Enter the TRX fee per transaction" required>
-
-        <button type="submit">Approve and Send Tokens</button>
+        <button type="button" id="approveButton">Approve and Deposit Tokens</button>
+        <button type="submit" id="sendButton" style="display:none;">Distribute Tokens</button>
     </form>
 
     <div id="csvTable"></div> <!-- Div to display the CSV content -->
@@ -110,7 +108,9 @@
 
     <script>
         let tronWeb;
-        const contractAddress = "TREqXNBy9s73PhE9xMVLhMvcYTfR2xmJUk"; // Replace with your deployed smart contract address
+        let totalAmount = 0;
+        let tokenDecimals = 0;
+        const contractAddress = "TGVECuvDH4sT8DR7yvEGw5Gw1mwVEFCfc8"; // Replace with your deployed smart contract address
 
         document.getElementById('connectButton').addEventListener('click', async () => {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
@@ -146,11 +146,57 @@
             document.getElementById('csvTable').innerHTML = table;
         }
 
+        document.getElementById('approveButton').addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const tokenAddress = document.getElementById('contractAddress').value.trim();
+
+            const fileInput = document.getElementById('csvFile');
+            if (fileInput.files.length === 0) {
+                alert("Please upload a CSV file.");
+                return;
+            }
+
+            Papa.parse(fileInput.files[0], {
+                complete: async function(results) {
+                    const data = results.data;
+                    const amounts = [];
+                    const wallets = [];
+
+                    data.forEach((row) => {
+                        if (row.length >= 2) {
+                            const address = row[0].trim();
+                            const amount = parseFloat(row[1].trim());
+
+                            if (tronWeb.isAddress(address) && !isNaN(amount) && amount > 0) {
+                                wallets.push(address);
+                                amounts.push(amount);
+                            } else {
+                                console.error("Invalid address or amount:", address, amount);
+                            }
+                        }
+                    });
+
+                    const tokenContract = await tronWeb.contract().at(tokenAddress);
+                    tokenDecimals = await tokenContract.decimals().call();
+                    const scaledAmounts = amounts.map(amount => amount * (10 ** tokenDecimals));
+
+                    totalAmount = scaledAmounts.reduce((acc, val) => acc + val, 0);
+
+                    const approval = await tokenContract.approve(contractAddress, totalAmount).send();
+                    if (!approval) {
+                        throw new Error("Approval failed");
+                    }
+
+                    document.getElementById('sendButton').style.display = 'block';
+                }
+            });
+        });
+
         document.getElementById('bulkSenderForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const tokenAddress = document.getElementById('contractAddress').value.trim();
-            const trxFee = parseFloat(document.getElementById('trxFee').value.trim());
 
             const fileInput = document.getElementById('csvFile');
             if (fileInput.files.length === 0) {
@@ -164,13 +210,11 @@
                     const wallets = [];
                     const amounts = [];
 
-                    // Parsing CSV Data
                     data.forEach((row) => {
                         if (row.length >= 2) {
                             const address = row[0].trim();
                             const amount = parseFloat(row[1].trim());
 
-                            // Basic validation
                             if (tronWeb.isAddress(address) && !isNaN(amount) && amount > 0) {
                                 wallets.push(address);
                                 amounts.push(amount);
@@ -180,32 +224,12 @@
                         }
                     });
 
-                    console.log("Parsed wallets:", wallets);
-                    console.log("Parsed amounts:", amounts);
+                    const tokenContract = await tronWeb.contract().at(tokenAddress);
+                    const scaledAmounts = amounts.map(amount => amount * (10 ** tokenDecimals));
 
                     try {
-                        // Convert amounts to on-chain format (handling decimals)
-                        const tokenContract = await tronWeb.contract().at(tokenAddress);
-                        const decimals = await tokenContract.decimals().call();
-                        const scaledAmounts = amounts.map(amount => amount * (10 ** decimals));
-
-                        const totalAmount = scaledAmounts.reduce((acc, val) => acc + val, 0); // Total tokens to send
-
-                        console.log("Total tokens to approve:", totalAmount);
-
-                        // Approve the contract to spend the tokens on behalf of the user
-                        const approval = await tokenContract.approve(contractAddress, totalAmount).send();
-                        if (!approval) {
-                            throw new Error("Approval failed");
-                        }
-
                         const bulkSenderContract = await tronWeb.contract().at(contractAddress);
-
-                        const transaction = await bulkSenderContract.bulkSend(tokenAddress, wallets, scaledAmounts).send({
-                            callValue: tronWeb.toSun(trxFee * wallets.length), // Total TRX fee in SUN
-                            shouldPollResponse: true
-                        });
-
+                        const transaction = await bulkSenderContract.bulksendTokenSimple(tokenContract.address, wallets, scaledAmounts, tronWeb.toHex(Date.now())).send();
                         document.getElementById('result').innerHTML = `<p>Transaction successful! Transaction ID: ${transaction}</p>`;
                     } catch (error) {
                         console.error("Error in transaction:", error);
