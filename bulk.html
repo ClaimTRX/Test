@@ -93,7 +93,7 @@
 
     <script>
         let tronWeb;
-        const contractAddress = "TGjScbQioY3EfpcDn7bUYdnf8Y3ZZK13oj"; // Replace with your deployed smart contract address
+        const contractAddress = "YOUR_SMART_CONTRACT_ADDRESS"; // Replace with your deployed smart contract address
 
         document.getElementById('connectButton').addEventListener('click', async () => {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
@@ -127,10 +127,21 @@
                     // Parsing CSV Data
                     data.forEach((row) => {
                         if (row.length >= 2) {
-                            wallets.push(row[0].trim());
-                            amounts.push(parseFloat(row[1].trim()));
+                            const address = row[0].trim();
+                            const amount = parseFloat(row[1].trim());
+
+                            // Basic validation
+                            if (tronWeb.isAddress(address) && !isNaN(amount) && amount > 0) {
+                                wallets.push(address);
+                                amounts.push(amount);
+                            } else {
+                                console.error("Invalid address or amount:", address, amount);
+                            }
                         }
                     });
+
+                    console.log("Parsed wallets:", wallets);
+                    console.log("Parsed amounts:", amounts);
 
                     try {
                         // Convert amounts to on-chain format (handling decimals)
@@ -139,6 +150,8 @@
                         const scaledAmounts = amounts.map(amount => amount * (10 ** decimals));
 
                         const totalAmount = scaledAmounts.reduce((acc, val) => acc + val, 0); // Total tokens to send
+
+                        console.log("Total tokens to approve:", totalAmount);
 
                         // Approve the contract to spend the tokens on behalf of the user
                         const approval = await tokenContract.approve(contractAddress, totalAmount).send();
@@ -155,7 +168,7 @@
 
                         document.getElementById('result').innerHTML = `<p>Transaction successful! Transaction ID: ${transaction}</p>`;
                     } catch (error) {
-                        console.error(error);
+                        console.error("Error in transaction:", error);
                         document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
                     }
                 }
@@ -164,5 +177,6 @@
     </script>
 </body>
 </html>
+
 
 
