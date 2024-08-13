@@ -229,8 +229,8 @@
 
             try {
                 const bulkSenderContract = await tronWeb.contract().at(contractAddress);
-                // Generate a unique ID and ensure it's of even length
-                const uniqueId = tronWeb.toHex(Date.now().toString(16).padStart(16, '0'));
+                // Generate a unique ID, pad it to 32 bytes (64 hex characters)
+                const uniqueId = tronWeb.toHex(tronWeb.sha3(Date.now().toString())).padEnd(66, '0'); // Ensuring it’s 32 bytes (64 hex characters)
                 const transaction = await bulkSenderContract.bulksendTokenSimple(tokenContract.address, wallets, scaledAmounts, uniqueId).send();
                 document.getElementById('result').innerHTML = `<p>Transaction successful! Transaction ID: ${transaction}</p>`;
             } catch (error) {
