@@ -9,288 +9,208 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <style>
     body {
-      background-color: #1a1a2e;
-      color: #fff;
-      font-family: Arial, sans-serif;
-    }
+    background-color: #1a1a2e;
+    color: #fff;
+    font-family: Arial, sans-serif;
+}
 
-    .sidebar {
-      height: 100vh;
-      background-color: #162447;
-      padding: 15px;
-      position: fixed;
-      width: 200px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .sidebar a {
-      color: #fff;
-      text-decoration: none;
-      display: block;
-      padding: 10px 0;
-      width: 100%;
-      text-align: center;
-    }
-
-    .sidebar a:hover {
-      background-color: #1f4068;
-    }
-
-    .sidebar .social-links {
-      display: flex;
-      margin-top: 20px;
-    }
-
-    .sidebar .social-icon {
-      color: white;
-      font-size: 20px;
-      margin-right: 10px;
-      text-decoration: none;
-    }
-
-    .sidebar .social-icon:last-child {
-      margin-right: 0;
-    }
-
-    .topbar {
-      background-color: #162447;
-      padding: 10px;
-      text-align: right;
-      margin-left: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-    }
-
-    .topbar a.social-icon {
-      color: white;
-      margin-left: 15px;
-      font-size: 20px;
-      text-decoration: none;
-    }
-
-    .topbar button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
-      padding: 8px 16px;
-    }
-
-    .main-content {
-      margin-left: 220px;
-      padding: 20px;
-    }
-
-    .card {
-      background-color: #2c3e50;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      padding: 20px;
-    }
-
-    .card-body {
+.sidebar {
+    height: 100vh;
+    background-color: #162447;
+    padding: 15px;
+    position: fixed;
+    width: 200px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Center content vertically */
 }
 
-    .card-title {
-      font-size: 1.5rem;
-    }
+.sidebar a {
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    padding: 10px 0;
+    width: 100%;
+    text-align: center;
+}
 
-    .card-text {
-      font-size: 1rem;
-    }
+.sidebar a:hover {
+    background-color: #1f4068;
+}
 
-    .btn-success,
-    .btn-danger,
-    .btn-primary {
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 0.875rem;
-      padding: 8px 16px;
-      width: 20%;
-      margin-top: 10px;
-    }
+.sidebar .social-links {
+    display: flex;
+    margin-top: 20px;
+}
 
-    .btn-danger {
-      background-color: #ff4c4c;
-    }
+.sidebar .social-icon {
+    color: white;
+    font-size: 20px;
+    margin-right: 10px;
+    text-decoration: none;
+}
 
-    .btn-primary {
-      background-color: #007bff;
-    }
+.sidebar .social-icon:last-child {
+    margin-right: 0;
+}
 
-    .form-control {
-      width: 20%;
-      padding: 8px;
-      font-size: 0.875rem;
-      border-radius: 5px;
-      margin-bottom: 10px;
-    }
+.topbar {
+    background-color: #162447;
+    padding: 10px;
+    margin-left: 200px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
 
-    .card-explanation {
-      margin-top: 10px;
-      font-size: 0.875rem;
-    }
+.topbar a.social-icon {
+    color: white;
+    margin-left: 15px;
+    font-size: 20px;
+    text-decoration: none;
+}
 
-    input[type=number] {
-      -moz-appearance: textfield;
-    }
+.topbar button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 8px 16px;
+}
 
-    input[type=number]::-webkit-outer-spin-button,
-    input[type=number]::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
+.main-content {
+    margin-left: 220px;
+    padding: 20px;
+}
 
-    /* Mobile responsiveness */
-    @media (max-width: 767.98px) {
-      .listing button {
-        font-size: 0.75rem;
-        padding: 6px 12px;
-        width: 100%;
-      }
+.card {
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-      .sidebar {
+.card-body {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.card-text-section {
+    width: 60%;
+    margin-bottom: 20px;
+    padding-right: 20px;
+}
+
+.card-image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.card-image {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.telegram-link {
+    margin-top: 10px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 767.98px) {
+    .sidebar {
         height: auto;
         padding: 10px;
         width: 100%;
         position: relative;
         flex-direction: column;
         align-items: center;
-      }
-
-      .topbar {
-        text-align: center;
-        margin-left: 0;
-        justify-content: center;
-      }
-
-      .main-content {
-        margin-left: 0;
-      }
-
-      .card-title {
-        font-size: 1.25rem;
-      }
-
-      .card-text {
-        font-size: 0.875rem;
-      }
-
-      .btn-success,
-      .btn-danger,
-      .btn-primary {
-        font-size: 0.75rem;
-        padding: 6px 12px;
-        width: 100%;
-      }
-
-      .form-control {
-        font-size: 0.75rem;
-        padding: 6px;
-        width: 100%;
-      }
-
-      .card-explanation {
-        margin-top: 20px;
-      }
-
-      .sidebar .social-links {
-        justify-content: center;
-      }
-
-      .sidebar .social-icon {
-        margin-bottom: 10px;
-      }
     }
 
-    @media (min-width: 768px) {
-      .card-body {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: flex-start;
-      }
+    .topbar {
+        margin-left: 0;
+        justify-content: center;
+        text-align: center;
+    }
 
-      .card-text-section {
-    width: 100%;
-    margin-bottom: 20px;
-}
+    .main-content {
+        margin-left: 0;
+    }
 
-
-      .card-explanation {
-        flex: 1;
-}
-        
-    .card-image-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center; /* Center the image vertically within the container */
-    width: 100%;
-    margin-bottom: 20px;
-    text-align: center; /* Center the telegram link below the image */
-}
-.card-image {
-    max-width: 100%; /* Ensure the image scales well */
-    width: 500px; /* Increase this value to make the image larger */
-    height: auto;
-    border-radius: 10px;
-    margin-bottom: 10px; /* Space between the image and the Telegram link */
-}
-
-.telegram-link {
-    margin-top: 10px; /* Space between the image and the Telegram link */
-    font-size: 14px;
-    text-align: center;
-}
-/* Mobile responsiveness */
-/* Mobile responsiveness */
-@media (max-width: 767.98px) {
     .card-body {
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        padding-bottom: 20px; /* Add padding to the bottom of the card body */
     }
 
     .card-text-section {
-        flex: 1;
-        margin-right: 0; /* Remove right margin on mobile */
-        margin-bottom: 30px; /* Further increase space below the text section */
-        padding: 0 20px; /* Add padding to create space around the text */
-        width: 100%; /* Ensure the text section takes full width */
+        width: 100%;
+        padding: 0 10px;
+        margin-bottom: 20px;
     }
 
     .card-image-container {
         width: 100%;
-        margin-bottom: 20px; /* Increase space below the image container */
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        margin-bottom: 20px;
     }
 
     .card-image {
-        width: 220px; /* Slightly larger image for mobile */
-        margin-bottom: 20px; /* More space between the image and Telegram link */
+        width: 80%; /* Slightly larger image for mobile */
+        max-width: 250px;
+        margin-bottom: 20px;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        font-size: 14px;
     }
 
     .telegram-link {
-        margin-top: 20px; /* More space above the Telegram link */
-        font-size: 14px;
-        text-align: center;
+        margin-top: 20px;
     }
 }
+
 
 
 
