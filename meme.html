@@ -96,19 +96,17 @@
     }
 
     .card-body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
     .card-title {
       font-size: 1.5rem;
-      text-align: center;
     }
 
     .card-text {
       font-size: 1rem;
-      text-align: center;
     }
 
     .btn-success,
@@ -142,7 +140,6 @@
     .card-explanation {
       margin-top: 10px;
       font-size: 0.875rem;
-      text-align: center;
     }
 
     input[type=number] {
@@ -153,19 +150,6 @@
     input[type=number]::-webkit-inner-spin-button {
       -webkit-appearance: none;
       margin: 0;
-    }
-
-    .card-image-container {
-      width: 100%;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .card-image {
-      width: 100%;
-      max-width: 200px;
-      height: auto;
-      border-radius: 10px;
     }
 
     /* Mobile responsiveness */
@@ -228,17 +212,6 @@
       .sidebar .social-icon {
         margin-bottom: 10px;
       }
-
-      .card-body {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .card-image {
-        max-width: 80%;
-        height: auto;
-        border-radius: 10px;
-      }
     }
 
     @media (min-width: 768px) {
@@ -248,31 +221,54 @@
         align-items: flex-start;
       }
 
-      .card-image-container {
-        width: 100%;
-        text-align: center;
-        margin-bottom: 20px;
-      }
-
-      .card-image {
-        width: 60%;
-        max-width: 300px;
-        height: auto;
-        border-radius: 10px;
-      }
-
       .card-text-section {
-        width: 100%;
-        margin-bottom: 20px;
-      }
+    width: 100%;
+    margin-bottom: 20px;
+}
+
 
       .card-explanation {
         flex: 1;
-        text-align: left;
-      }
+}
+        
+    .card-image-container {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+.card-image {
+    width: 50%; /* Reduce this value to make the image smaller */
+    max-width: 100px; /* Further limit the max size */
+    height: auto;
+    border-radius: 10px;
+}
+
+@media (min-width: 768px) {
+    .card-body {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
     }
+
+    .card-text-section {
+        flex: 1;
+        margin-right: 20px;
+    }
+
+    .card-image-container {
+        flex: 1 1 40%;
+        margin-bottom: 0;
+    }
+
+    .card-image {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
   </style>
-  
 </head>
 <body>
     <div class="sidebar">
@@ -329,17 +325,13 @@
 <div id="time-remaining-token1" class="mt-2">Loading time remaining...</div>
 
           </div>
-        <div class="card-image-container">
-            <img src="https://github.com/ClaimTRX/Test/blob/main/66bcd3e74b1c9_download.jpg" class="card-image" alt="Token Image">
-            <!-- Telegram Link -->
-            <div class="telegram-link">
-                <a href="https://t.me/claimfreetrxnow" target="_blank">
-                    <i class="fab fa-telegram-plane"></i> Join our Telegram
-                </a>
+          <div class="card-explanation">
+            <div class="card-image-container">
+                <img src="https://raw.githubusercontent.com/ClaimTRX/Test/edit/main/meme.html" class="card-image" alt="Token Image">
             </div>
           </div>
-          </div>
-</div>
+        </div>
+      </div>
 
       <!-- Repeat the same structure for Token 2, Token 3, and Token 4 -->
 
