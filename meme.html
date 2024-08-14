@@ -234,16 +234,24 @@
         
     .card-image-container {
     display: flex;
-    justify-content: center; /* Center content horizontally */
+    flex-direction: column;
     align-items: center;
     width: 100%;
     margin-bottom: 20px;
 }
 
 .card-image {
-    max-width: 80%; /* Adjust width as needed */
+    max-width: 100%; /* Ensure the image scales well */
+    width: 250px; /* Increase this value to make the image larger */
     height: auto;
     border-radius: 10px;
+    margin-bottom: 10px; /* Space between the image and the Telegram link */
+}
+
+.telegram-link {
+    margin-top: 10px; /* Space between the image and the Telegram link */
+    font-size: 14px;
+    text-align: center;
 }
 @media (min-width: 768px) {
     .card-body {
