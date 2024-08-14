@@ -221,46 +221,49 @@
       }
 
       .card-text-section {
-        flex: 1;
-        margin-right: 20px;
-      }
+    width: 100%;
+    margin-bottom: 20px;
+}
+
 
       .card-explanation {
         flex: 1;
 }
         
     .card-image-container {
-    flex: 1 1 40%; /* Adjust the flex basis to make the image container smaller */
+    width: 100%;
     text-align: center;
     margin-bottom: 20px;
 }
 
+
 .card-image {
-    max-width: 80%; /* Reduce the maximum width of the image to make it smaller */
+    width: 70%; /* Adjust this percentage to control image size */
+    max-width: 300px; /* This limits the size on larger screens */
     height: auto;
     border-radius: 10px;
 }
 
-/* Mobile responsiveness */
-@media (max-width: 767.98px) {
+@media (min-width: 768px) {
     .card-body {
-        flex-direction: column;
-        align-items: center;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
     }
 
     .card-text-section {
-        width: 100%;
-        margin-right: 0;
-        margin-bottom: 20px;
+        flex: 1;
+        margin-right: 20px;
     }
 
     .card-image-container {
-        width: 100%;
+        flex: 1 1 40%;
+        margin-bottom: 0;
     }
 
     .card-image {
-        width: 80%; /* Maintain a smaller width on mobile as well */
-        max-width: 300px;
+        max-width: 100%;
+        height: auto;
     }
 }
 
