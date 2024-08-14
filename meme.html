@@ -236,10 +236,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center; /* Center the image vertically within the container */
     width: 100%;
     margin-bottom: 20px;
+    text-align: center; /* Center the telegram link below the image */
 }
-
 .card-image {
     max-width: 100%; /* Ensure the image scales well */
     width: 500px; /* Increase this value to make the image larger */
@@ -254,33 +255,40 @@
     text-align: center;
 }
 /* Mobile responsiveness */
+/* Mobile responsiveness */
 @media (max-width: 767.98px) {
     .card-body {
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        padding-bottom: 20px; /* Add padding to the bottom of the card body */
     }
 
     .card-text-section {
         flex: 1;
-        margin-right: 10px; /* Adjust margin as necessary for mobile */
-        margin-bottom: 25px; /* Increase space below text section */
+        margin-right: 0; /* Remove right margin on mobile */
+        margin-bottom: 30px; /* Further increase space below the text section */
+        padding: 0 20px; /* Add padding to create space around the text */
+        width: 100%; /* Ensure the text section takes full width */
     }
 
     .card-image-container {
         width: 100%;
         margin-bottom: 20px; /* Increase space below the image container */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .card-image {
-        width: 200px; /* Adjust image size for mobile */
-        margin-bottom: 30px; /* Space between the image and Telegram link */
-       margin-top: 30px;
+        width: 220px; /* Slightly larger image for mobile */
+        margin-bottom: 20px; /* More space between the image and Telegram link */
     }
 
     .telegram-link {
-        margin-top: 15px; /* Increase space above the Telegram link */
+        margin-top: 20px; /* More space above the Telegram link */
         font-size: 14px;
+        text-align: center;
     }
 }
 
