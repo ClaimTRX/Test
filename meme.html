@@ -917,8 +917,8 @@
     document.getElementById('connect-button').addEventListener('click', connectWallet);
     if (await checkTronLinkInstalled()) {
         await initializeTronWeb();
-        await updateAllDailyRewards();
-        await updateAllTimeRemaining();
+        await updateAllUI();
+        setInterval(updateAllUI, 60000); // Update UI every minute
     }
 });
 
@@ -956,10 +956,7 @@ async function initializeTronWeb() {
             stakingContracts[token] = await tronWeb.contract(stakingContractAbi, stakingContractAddresses[token]);
         }
 
-        updateAllUI();
-        setInterval(updateAllClaimableRewards, 60000); // Update claimable rewards every minute
-        setInterval(updateAllTimeRemaining, 60000); // Update time remaining every minute
-        await updateAllDailyRewards();
+        await updateAllUI();
     } catch (error) {
         console.error('Error initializing TronWeb:', error);
     }
@@ -968,35 +965,24 @@ async function initializeTronWeb() {
 async function updateAllUI() {
     try {
         for (let token in stakingContracts) {
-            await updateClaimableRewards(token);
-            await updateStakedAmount(token);
-            await updateStakedPercentage(token);
-            await updateAvailableToken(token);
-            await updateTotalClaimed(token);
-            await updateTimeRemaining(token);
+            await updateTokenUI(token);
         }
     } catch (error) {
         console.error('Error updating UI:', error);
     }
 }
 
-async function updateAllDailyRewards() {
+async function updateTokenUI(token) {
     try {
-        for (let token in stakingContracts) {
-            await updateDailyReward(token);
-        }
+        await updateDailyReward(token);
+        await updateClaimableRewards(token);
+        await updateStakedAmount(token);
+        await updateStakedPercentage(token);
+        await updateAvailableToken(token);
+        await updateTotalClaimed(token);
+        await updateTimeRemaining(token);
     } catch (error) {
-        console.error('Error updating daily rewards:', error);
-    }
-}
-
-async function updateAllTimeRemaining() {
-    try {
-        for (let token in stakingContracts) {
-            await updateTimeRemaining(token);
-        }
-    } catch (error) {
-        console.error('Error updating time remaining:', error);
+        console.error(`Error updating UI for ${token}:`, error);
     }
 }
 
@@ -1060,7 +1046,7 @@ async function updateTotalClaimed(token) {
 
 async function updateTimeRemaining(token) {
     try {
-        const endTime = await stakingContracts[token].methods.endTime().call(); // Access without parentheses
+        const endTime = await stakingContracts[token].methods.endTime().call(); // Corrected access without parentheses
         const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
         let timeRemaining = endTime - currentTime;
 
@@ -1080,13 +1066,12 @@ async function updateTimeRemaining(token) {
     }
 }
 
-
 document.getElementById('stake-button-token1').addEventListener('click', async () => {
     const stakeAmount = document.getElementById('stake-amount-token1').value;
     if (stakeAmount) {
         try {
             await stakeTokens('token1', stakeAmount);
-            setTimeout(updateAllUI, 3000);
+            setTimeout(updateTokenUI.bind(null, 'token1'), 3000);
         } catch (error) {
             console.error('Error staking tokens:', error);
         }
@@ -1096,7 +1081,7 @@ document.getElementById('stake-button-token1').addEventListener('click', async (
 document.getElementById('unstake-button-token1').addEventListener('click', async () => {
     try {
         await unstakeTokens('token1');
-        setTimeout(updateAllUI, 3000);
+        setTimeout(updateTokenUI.bind(null, 'token1'), 3000);
     } catch (error) {
         console.error('Error unstaking tokens:', error);
     }
@@ -1105,45 +1090,11 @@ document.getElementById('unstake-button-token1').addEventListener('click', async
 document.getElementById('claim-rewards-button-token1').addEventListener('click', async () => {
     try {
         await claimRewards('token1');
-        setTimeout(updateAllUI, 3000);
+        setTimeout(updateTokenUI.bind(null, 'token1'), 3000);
     } catch (error) {
         console.error('Error claiming rewards:', error);
     }
 });
-
-// Repeat similar event listeners for token2, token3, token4
-
-document.getElementById('stake-button-token2').addEventListener('click', async () => {
-    const stakeAmount = document.getElementById('stake-amount-token2').value;
-    if (stakeAmount) {
-        try {
-            await stakeTokens('token2', stakeAmount);
-            setTimeout(updateAllUI, 3000);
-        } catch (error) {
-            console.error('Error staking tokens:', error);
-        }
-    }
-});
-
-document.getElementById('unstake-button-token2').addEventListener('click', async () => {
-    try {
-        await unstakeTokens('token2');
-        setTimeout(updateAllUI, 3000);
-    } catch (error) {
-        console.error('Error unstaking tokens:', error);
-    }
-});
-
-document.getElementById('claim-rewards-button-token2').addEventListener('click', async () => {
-    try {
-        await claimRewards('token2');
-        setTimeout(updateAllUI, 3000);
-    } catch (error) {
-        console.error('Error claiming rewards:', error);
-    }
-});
-
-// Add similar event listeners for token3, token4
 
 async function stakeTokens(token, amount) {
     const amountToStake = tronWeb.toSun(amount);
@@ -1157,14 +1108,22 @@ async function stakeTokens(token, amount) {
 
 async function unstakeTokens(token) {
     const unstakeAmount = document.getElementById(`stake-amount-${token}`).value;
-    await stakingContracts[token].methods.withdraw(tronWeb.toSun(unstakeAmount)).send();
-    await updateStakedAmount(token);
+    try {
+        await stakingContracts[token].methods.withdraw(tronWeb.toSun(unstakeAmount)).send();
+        await updateStakedAmount(token);
+    } catch (error) {
+        console.error(`Error unstaking tokens for ${token}:`, error);
+    }
 }
 
 async function claimRewards(token) {
-    await stakingContracts[token].methods.claimReward().send();
-    await updateClaimableRewards(token);
-    await updateTotalClaimed(token);
+    try {
+        await stakingContracts[token].methods.claimReward().send();
+        await updateClaimableRewards(token);
+        await updateTotalClaimed(token);
+    } catch (error) {
+        console.error(`Error claiming rewards for ${token}:`, error);
+    }
 }
 
 function formatNumber(num) {
@@ -1182,6 +1141,7 @@ function switchLanguage(language) {
         window.location.href = 'usdt.html';
     }
 }
+
      </script>
 </body>
 </html>
