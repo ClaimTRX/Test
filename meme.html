@@ -96,17 +96,19 @@
     }
 
     .card-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
     .card-title {
       font-size: 1.5rem;
+      text-align: center;
     }
 
     .card-text {
       font-size: 1rem;
+      text-align: center;
     }
 
     .btn-success,
@@ -140,6 +142,7 @@
     .card-explanation {
       margin-top: 10px;
       font-size: 0.875rem;
+      text-align: center;
     }
 
     input[type=number] {
@@ -150,6 +153,19 @@
     input[type=number]::-webkit-inner-spin-button {
       -webkit-appearance: none;
       margin: 0;
+    }
+
+    .card-image-container {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .card-image {
+      width: 100%;
+      max-width: 200px;
+      height: auto;
+      border-radius: 10px;
     }
 
     /* Mobile responsiveness */
@@ -212,6 +228,17 @@
       .sidebar .social-icon {
         margin-bottom: 10px;
       }
+
+      .card-body {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .card-image {
+        max-width: 80%;
+        height: auto;
+        border-radius: 10px;
+      }
     }
 
     @media (min-width: 768px) {
@@ -221,67 +248,31 @@
         align-items: flex-start;
       }
 
-      .card-text-section {
-    width: 100%;
-    margin-bottom: 20px;
-}
+      .card-image-container {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 20px;
+      }
 
+      .card-image {
+        width: 60%;
+        max-width: 300px;
+        height: auto;
+        border-radius: 10px;
+      }
+
+      .card-text-section {
+        width: 100%;
+        margin-bottom: 20px;
+      }
 
       .card-explanation {
         flex: 1;
-}
-        
-    .card-image-container {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.card-image {
-    width: 60%; /* Desktop/Tablet size */
-    max-width: 200px;
-    height: auto;
-    border-radius: 10px;
-}
-
-/* Mobile responsiveness */
-@media (max-width: 150px) {
-    .card-body {
-        flex-direction: column;
-        align-items: center;
+        text-align: left;
+      }
     }
-
-    .card-text-section {
-        width: 100%;
-        margin-right: 0;
-        margin-bottom: 20px;
-    }
-
-    .card-image-container {
-    width: 50%; /* The container width */
-    margin-bottom: 10px; /* Space between the container and the next element below it */
-    position: relative; /* To position the image relative to this container */
-}
-
-.card-image {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-    position: absolute;
-    bottom: 10px; /* Position the image 10px from the bottom */
-    left: 10px; /* Position the image 10px from the left */
-    right: 10px; /* Ensures the image is 10px from the right side as well */
-}
-
-    .telegram-link {
-        margin-top: 10px;
-        font-size: 14px;
-    }
-}
-
-
-
   </style>
+  
 </head>
 <body>
     <div class="sidebar">
