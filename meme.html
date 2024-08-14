@@ -258,14 +258,20 @@
     }
 
     .card-image-container {
-        width: 100%;
-        margin-bottom: 10px;
-    }
+    width: 50%; /* The container width */
+    margin-bottom: 10px; /* Space between the container and the next element below it */
+    position: relative; /* To position the image relative to this container */
+}
 
-    .card-image {
-        width: 50%; /* Mobile size */
-        max-width: 150px;
-    }
+.card-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    position: absolute;
+    bottom: 10px; /* Position the image 10px from the bottom */
+    left: 10px; /* Position the image 10px from the left */
+    right: 10px; /* Ensures the image is 10px from the right side as well */
+}
 
     .telegram-link {
         margin-top: 10px;
