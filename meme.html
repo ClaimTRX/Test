@@ -1060,7 +1060,7 @@ async function updateTotalClaimed(token) {
 
 async function updateTimeRemaining(token) {
     try {
-        const endTime = await stakingContracts[token].methods.endTime().call();
+        const endTime = await stakingContracts[token].methods.endTime().call(); // Access without parentheses
         const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
         let timeRemaining = endTime - currentTime;
 
@@ -1079,6 +1079,7 @@ async function updateTimeRemaining(token) {
         document.getElementById(`time-remaining-${token}`).innerText = 'Time Remaining: Unable to fetch';
     }
 }
+
 
 document.getElementById('stake-button-token1').addEventListener('click', async () => {
     const stakeAmount = document.getElementById('stake-amount-token1').value;
