@@ -1139,12 +1139,20 @@ async function updateTokenUI(token) {
       
 async function updateTotalStaked(token) {
     try {
-        const totalStaked = await stakingContracts[token].methods.viewTotalStaked().call();
-        document.getElementById(`total-staked-${token}`).innerText = formatNumber(tronWeb.fromSun(totalStaked)) + ' TRX';
+        const totalStakedRaw = await stakingContracts[token].methods.viewTotalStaked().call();
+        const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
+        const decimals = await tokenContract.methods.decimals().call();
+
+        // Convert the raw total staked amount to the proper number of decimals
+        const totalStaked = totalStakedRaw / Math.pow(10, decimals);
+
+        // Display the total staked amount with correct formatting
+        document.getElementById(`total-staked-${token}`).innerText = formatNumber(totalStaked) + ' TRX';
     } catch (error) {
         console.error(`Error fetching total staked TRX for ${token}:`, error);
     }
 }
+
 
 async function updateTotalClaimedAllUsers(token) {
     try {
