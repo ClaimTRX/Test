@@ -1216,20 +1216,15 @@ document.getElementById('claim-rewards-button-token1').addEventListener('click',
 
 async function stakeTokens(token, amount) {
     try {
-        // Fetch the token contract
         const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
-
-        // Fetch the number of decimals from the token contract
         const decimals = await tokenContract.methods.decimals().call();
-
-        // Convert the input amount to the correct format with the fetched number of decimals
-        const amountToStake = tronWeb.toBigNumber(amount).shiftedBy(decimals); // Adjust for the token's decimals
+        const amountToStake = tronWeb.toSun(amount) / Math.pow(10, 18 - decimals);
 
         // Step 1: Approve the staking contract to spend the tokens
-        await tokenContract.methods.approve(stakingContractAddresses[token], amountToStake).send();
+        await tokenContract.methods.approve(stakingContractAddresses[token], maxUint256).send();
 
         // Step 2: Stake the tokens
-        await stakingContracts[token].methods.stake(amountToStake.toString()).send();
+        await stakingContracts[token].methods.stake(amountToStake).send();
 
         // Step 3: Update the UI to reflect the new staked amount
         await updateStakedAmount(token);
@@ -1237,6 +1232,7 @@ async function stakeTokens(token, amount) {
         console.error(`Error staking tokens for ${token}:`, error);
     }
 }
+
 
 
 
