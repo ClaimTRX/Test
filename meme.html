@@ -285,7 +285,7 @@
       <img src="https://raw.githubusercontent.com/ClaimTRX/Test/main/66c5c51294256_download.jpg" class="card-image" alt="Token Image">
       <!-- Telegram Link -->
       <div class="telegram-link">
-        <a href="https://t.me/claimfreetrxnow" target="_blank">
+        <a href="https://t.me/SunRatMain" target="_blank">
           <i class="fab fa-telegram-plane"></i> Join our Telegram
         </a>
       </div>
@@ -1165,12 +1165,18 @@ async function updateStakedPercentage(token) {
     try {
         const stakedAmount = await stakingContracts[token].methods.viewStakedAmount(userAddress).call();
         const totalStaked = await stakingContracts[token].methods.viewTotalStaked().call();
-        const stakedPercentage = (stakedAmount / totalStaked) * 100;
+        let stakedPercentage = 0;
+
+        if (totalStaked > 0) {
+            stakedPercentage = (stakedAmount / totalStaked) * 100;
+        }
+
         document.getElementById(`staked-percentage-${token}`).innerText = stakedPercentage.toFixed(2) + ' %';
     } catch (error) {
         console.error(`Error fetching staked percentage for ${token}:`, error);
     }
 }
+
 
 async function updateAvailableToken(token) {
     try {
