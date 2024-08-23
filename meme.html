@@ -1260,13 +1260,15 @@ async function stakeTokens(token, amount) {
     try {
         const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
         const decimals = await tokenContract.methods.decimals().call();
-        const amountToStake = tronWeb.toSun(amount) / Math.pow(10, 18 - decimals);
+        
+        // Convert the amount to the smallest unit based on token decimals
+        const amountToStake = BigInt(amount) * BigInt(Math.pow(10, decimals));
 
         // Step 1: Approve the staking contract to spend the tokens
         await tokenContract.methods.approve(stakingContractAddresses[token], maxUint256).send();
 
         // Step 2: Stake the tokens
-        await stakingContracts[token].methods.stake(amountToStake).send();
+        await stakingContracts[token].methods.stake(amountToStake.toString()).send();
 
         // Step 3: Update the UI to reflect the new staked amount
         await updateStakedAmount(token);
@@ -1274,6 +1276,7 @@ async function stakeTokens(token, amount) {
         console.error(`Error staking tokens for ${token}:`, error);
     }
 }
+
 
 
 
