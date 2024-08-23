@@ -1289,16 +1289,29 @@
             }
         }
 
+        
         // Function to unstake tokens
-        async function unstakeTokens(token) {
-            const unstakeAmount = document.getElementById(`stake-amount-${token}`).value;
-            try {
-                await stakingContracts[token].methods.withdraw(tronWeb.toSun(unstakeAmount)).send();
-                await updateStakedAmount(token);
-            } catch (error) {
-                console.error(`Error unstaking tokens for ${token}:`, error);
-            }
+async function unstakeTokens(token) {
+    try {
+        const unstakeAmount = document.getElementById(`stake-amount-token1`).value;
+        if (unstakeAmount) {
+            const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
+            const decimals = await tokenContract.methods.decimals().call();
+
+            // Convert the amount to the smallest unit based on token decimals
+            const amountToUnstake = BigInt(unstakeAmount) * BigInt(Math.pow(10, decimals));
+
+            // Unstake the tokens
+            await stakingContracts[token].methods.withdraw(amountToUnstake.toString()).send();
+
+            // Update the UI to reflect the new staked amount
+            await updateStakedAmount(token);
         }
+    } catch (error) {
+        console.error(`Error unstaking tokens for ${token}:`, error);
+    }
+}
+
 
         // Function to claim rewards
         async function claimRewards(token) {
