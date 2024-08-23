@@ -1134,7 +1134,7 @@ async function updateTotalClaimedAllUsers(token) {
 
 async function updateDailyReward(token) {
     try {
-        const dailyReward = await stakingContracts[token].methods.viewDailyReward().call();
+        const dailyReward = await stakingContracts[token].methods.dailyReward().call(); // Ensure this is the correct function name in ABI
         const dailyRewardInTrx = tronWeb.fromSun(dailyReward);
         document.getElementById(`daily-reward-${token}`).innerText = `Daily TRX Reward: ${dailyRewardInTrx} TRX`;
     } catch (error) {
@@ -1142,6 +1142,7 @@ async function updateDailyReward(token) {
         document.getElementById(`daily-reward-${token}`).innerText = 'Daily TRX Reward: Unable to fetch';
     }
 }
+
 
 async function updateClaimableRewards(token) {
     try {
@@ -1228,7 +1229,7 @@ document.getElementById('claim-rewards-button-token1').addEventListener('click',
 });
 
 async function stakeTokens(token, amount) {
-    const amountToStake = tronWeb.toSun(amount);
+    const amountToStake = tronWeb.toDecimal(amount * Math.pow(10, 18)); // Adjust for 18 decimals
     try {
         await stakingContracts[token].methods.stake(amountToStake).send();
         await updateStakedAmount(token);
@@ -1236,6 +1237,8 @@ async function stakeTokens(token, amount) {
         console.error(`Error staking tokens for ${token}:`, error);
     }
 }
+
+
 
 async function unstakeTokens(token) {
     const unstakeAmount = document.getElementById(`stake-amount-${token}`).value;
