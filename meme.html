@@ -1129,7 +1129,6 @@ async function updateTokenUI(token) {
         await updateClaimableRewards(token);
         await updateStakedAmount(token);
         await updateStakedPercentage(token);
-        await updateAvailableToken(token);
         await updateTotalClaimed(token);
         await updateTotalStaked(token);
         await updateTotalClaimedAllUsers(token);
@@ -1201,14 +1200,6 @@ async function updateStakedPercentage(token) {
     }
 }
 
-async function updateAvailableToken(token) {
-    try {
-        const availableToken = await tronWeb.contract(tokenContractAbi, tokenContracts[token]).methods.balanceOf(userAddress).call();
-        document.getElementById(`available-${token}`).innerText = 'Available Token: ' + formatWholeNumber(tronWeb.fromSun(availableToken)) + ' Token';
-    } catch (error) {
-        console.error(`Error fetching available ${token}:`, error);
-    }
-}
 
 async function updateTotalClaimed(token) {
     try {
