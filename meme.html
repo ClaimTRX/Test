@@ -253,8 +253,9 @@
       <h5 class="card-title">Stake your $SUNRAT for TRX rewards</h5>
       
       <input type="number" id="stake-amount-token1" class="form-control" placeholder="Enter amount to stake">
-      <button id="stake-button-token1" class="btn btn-success">Stake</button><br>
-      <button id="unstake-button-token1" class="btn btn-danger">Unstake</button>
+<button id="stake-button-token1" class="btn btn-success">Stake</button><br>
+<button id="unstake-button-token1" class="btn btn-danger">Unstake</button>
+
       
       <h5 class="card-title mt-3">Total Staked $SUNRAT</h5>
       <p class="card-text" id="total-staked-token1">Loading...</p>
@@ -1204,6 +1205,7 @@ document.getElementById('unstake-button-token1').addEventListener('click', async
         console.error('Error unstaking tokens:', error);
     }
 });
+
 
 document.getElementById('claim-rewards-button-token1').addEventListener('click', async () => {
     try {
