@@ -256,19 +256,28 @@
       <input type="number" id="stake-amount-token1" class="form-control" placeholder="Enter amount to stake">
       <button id="stake-button-token1" class="btn btn-success">Stake</button><br>
       <button id="unstake-button-token1" class="btn btn-danger">Unstake</button>
+      
       <h5 class="card-title mt-3">Your Staked $SunRat</h5>
       <p class="card-text" id="staked-amount-token1">Loading...</p>
+      
       <h5 class="card-title mt-3">Your Staked Percentage</h5>
       <p class="card-text" id="staked-percentage-token1">Loading...</p>
+      
       <h5 class="card-title mt-3">Daily TRX Rewards</h5>
       <div id="daily-reward-token1" class="mt-2">Loading daily reward...</div>
+      
       <h5 class="card-title mt-3">Claimable TRX Rewards</h5>
       <p class="card-text" id="claimable-rewards-token1">Loading...</p>
       <button id="claim-rewards-button-token1" class="btn btn-success">Claim Rewards</button>
-      <h5 class="card-title mt-3">Total TRX claimed</h5>
+      
+      <h5 class="card-title mt-3">Total TRX claimed (You)</h5>
       <p class="card-text" id="total-claimed-token1">Loading...</p>
-      <h5 class="card-title mt-3">Time Remaining</h5>
-      <div id="time-remaining-token1" class="mt-2">Loading time remaining...</div>
+
+      <h5 class="card-title mt-3">Total TRX claimed (All Users)</h5>
+      <p class="card-text" id="total-claimed-all-token1">Loading...</p>
+
+      <h5 class="card-title mt-3">Total TRX Staked</h5>
+      <p class="card-text" id="total-staked-token1">Loading...</p>
     </div> <!-- Close .card-text-section -->
     
     <div class="card-image-container">
@@ -283,40 +292,8 @@
   </div> <!-- Close .card-body -->
 </div> <!-- Close .card -->
 
-      <div class="card mt-4">
-  <div class="card-body">
-    <div class="card-text-section">
-      <h5 class="card-title">Stake your $SunnyBoy for TRX rewards</h5>
-      
-      <input type="number" id="stake-amount-token1" class="form-control" placeholder="Enter amount to stake">
-      <button id="stake-button-token1" class="btn btn-success">Stake</button><br>
-      <button id="unstake-button-token1" class="btn btn-danger">Unstake</button>
-      <h5 class="card-title mt-3">Your Staked $SunnyBoy</h5>
-      <p class="card-text" id="staked-amount-token1">Loading...</p>
-      <h5 class="card-title mt-3">Your Staked Percentage</h5>
-      <p class="card-text" id="staked-percentage-token1">Loading...</p>
-      <h5 class="card-title mt-3">Daily TRX Rewards</h5>
-      <div id="daily-reward-token1" class="mt-2">Loading daily reward...</div>
-      <h5 class="card-title mt-3">Claimable TRX Rewards</h5>
-      <p class="card-text" id="claimable-rewards-token1">Loading...</p>
-      <button id="claim-rewards-button-token1" class="btn btn-success">Claim Rewards</button>
-      <h5 class="card-title mt-3">Total TRX claimed</h5>
-      <p class="card-text" id="total-claimed-token1">Loading...</p>
-      <h5 class="card-title mt-3">Time Remaining</h5>
-      <div id="time-remaining-token1" class="mt-2">Loading time remaining...</div>
-    </div> <!-- Close .card-text-section -->
-    
-    <div class="card-image-container">
-      <img src="https://raw.githubusercontent.com/ClaimTRX/Test/main/66bcec58ed494_download.jpg" class="card-image" alt="Token Image">
-      <!-- Telegram Link -->
-      <div class="telegram-link">
-        <a href="https://t.me/claimfreetrxnow" target="_blank">
-          <i class="fab fa-telegram-plane"></i> Join our Telegram
-        </a>
-      </div>
-    </div> <!-- Close .card-image-container -->
-  </div> <!-- Close .card-body -->
-</div> <!-- Close .card -->
+
+     
 
 
 
@@ -332,12 +309,12 @@
 
         // Contract Addresses
         const tokenContracts = {
-            token1: 'TPqKR5RkgbrAQDanGE1itqqWwGRnr1h2BX',
+            token1: 'TTwpF9nE4WpRbBXiEyYkXSfRXaxZWrFmoh',
             
         };
 
         const stakingContractAddresses = {
-            token1: 'TB2S8PVQkUBVzM7KahnrujwJeUQmPyHeFW',
+            token1: 'TDRQaWbdkyxfjYRvhJn85r3eWCfCM7vBBr',
             
         };
 
@@ -348,264 +325,6 @@
                 "internalType": "address",
                 "name": "_stakingToken",
                 "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_rewardToken",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_dailyReward",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "user",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "RewardClaimed",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "user",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "Staked",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "user",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "Withdrawn",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "OwnerWithdrawn",
-        "type": "event"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "stake",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "withdraw",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "claimReward",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "ownerWithdraw",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "viewAPR",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "viewTotalStaked",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-            }
-        ],
-        "name": "viewStakedAmount",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-            }
-        ],
-        "name": "viewPendingReward",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-            }
-        ],
-        "name": "viewTotalClaimedRewards",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "viewDailyReward",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_dailyReward",
-                "type": "uint256"
-            }
-        ],
-        "name": "setDailyReward",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "stateMutability": "payable",
-        "type": "receive"
-    }
-];
-
-    const tokenContractAbi = [
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_stakingToken",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_dailyReward",
-                "type": "uint256"
             }
         ],
         "stateMutability": "nonpayable",
@@ -682,34 +401,8 @@
         "type": "event"
     },
     {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "startTime",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "endTime",
-                "type": "uint256"
-            }
-        ],
-        "name": "RewardPeriodStarted",
-        "type": "event"
-    },
-    {
         "inputs": [],
-        "name": "startRewardPeriod",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "rewardPerToken",
+        "name": "dailyReward",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -721,55 +414,29 @@
         "type": "function"
     },
     {
-        "inputs": [
+        "inputs": [],
+        "name": "lastUpdateTime",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
             {
                 "internalType": "address",
-                "name": "account",
+                "name": "",
                 "type": "address"
             }
         ],
-        "name": "earned",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
         "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "stake",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "withdraw",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "claimReward",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -787,7 +454,7 @@
     },
     {
         "inputs": [],
-        "name": "viewTotalStaked",
+        "name": "rewardPerTokenStored",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -799,14 +466,47 @@
         "type": "function"
     },
     {
-        "inputs": [
+        "inputs": [],
+        "name": "rewardsPerMinute",
+        "outputs": [
             {
-                "internalType": "address",
-                "name": "account",
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "stakingToken",
+        "outputs": [
+            {
+                "internalType": "contract ITRC20",
+                "name": "",
                 "type": "address"
             }
         ],
-        "name": "viewStakedAmount",
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "totalClaimed",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "totalStaked",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -844,71 +544,58 @@
                 "type": "address"
             }
         ],
+        "name": "viewStakedAmount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "viewTotalStaked",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "viewTotalClaimedByUser",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
         "name": "viewStakedPercentage",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "viewDailyReward",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-            }
-        ],
-        "name": "viewTotalClaimedRewards",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-            }
-        ],
-        "name": "viewUnclaimedRewards",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "viewTotalClaimedRewards",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -933,8 +620,193 @@
         "type": "function"
     },
     {
+        "stateMutability": "payable",
+        "type": "receive"
+    }
+]
+;
+
+    const tokenContractAbi = [
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "symbol",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "totalSupply",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "spender",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "value",
+                "type": "uint256"
+            }
+        ],
+        "name": "Approval",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "previousOwner",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "value",
+                "type": "uint256"
+            }
+        ],
+        "name": "Transfer",
+        "type": "event"
+    },
+    {
         "inputs": [],
-        "name": "isStakingActive",
+        "name": "MODE_NORMAL",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "MODE_TRANSFER_CONTROLLED",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "MODE_TRANSFER_RESTRICTED",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "_mode",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "spender",
+                "type": "address"
+            }
+        ],
+        "name": "allowance",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "spender",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "approve",
         "outputs": [
             {
                 "internalType": "bool",
@@ -942,10 +814,229 @@
                 "type": "bool"
             }
         ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "balanceOf",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
         "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [
+            {
+                "internalType": "uint8",
+                "name": "",
+                "type": "uint8"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "spender",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "subtractedValue",
+                "type": "uint256"
+            }
+        ],
+        "name": "decreaseAllowance",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "spender",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "addedValue",
+                "type": "uint256"
+            }
+        ],
+        "name": "increaseAllowance",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "name",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "renounceOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "v",
+                "type": "uint256"
+            }
+        ],
+        "name": "setMode",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "symbol",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "totalSupply",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "transfer",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "transferFrom",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
     }
 ]
+
 ;
 
    document.addEventListener('DOMContentLoaded', async () => {
@@ -1015,9 +1106,28 @@ async function updateTokenUI(token) {
         await updateStakedPercentage(token);
         await updateAvailableToken(token);
         await updateTotalClaimed(token);
-        await updateTimeRemaining(token);
+        await updateTotalStaked(token);
+        await updateTotalClaimedAllUsers(token);
     } catch (error) {
         console.error(`Error updating UI for ${token}:`, error);
+    }
+}
+      
+async function updateTotalStaked(token) {
+    try {
+        const totalStaked = await stakingContracts[token].methods.viewTotalStaked().call();
+        document.getElementById(`total-staked-${token}`).innerText = formatNumber(tronWeb.fromSun(totalStaked)) + ' TRX';
+    } catch (error) {
+        console.error(`Error fetching total staked TRX for ${token}:`, error);
+    }
+}
+
+async function updateTotalClaimedAllUsers(token) {
+    try {
+        const totalClaimedAll = await stakingContracts[token].methods.viewTotalClaimed().call();
+        document.getElementById(`total-claimed-all-${token}`).innerText = formatNumber(tronWeb.fromSun(totalClaimedAll)) + ' TRX';
+    } catch (error) {
+        console.error(`Error fetching total claimed TRX for all users for ${token}:`, error);
     }
 }
 
@@ -1072,34 +1182,13 @@ async function updateAvailableToken(token) {
 
 async function updateTotalClaimed(token) {
     try {
-        const totalClaimed = await stakingContracts[token].methods.viewTotalClaimedRewards(userAddress).call();
+        const totalClaimed = await stakingContracts[token].methods.viewTotalClaimedByUser(userAddress).call();
         document.getElementById(`total-claimed-${token}`).innerText = formatNumber(tronWeb.fromSun(totalClaimed)) + ' TRX';
     } catch (error) {
         console.error(`Error fetching total claimed TRX for ${token}:`, error);
     }
 }
 
-async function updateTimeRemaining(token) {
-    try {
-        const endTime = await stakingContracts[token].methods.endTime().call(); // Corrected access without parentheses
-        const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-        let timeRemaining = endTime - currentTime;
-
-        if (timeRemaining < 0) {
-            timeRemaining = 0;
-        }
-
-        const days = Math.floor(timeRemaining / 86400);
-        const hours = Math.floor((timeRemaining % 86400) / 3600);
-        const minutes = Math.floor((timeRemaining % 3600) / 60);
-        const seconds = timeRemaining % 60;
-
-        document.getElementById(`time-remaining-${token}`).innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-    } catch (error) {
-        console.error(`Error fetching time remaining for ${token}:`, error);
-        document.getElementById(`time-remaining-${token}`).innerText = 'Time Remaining: Not yet started';
-    }
-}
 
 document.getElementById('stake-button-token1').addEventListener('click', async () => {
     const stakeAmount = document.getElementById('stake-amount-token1').value;
