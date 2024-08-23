@@ -1242,7 +1242,9 @@ document.getElementById('stake-button-token1').addEventListener('click', async (
     if (stakeAmount) {
         try {
             await stakeTokens('token1', stakeAmount);
-            await updateAllUI(); // Update the UI immediately after staking
+            setTimeout(async () => {
+                await updateAllUI(); // Update the UI 4 seconds after staking
+            }, 4000);
         } catch (error) {
             console.error('Error staking tokens:', error);
         }
@@ -1253,7 +1255,9 @@ document.getElementById('stake-button-token1').addEventListener('click', async (
 document.getElementById('unstake-button-token1').addEventListener('click', async () => {
     try {
         await unstakeTokens('token1');
-        await updateAllUI(); // Update the UI immediately after unstaking
+        setTimeout(async () => {
+            await updateAllUI(); // Update the UI 4 seconds after unstaking
+        }, 4000);
     } catch (error) {
         console.error('Error unstaking tokens:', error);
     }
@@ -1263,11 +1267,14 @@ document.getElementById('unstake-button-token1').addEventListener('click', async
 document.getElementById('claim-rewards-button-token1').addEventListener('click', async () => {
     try {
         await claimRewards('token1');
-        await updateAllUI(); // Update the UI immediately after claiming rewards
+        setTimeout(async () => {
+            await updateAllUI(); // Update the UI 4 seconds after claiming rewards
+        }, 4000);
     } catch (error) {
         console.error('Error claiming rewards:', error);
     }
 });
+
 
 
         // Function to stake tokens
