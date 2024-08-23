@@ -1177,8 +1177,15 @@ async function updateClaimableRewards(token) {
 
 async function updateStakedAmount(token) {
     try {
-        const stakedAmount = await stakingContracts[token].methods.viewStakedAmount(userAddress).call();
-        document.getElementById(`staked-amount-${token}`).innerText = formatWholeNumber(tronWeb.fromSun(stakedAmount)) + ' CFT';
+        const stakedAmountRaw = await stakingContracts[token].methods.viewStakedAmount(userAddress).call();
+        const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
+        const decimals = await tokenContract.methods.decimals().call();
+
+        // Convert the raw staked amount to the proper number of decimals
+        const stakedAmount = stakedAmountRaw / Math.pow(10, decimals);
+        
+        // Display the staked amount with correct formatting
+        document.getElementById(`staked-amount-${token}`).innerText = formatWholeNumber(stakedAmount) + ' CFT';
     } catch (error) {
         console.error(`Error fetching staked amount for ${token}:`, error);
     }
@@ -1284,13 +1291,12 @@ async function claimRewards(token) {
     }
 }
 
-function formatNumber(num) {
-    return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function formatWholeNumber(num) {
+    return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
 
-function formatWholeNumber(num) {
-    return Math.floor(parseFloat(num)).toLocaleString('en-US');
-}
+
+
 
 function switchLanguage(language) {
     if (language === 'zh') {
