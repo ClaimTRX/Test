@@ -1038,35 +1038,35 @@
 ];
 
   document.addEventListener('DOMContentLoaded', async () => {
-      document.getElementById('connect-button').addEventListener('click', connectWallet);
+    document.getElementById('connect-button').addEventListener('click', connectWallet);
 
-      if (await checkTronLinkInstalled()) {
+    if (await checkTronLinkInstalled()) {
         await initializeTronWeb();
         await updateAllUI(); // Update the UI once when the page loads
-      }
-    });
+    }
+});
 
-    async function checkTronLinkInstalled() {
-      return new Promise((resolve) => {
+async function checkTronLinkInstalled() {
+    return new Promise((resolve) => {
         const interval = setInterval(() => {
-          if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-            clearInterval(interval);
-            resolve(true);
-          }
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                clearInterval(interval);
+                resolve(true);
+            }
         }, 1000);
-      });
-    }
+    });
+}
 
-    async function connectWallet() {
-      if (await checkTronLinkInstalled()) {
+async function connectWallet() {
+    if (await checkTronLinkInstalled()) {
         await initializeTronWeb();
-      } else {
+    } else {
         console.error('TronLink is not installed.');
-      }
     }
+}
 
-    async function initializeTronWeb() {
-      try {
+async function initializeTronWeb() {
+    try {
         tronWeb = window.tronWeb;
         userAddress = tronWeb.defaultAddress.base58;
         console.log('Connected to TronLink.');
@@ -1075,44 +1075,49 @@
         document.getElementById('connect-button').style.display = 'none';
 
         for (let token in stakingContractAddresses) {
-          stakingContracts[token] = await tronWeb.contract(stakingContractAbi, stakingContractAddresses[token]);
+            const contractInstance = await tronWeb.contract(stakingContractAbi, stakingContractAddresses[token]);
+            if (contractInstance) {
+                stakingContracts[token] = contractInstance;
+            } else {
+                console.error(`Error initializing contract for ${token}`);
+            }
         }
 
         await updateAllUI();
-      } catch (error) {
+    } catch (error) {
         console.error('Error initializing TronWeb:', error);
-      }
     }
+}
 
-    // Function to handle the UI update after specific actions
-    async function updateAllUI() {
-      try {
+// Function to handle the UI update after specific actions
+async function updateAllUI() {
+    try {
         await updateTokenUI('token1');
         await updateTokenUI('token2');
-      } catch (error) {
+    } catch (error) {
         console.error('Error updating UI:', error);
-      }
     }
+}
 
     // Update UI only after staking
-    async function handleStaking(token) {
-      const stakeAmount = document.getElementById(`stake-amount-${token}`).value;
-      if (stakeAmount) {
+async function handleStaking(token) {
+    const stakeAmount = document.getElementById(`stake-amount-${token}`).value;
+    if (stakeAmount) {
         try {
-          await stakeTokens(token, stakeAmount);
-          await updateAllUI(); // Update UI immediately after staking
+            await stakeTokens(token, stakeAmount);
+            await updateAllUI(); // Update UI immediately after staking
         } catch (error) {
-          console.error(`Error staking tokens for ${token}:`, error);
+            console.error(`Error staking tokens for ${token}:`, error);
         }
-      }
     }
+}
 
-    // Update UI only after unstaking
-    async function handleUnstaking(token) {
-      try {
+// Update UI only after unstaking
+async function handleUnstaking(token) {
+    try {
         await unstakeTokens(token);
         await updateAllUI(); // Update UI immediately after unstaking
-      } catch (error) {
+    } catch (error) {
         console.error(`Error unstaking tokens for ${token}:`, error);
       }
     }
@@ -1126,6 +1131,8 @@
         console.error(`Error claiming rewards for ${token}:`, error);
       }
     }
+
+   
 
     // Example of how to trigger an update on page load or after specific actions
     document.getElementById('stake-button-token1').addEventListener('click', () => handleStaking('token1'));
