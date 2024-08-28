@@ -1192,24 +1192,32 @@
             }
         }
 
-        async function updateTotalClaimedAllUsers(token) {
-            try {
-                const totalClaimedAll = await stakingContracts[token].methods.totalClaimed().call();
-                document.getElementById(`total-claimed-all-${token}`).innerText = formatNumber(tronWeb.fromSun(totalClaimedAll)) + ` ${token.toUpperCase()}`;
-            } catch (error) {
-                console.error(`Error fetching total claimed for all users for ${token}:`, error);
-            }
-        }
+        async function updateTotalClaimed(token) {
+    try {
+        const totalClaimedRaw = await stakingContracts[token].methods.viewTotalClaimedByUser(userAddress).call();
+        const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
+        const decimals = await tokenContract.methods.decimals().call();
+        const totalClaimed = totalClaimedRaw / Math.pow(10, decimals);
+
+        document.getElementById(`total-claimed-${token}`).innerText = formatNumber(totalClaimed) + ` ${token.toUpperCase()}`;
+    } catch (error) {
+        console.error(`Error fetching total claimed for ${token}:`, error);
+    }
+}
 
         
         async function updateClaimableRewards(token) {
-            try {
-                const claimableRewards = await stakingContracts[token].methods.viewPendingReward(userAddress).call();
-                document.getElementById(`claimable-rewards-${token}`).innerText = formatNumber(tronWeb.fromSun(claimableRewards)) + ` ${token.toUpperCase()}`;
-            } catch (error) {
-                console.error(`Error fetching claimable rewards for ${token}:`, error);
-            }
-        }
+    try {
+        const claimableRewardsRaw = await stakingContracts[token].methods.viewPendingReward(userAddress).call();
+        const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
+        const decimals = await tokenContract.methods.decimals().call();
+        const claimableRewards = claimableRewardsRaw / Math.pow(10, decimals);
+
+        document.getElementById(`claimable-rewards-${token}`).innerText = formatNumber(claimableRewards) + ` ${token.toUpperCase()}`;
+    } catch (error) {
+        console.error(`Error fetching claimable rewards for ${token}:`, error);
+    }
+}
 
         async function updateStakedAmount(token) {
             try {
