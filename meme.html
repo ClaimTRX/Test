@@ -1106,13 +1106,15 @@
 ];
 
    document.addEventListener('DOMContentLoaded', async () => {
-            document.getElementById('connect-button').addEventListener('click', connectWallet);
-            if (await checkTronLinkInstalled()) {
-                await initializeTronWeb();
-                await updateAllUI();
-                setInterval(updateAllUI, 60000); // Update UI every minute
-            }
-        });
+    document.getElementById('connect-button').addEventListener('click', connectWallet);
+    if (await checkTronLinkInstalled()) {
+        await initializeTronWeb();
+        setTimeout(async () => {
+            await updateAllUI();
+        }, 4000); // 4-second delay on initial load
+        setInterval(updateAllUI, 60000); // Update UI every minute
+    }
+});
 
         async function checkTronLinkInstalled() {
             return new Promise((resolve) => {
@@ -1248,76 +1250,76 @@
         }
 
         document.getElementById('stake-button-token1').addEventListener('click', async () => {
-            const stakeAmount = document.getElementById('stake-amount-token1').value;
-            if (stakeAmount) {
-                try {
-                    await stakeTokens('token1', stakeAmount);
-                    setTimeout(async () => {
-                        await updateAllUI();
-                    }, 4000);
-                } catch (error) {
-                    console.error('Error staking tokens:', error);
-                }
-            }
-        });
+    const stakeAmount = document.getElementById('stake-amount-token1').value;
+    if (stakeAmount) {
+        try {
+            await stakeTokens('token1', stakeAmount);
+            setTimeout(async () => {
+                await updateAllUI();
+            }, 4000); // 4-second delay after staking
+        } catch (error) {
+            console.error('Error staking tokens:', error);
+        }
+    }
+});
 
-        document.getElementById('unstake-button-token1').addEventListener('click', async () => {
-            try {
-                await unstakeTokens('token1');
-                setTimeout(async () => {
-                    await updateAllUI();
-                }, 4000);
-            } catch (error) {
-                console.error('Error unstaking tokens:', error);
-            }
-        });
+document.getElementById('unstake-button-token1').addEventListener('click', async () => {
+    try {
+        await unstakeTokens('token1');
+        setTimeout(async () => {
+            await updateAllUI();
+        }, 4000); // 4-second delay after unstaking
+    } catch (error) {
+        console.error('Error unstaking tokens:', error);
+    }
+});
 
-        document.getElementById('claim-rewards-button-token1').addEventListener('click', async () => {
-            try {
-                await claimRewards('token1');
-                setTimeout(async () => {
-                    await updateAllUI();
-                }, 4000);
-            } catch (error) {
-                console.error('Error claiming rewards:', error);
-            }
-        });
+document.getElementById('claim-rewards-button-token1').addEventListener('click', async () => {
+    try {
+        await claimRewards('token1');
+        setTimeout(async () => {
+            await updateAllUI();
+        }, 4000); // 4-second delay after claiming rewards
+    } catch (error) {
+        console.error('Error claiming rewards:', error);
+    }
+});
 
-        document.getElementById('stake-button-token2').addEventListener('click', async () => {
-            const stakeAmount = document.getElementById('stake-amount-token2').value;
-            if (stakeAmount) {
-                try {
-                    await stakeTokens('token2', stakeAmount);
-                    setTimeout(async () => {
-                        await updateAllUI();
-                    }, 4000);
-                } catch (error) {
-                    console.error('Error staking tokens:', error);
-                }
-            }
-        });
+document.getElementById('stake-button-token2').addEventListener('click', async () => {
+    const stakeAmount = document.getElementById('stake-amount-token2').value;
+    if (stakeAmount) {
+        try {
+            await stakeTokens('token2', stakeAmount);
+            setTimeout(async () => {
+                await updateAllUI();
+            }, 4000); // 4-second delay after staking
+        } catch (error) {
+            console.error('Error staking tokens:', error);
+        }
+    }
+});
 
-        document.getElementById('unstake-button-token2').addEventListener('click', async () => {
-            try {
-                await unstakeTokens('token2');
-                setTimeout(async () => {
-                    await updateAllUI();
-                }, 4000);
-            } catch (error) {
-                console.error('Error unstaking tokens:', error);
-            }
-        });
+document.getElementById('unstake-button-token2').addEventListener('click', async () => {
+    try {
+        await unstakeTokens('token2');
+        setTimeout(async () => {
+            await updateAllUI();
+        }, 4000); // 4-second delay after unstaking
+    } catch (error) {
+        console.error('Error unstaking tokens:', error);
+    }
+});
 
-        document.getElementById('claim-rewards-button-token2').addEventListener('click', async () => {
-            try {
-                await claimRewards('token2');
-                setTimeout(async () => {
-                    await updateAllUI();
-                }, 4000);
-            } catch (error) {
-                console.error('Error claiming rewards:', error);
-            }
-        });
+document.getElementById('claim-rewards-button-token2').addEventListener('click', async () => {
+    try {
+        await claimRewards('token2');
+        setTimeout(async () => {
+            await updateAllUI();
+        }, 4000); // 4-second delay after claiming rewards
+    } catch (error) {
+        console.error('Error claiming rewards:', error);
+    }
+});
 
         async function stakeTokens(token, amount) {
             try {
