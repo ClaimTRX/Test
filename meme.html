@@ -221,13 +221,11 @@
     <div class="sidebar">
       <h2>CFT</h2>
       <a href="index.html">CFT Token</a>
-      <a href="usdt.html">USDT Rewards</a>
-      <a href="lottery.html">Lottery</a>
-      <a href="draw.html">Draw</a>
-      <a href="claim.html">Claim</a>
-      <a href="treasury.html">Treasury</a>
-      <a href="Swap.html">Swap</a>
-      <a href="Meme.html">Meme Staking</a>
+    <a href="usdt.html">USDT Rewards</a>
+    
+    <a href="treasury.html">Treasury</a>
+    <a href="Swap.html">Swap</a>
+      <a href="meme.html">Meme Staking</a>
       <div class="social-links">
         <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
           <i class="fab fa-twitter"></i>
@@ -236,9 +234,7 @@
           <i class="fab fa-telegram-plane"></i>
         </a>
       </div>
-      <div class="language-switcher">
-        <button id="language-switcher" class="btn btn-secondary" onclick="switchLanguage('zh')">中文</button>
-      </div>
+      
     </div>
     <div class="topbar">
       <button id="connect-button" onclick="connectWallet()">Connect Wallet</button>
@@ -246,7 +242,7 @@
     <div class="main-content">
       <h1>Meme Staking</h1>
 
-     <!-- Card for Token 1 -->
+     <!-- Card for Tokena 1 -->
 <div class="card mt-4">
   <div class="card-body">
     <div class="card-text-section">
@@ -260,7 +256,7 @@
       <h5 class="card-title mt-3">Total Staked $SUNRAT</h5>
       <p class="card-text" id="total-staked-token1">Loading...</p>
       
-      <h5 class="card-title mt-3">Your Staked $SunRat</h5>
+      <h5 class="card-title mt-3">Your Staked $SUNRAT</h5>
       <p class="card-text" id="staked-amount-token1">Loading...</p>
       
       <h5 class="card-title mt-3">Your Staked Percentage</h5>
@@ -1154,7 +1150,7 @@
                 const totalStaked = totalStakedRaw / Math.pow(10, decimals);
 
                 // Display the total staked amount with correct formatting
-                document.getElementById(`total-staked-${token}`).innerText = formatNumber(totalStaked) + ' TRX';
+                document.getElementById(`total-staked-${token}`).innerText = formatNumber(totalStaked) + ' $SUNRAT';
             } catch (error) {
                 console.error(`Error fetching total staked TRX for ${token}:`, error);
             }
@@ -1203,7 +1199,7 @@
                 const stakedAmount = stakedAmountRaw / Math.pow(10, decimals);
 
                 // Display the staked amount with correct formatting
-                document.getElementById(`staked-amount-${token}`).innerText = formatWholeNumber(stakedAmount) + ' CFT';
+                document.getElementById(`staked-amount-${token}`).innerText = formatWholeNumber(stakedAmount) + ' $SUNRAT';
             } catch (error) {
                 console.error(`Error fetching staked amount for ${token}:`, error);
             }
@@ -1355,5 +1351,4 @@ async function unstakeTokens(token) {
     </script>
 </body>
 </html>
-
 
