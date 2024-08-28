@@ -1174,17 +1174,18 @@
         }
 
         async function updateTotalStaked(token) {
-            try {
-                const totalStakedRaw = await stakingContracts[token].methods.viewTotalStaked().call();
-                const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
-                const decimals = await tokenContract.methods.decimals().call();
-                const totalStaked = totalStakedRaw / Math.pow(10, decimals);
+    try {
+        const totalStakedRaw = await stakingContracts[token].methods.viewTotalStaked().call();
+        const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
+        const decimals = await tokenContract.methods.decimals().call();
+        const totalStaked = totalStakedRaw / Math.pow(10, decimals);
 
-                document.getElementById(`total-staked-${token}`).innerText = formatNumber(totalStaked) + ` $${token.toUpperCase()}`;
-            } catch (error) {
-                console.error(`Error fetching total staked for ${token}:`, error);
-            }
-        }
+        // Updated line to remove $TOKEN1 or $TOKEN2
+        document.getElementById(`total-staked-${token}`).innerText = formatNumber(totalStaked);
+    } catch (error) {
+        console.error(`Error fetching total staked for ${token}:`, error);
+    }
+}
 
         
         
@@ -1195,24 +1196,26 @@
         const decimals = await tokenContract.methods.decimals().call();
         const claimableRewards = claimableRewardsRaw / Math.pow(10, decimals);
 
-        document.getElementById(`claimable-rewards-${token}`).innerText = formatNumber(claimableRewards) + ` ${token.toUpperCase()}`;
+        // Updated line to remove $TOKEN1 or $TOKEN2
+        document.getElementById(`claimable-rewards-${token}`).innerText = formatNumber(claimableRewards);
     } catch (error) {
         console.error(`Error fetching claimable rewards for ${token}:`, error);
     }
 }
 
         async function updateStakedAmount(token) {
-            try {
-                const stakedAmountRaw = await stakingContracts[token].methods.viewStakedAmount(userAddress).call();
-                const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
-                const decimals = await tokenContract.methods.decimals().call();
-                const stakedAmount = stakedAmountRaw / Math.pow(10, decimals);
+    try {
+        const stakedAmountRaw = await stakingContracts[token].methods.viewStakedAmount(userAddress).call();
+        const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
+        const decimals = await tokenContract.methods.decimals().call();
+        const stakedAmount = stakedAmountRaw / Math.pow(10, decimals);
 
-                document.getElementById(`staked-amount-${token}`).innerText = formatWholeNumber(stakedAmount) + ` $${token.toUpperCase()}`;
-            } catch (error) {
-                console.error(`Error fetching staked amount for ${token}:`, error);
-            }
-        }
+        // Updated line to remove $TOKEN1 or $TOKEN2
+        document.getElementById(`staked-amount-${token}`).innerText = formatWholeNumber(stakedAmount);
+    } catch (error) {
+        console.error(`Error fetching staked amount for ${token}:`, error);
+    }
+}
 
         async function updateStakedPercentage(token) {
             try {
