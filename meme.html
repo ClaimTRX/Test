@@ -272,8 +272,7 @@
                     <h5 class="card-title mt-3">Total TRX claimed (All Users)</h5>
                     <p class="card-text" id="total-claimed-all-token1">Loading...</p>
 
-                    <h5 class="card-title mt-3">Daily TRX Rewards (All Users)</h5>
-                    <div id="daily-reward-token1" class="mt-2">Loading daily reward...</div>
+                    
 
                 </div>
 
@@ -318,9 +317,7 @@
                     <h5 class="card-title mt-3">Total BBT claimed (All Users)</h5>
                     <p class="card-text" id="total-claimed-all-token2">Loading...</p>
 
-                    <h5 class="card-title mt-3">Daily BBT Rewards (All Users)</h5>
-                    <div id="daily-reward-token2" class="mt-2">Loading daily reward...</div>
-
+                    
                 </div>
 
                 <div class="card-image-container">
@@ -1168,7 +1165,7 @@
 
         async function updateTokenUI(token) {
             try {
-                await updateDailyReward(token);
+                
                 await updateClaimableRewards(token);
                 await updateStakedAmount(token);
                 await updateStakedPercentage(token);
@@ -1202,17 +1199,7 @@
             }
         }
 
-        async function updateDailyReward(token) {
-            try {
-                const dailyReward = await stakingContracts[token].methods.dailyReward().call();
-                const dailyRewardInTrx = tronWeb.fromSun(dailyReward);
-                document.getElementById(`daily-reward-${token}`).innerText = `Daily Reward: ${dailyRewardInTrx} ${token.toUpperCase()}`;
-            } catch (error) {
-                console.error(`Error fetching daily reward for ${token}:`, error);
-                document.getElementById(`daily-reward-${token}`).innerText = `Daily Reward: Unable to fetch`;
-            }
-        }
-
+        
         async function updateClaimableRewards(token) {
             try {
                 const claimableRewards = await stakingContracts[token].methods.viewPendingReward(userAddress).call();
