@@ -7,6 +7,8 @@
   <link rel="icon" href="https://raw.githubusercontent.com/ClaimTRX/Test/main/favicon-32x32.png" type="image/png">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <script src="memebbt.js"></script>
+
   <style>
     body {
     background-color: #1a1a2e;
@@ -288,6 +290,52 @@
     </div> <!-- Close .card-image-container -->
   </div> <!-- Close .card-body -->
 </div> <!-- Close .card -->
+
+      <!-- Card for Token 2 -->
+<div class="card mt-4">
+  <div class="card-body">
+    <div class="card-text-section">
+      <h5 class="card-title">Stake your $TOKEN2 for TRX rewards</h5>
+
+      <input type="number" id="stake-amount-token2" class="form-control" placeholder="Enter amount to stake">
+      <button id="stake-button-token2" class="btn btn-success">Stake</button><br>
+      <button id="unstake-button-token2" class="btn btn-danger">Unstake</button>
+
+      <h5 class="card-title mt-3">Total Staked $TOKEN2</h5>
+      <p class="card-text" id="total-staked-token2">Loading...</p>
+
+      <h5 class="card-title mt-3">Your Staked $TOKEN2</h5>
+      <p class="card-text" id="staked-amount-token2">Loading...</p>
+
+      <h5 class="card-title mt-3">Your Staked Percentage</h5>
+      <p class="card-text" id="staked-percentage-token2">Loading...</p>
+
+      <h5 class="card-title mt-3">Claimable TRX Rewards</h5>
+      <p class="card-text" id="claimable-rewards-token2">Loading...</p>
+      <button id="claim-rewards-button-token2" class="btn btn-success">Claim Rewards</button>
+
+      <h5 class="card-title mt-3">Total TRX claimed (You)</h5>
+      <p class="card-text" id="total-claimed-token2">Loading...</p>
+
+      <h5 class="card-title mt-3">Total TRX claimed (All Users)</h5>
+      <p class="card-text" id="total-claimed-all-token2">Loading...</p>
+
+      <h5 class="card-title mt-3">Daily TRX Rewards (All Users)</h5>
+      <div id="daily-reward-token2" class="mt-2">Loading daily reward...</div>
+
+    </div> <!-- Close .card-text-section -->
+
+    <div class="card-image-container">
+      <img src="https://example.com/token2-image.jpg" class="card-image" alt="Token Image">
+      <div class="telegram-link">
+        <a href="https://t.me/Token2Telegram" target="_blank">
+          <i class="fab fa-telegram-plane"></i> Join our Telegram
+        </a>
+      </div>
+    </div> <!-- Close .card-image-container -->
+  </div> <!-- Close .card-body -->
+</div> <!-- Close .card -->
+
 
     </div>
 
