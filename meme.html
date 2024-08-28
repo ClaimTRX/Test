@@ -266,8 +266,7 @@
                     <p class="card-text" id="claimable-rewards-token1">Loading...</p>
                     <button id="claim-rewards-button-token1" class="btn btn-success">Claim Rewards</button>
 
-                    <h5 class="card-title mt-3">Total TRX claimed (You)</h5>
-                    <p class="card-text" id="total-claimed-token1">Loading...</p>
+                    
 
                    
 
@@ -310,8 +309,7 @@
                     <p class="card-text" id="claimable-rewards-token2">Loading...</p>
                     <button id="claim-rewards-button-token2" class="btn btn-success">Claim Rewards</button>
 
-                    <h5 class="card-title mt-3">Total BBT claimed (You)</h5>
-                    <p class="card-text" id="total-claimed-token2">Loading...</p>
+                    
 
                    
                 </div>
@@ -1167,9 +1165,9 @@
                 await updateClaimableRewards(token);
                 await updateStakedAmount(token);
                 await updateStakedPercentage(token);
-                await updateTotalClaimed(token);
+                
                 await updateTotalStaked(token);
-                await updateTotalClaimedAllUsers(token);
+                
             } catch (error) {
                 console.error(`Error updating UI for ${token}:`, error);
             }
@@ -1188,19 +1186,7 @@
             }
         }
 
-        async function updateTotalClaimed(token) {
-    try {
-        const totalClaimedRaw = await stakingContracts[token].methods.viewTotalClaimedByUser(userAddress).call();
-        const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
-        const decimals = await tokenContract.methods.decimals().call();
-        const totalClaimed = totalClaimedRaw / Math.pow(10, decimals);
-
-        document.getElementById(`total-claimed-${token}`).innerText = formatNumber(totalClaimed) + ` ${token.toUpperCase()}`;
-    } catch (error) {
-        console.error(`Error fetching total claimed for ${token}:`, error);
-    }
-}
-
+        
         
         async function updateClaimableRewards(token) {
     try {
@@ -1244,14 +1230,7 @@
             }
         }
 
-        async function updateTotalClaimed(token) {
-            try {
-                const totalClaimed = await stakingContracts[token].methods.viewTotalClaimedByUser(userAddress).call();
-                document.getElementById(`total-claimed-${token}`).innerText = formatNumber(tronWeb.fromSun(totalClaimed)) + ` ${token.toUpperCase()}`;
-            } catch (error) {
-                console.error(`Error fetching total claimed for ${token}:`, error);
-            }
-        }
+        
 
         document.getElementById('stake-button-token1').addEventListener('click', async () => {
     const stakeAmount = document.getElementById('stake-amount-token1').value;
@@ -1357,7 +1336,7 @@ document.getElementById('claim-rewards-button-token2').addEventListener('click',
             try {
                 await stakingContracts[token].methods.claimReward().send();
                 await updateClaimableRewards(token);
-                await updateTotalClaimed(token);
+                
             } catch (error) {
                 console.error(`Error claiming rewards for ${token}:`, error);
             }
