@@ -1104,15 +1104,23 @@
     }
 ];
 
-   document.addEventListener('DOMContentLoaded', async () => {
-      document.getElementById('connect-button').addEventListener('click', connectWallet);
+  document.addEventListener('DOMContentLoaded', async () => {
+    document.getElementById('connect-button').addEventListener('click', connectWallet);
 
-      if (await checkTronLinkInstalled()) {
+    if (await checkTronLinkInstalled()) {
+        // Initialize TronWeb with custom node settings, including your TronGrid API key
+        tronWeb = new TronWeb({
+            fullHost: 'https://api.trongrid.io',
+            headers: { "TRON-PRO-API-KEY": "7041847c-172d-496a-a30f-b1746cc7eca3" },
+            privateKey: ''  // Optional: only if you want to initialize with a private key
+        });
+
         await initializeTronWeb();
         await updateAllUI();
         setInterval(updateAllUI, 60000); // Update UI every minute
-      }
-    });
+    }
+});
+
 
     async function checkTronLinkInstalled() {
       return new Promise((resolve) => {
@@ -1158,8 +1166,8 @@
       }
     }
 
-    async function updateTokenUI(token) {
-      try {
+   async function updateTokenUI(token) {
+    try {
         await updateTotalStaked(token);
         await updateStakedAmount(token);
         await updateStakedPercentage(token);
@@ -1167,10 +1175,14 @@
         await updateTotalClaimed(token);
         await updateTotalClaimedAllUsers(token);
         await updateDailyReward(token);
-      } catch (error) {
+    } catch (error) {
         console.error(`Error updating UI for ${token}:`, error);
-      }
+        if (error.response && error.response.status === 403) {
+            console.error('Forbidden request: check your API key or rate limits.');
+        }
     }
+}
+
 
     async function updateTotalStaked(token) {
       try {
