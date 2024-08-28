@@ -1108,15 +1108,15 @@
 ];
 
    document.addEventListener('DOMContentLoaded', async () => {
-       // Ensuring the function is properly registered
-       document.getElementById('connect-button').addEventListener('click', connectWallet);
-       
-       if (await checkTronLinkInstalled()) {
-           await initializeTronWeb();
-           await updateAllUI();
-           setInterval(updateAllUI, 60000); // Update UI every minute
-       }
-   });
+    // Ensuring the function is properly registered
+    document.getElementById('connect-button').addEventListener('click', connectWallet);
+
+    if (await checkTronLinkInstalled()) {
+        await initializeTronWeb();
+        await updateAllUI();
+        setInterval(updateAllUI, 60000); // Update UI every minute
+    }
+});
 
 
        async function checkTronLinkInstalled() {
