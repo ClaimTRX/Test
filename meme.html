@@ -1108,71 +1108,58 @@
 ];
 
    document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        document.getElementById('connect-button').addEventListener('click', connectWallet);
-        if (await checkTronLinkInstalled()) {
-            await initializeTronWeb();
-            await updateAllUI();
-            setInterval(updateAllUI, 60000); // Update UI every minute
-        }
-    } catch (error) {
-        console.error('Error during DOMContentLoaded:', error);
-    }
-});
+       // Ensuring the function is properly registered
+       document.getElementById('connect-button').addEventListener('click', connectWallet);
+       
+       if (await checkTronLinkInstalled()) {
+           await initializeTronWeb();
+           await updateAllUI();
+           setInterval(updateAllUI, 60000); // Update UI every minute
+       }
+   });
 
-        // Check if TronLink is installed
-        async function checkTronLinkInstalled() {
-            return new Promise((resolve) => {
-                const interval = setInterval(() => {
-                    if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                        clearInterval(interval);
-                        resolve(true);
-                    }
-                }, 1000);
-            });
-        }
 
-        // Connect the wallet using TronLink
-        async function connectWallet() {
-            if (await checkTronLinkInstalled()) {
-                await initializeTronWeb();
-            } else {
-                console.error('TronLink is not installed.');
-            }
-        }
+       async function checkTronLinkInstalled() {
+       return new Promise((resolve) => {
+           const interval = setInterval(() => {
+               if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                   clearInterval(interval);
+                   resolve(true);
+               }
+           }, 1000);
+       });
+   }
 
-        // Initialize TronWeb and the contracts
-        async function initializeTronWeb() {
-            try {
-                tronWeb = window.tronWeb;
-                userAddress = tronWeb.defaultAddress.base58;
+   // Function to connect the wallet using TronLink
+   async function connectWallet() {
+       if (await checkTronLinkInstalled()) {
+           await initializeTronWeb();
+       } else {
+           console.error('TronLink is not installed.');
+       }
+   }
 
-                console.log('Connected to TronLink.');
-                console.log('User Address:', userAddress);
+   // Initialize TronWeb and the contracts
+   async function initializeTronWeb() {
+       try {
+           tronWeb = window.tronWeb;
+           userAddress = tronWeb.defaultAddress.base58;
 
-                document.getElementById('connect-button').style.display = 'none';
+           console.log('Connected to TronLink.');
+           console.log('User Address:', userAddress);
 
-                // Initialize staking contracts
-                for (let token in stakingContractAddresses) {
-                    stakingContracts[token] = await tronWeb.contract(stakingContractAbi, stakingContractAddresses[token]);
-                }
+           document.getElementById('connect-button').style.display = 'none';
 
-                await updateAllUI();
-            } catch (error) {
-                console.error('Error initializing TronWeb:', error);
-            }
-        }
+           // Initialize staking contracts
+           for (let token in stakingContractAddresses) {
+               stakingContracts[token] = await tronWeb.contract(stakingContractAbi, stakingContractAddresses[token]);
+           }
 
-        // Update the entire UI with current data
-        async function updateAllUI() {
-            try {
-                for (let token in stakingContracts) {
-                    await updateTokenUI(token);
-                }
-            } catch (error) {
-                console.error('Error updating UI:', error);
-            }
-        }
+           await updateAllUI();
+       } catch (error) {
+           console.error('Error initializing TronWeb:', error);
+       }
+   }
 
         // Update UI for a specific token
         async function updateTokenUI(token) {
