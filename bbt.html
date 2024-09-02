@@ -1226,7 +1226,7 @@
         async function updateTotalClaimed(token) {
             try {
                 const totalClaimed = await stakingContracts[token].methods.viewTotalClaimedByUser(userAddress).call();
-                document.getElementById(`total-claimed-${token}`).innerText = formatNumber(tronWeb.fromSun(totalClaimed)) + ' TRX';
+                document.getElementById(`total-claimed-${token}`).innerText = formatNumber(tronWeb.fromSun(totalClaimed)) + ' ';
             } catch (error) {
                 console.error(`Error fetching total claimed TRX for ${token}:`, error);
             }
