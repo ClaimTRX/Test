@@ -1150,7 +1150,7 @@
                 const totalStaked = totalStakedRaw / Math.pow(10, decimals);
 
                 // Display the total staked amount with correct formatting
-                document.getElementById(`total-staked-${token}`).innerText = formatNumber(totalStaked) + ' $SUNRAT';
+                document.getElementById(`total-staked-${token}`).innerText = formatNumber(totalStaked) + '';
             } catch (error) {
                 console.error(`Error fetching total staked TRX for ${token}:`, error);
             }
@@ -1160,7 +1160,7 @@
         async function updateTotalClaimedAllUsers(token) {
             try {
                 const totalClaimedAll = await stakingContracts[token].methods.totalClaimed().call();
-                document.getElementById(`total-claimed-all-${token}`).innerText = formatNumber(tronWeb.fromSun(totalClaimedAll)) + ' TRX';
+                document.getElementById(`total-claimed-all-${token}`).innerText = formatNumber(tronWeb.fromSun(totalClaimedAll)) + '';
             } catch (error) {
                 console.error(`Error fetching total claimed TRX for all users for ${token}:`, error);
             }
@@ -1171,7 +1171,7 @@
             try {
                 const dailyReward = await stakingContracts[token].methods.dailyReward().call();
                 const dailyRewardInTrx = tronWeb.fromSun(dailyReward);
-                document.getElementById(`daily-reward-${token}`).innerText = `Daily TRX Reward: ${dailyRewardInTrx} TRX`;
+                document.getElementById(`daily-reward-${token}`).innerText = `Daily TRX Reward: ${dailyRewardInTrx} BBT`;
             } catch (error) {
                 console.error(`Error fetching daily reward for ${token}:`, error);
                 document.getElementById(`daily-reward-${token}`).innerText = 'Daily TRX Reward: Unable to fetch';
@@ -1182,7 +1182,7 @@
         async function updateClaimableRewards(token) {
             try {
                 const claimableRewards = await stakingContracts[token].methods.viewPendingReward(userAddress).call();
-                document.getElementById(`claimable-rewards-${token}`).innerText = formatNumber(tronWeb.fromSun(claimableRewards)) + ' TRX';
+                document.getElementById(`claimable-rewards-${token}`).innerText = formatNumber(tronWeb.fromSun(claimableRewards)) + ' ';
             } catch (error) {
                 console.error(`Error fetching claimable rewards for ${token}:`, error);
             }
@@ -1199,7 +1199,7 @@
                 const stakedAmount = stakedAmountRaw / Math.pow(10, decimals);
 
                 // Display the staked amount with correct formatting
-                document.getElementById(`staked-amount-${token}`).innerText = formatWholeNumber(stakedAmount) + ' $SUNRAT';
+                document.getElementById(`staked-amount-${token}`).innerText = formatWholeNumber(stakedAmount) + ' ';
             } catch (error) {
                 console.error(`Error fetching staked amount for ${token}:`, error);
             }
