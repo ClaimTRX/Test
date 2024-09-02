@@ -100,14 +100,21 @@
     }
 
     .card-body {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-gap: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
         width: 100%;
+        height: 100%;
     }
 
     .card-text-section {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
         width: 100%;
+        text-align: center;
     }
 
     .card-image-container {
@@ -116,7 +123,6 @@
         align-items: center;
         justify-content: center;
         text-align: center;
-        margin-bottom: 20px;
     }
 
     .main-content h1 {
@@ -178,7 +184,7 @@
         }
 
         .card-body {
-            grid-template-columns: 1fr;
+            flex-direction: column;
         }
 
         .card-text-section {
@@ -330,12 +336,13 @@
         }
 
         document.getElementById("enter-button1").onclick = function () {
-            window.location.href = "meme.html";
+            window.location.href = "sunrat.html";
         };
         document.getElementById("enter-button2").onclick = function () {
-            window.location.href = "index.html";
+            window.location.href = "bbt.html";
         };
     </script>
 </body>
 </html>
+
 
