@@ -1041,45 +1041,41 @@
 ];
 
    document.addEventListener('DOMContentLoaded', async () => {
-            document.getElementById('connect-button').addEventListener('click', connectWallet);
+    document.getElementById('connect-button').addEventListener('click', connectWallet);
 
-  try {
-        await tronLink.request({ method: 'tron_requestAccounts' });
-    } catch (e) {
-
-    }
-
-            if (await checkTronLinkInstalled()) {
-                await initializeTronWeb();
-                await updateAllUI();
-                setInterval(updateAllUI, 60000); // Update UI every minute
-            }
-        });
-
-    // Check if TronLink is installed
-    async function checkTronLinkInstalled() {
-      return new Promise((resolve) => {
-        const interval = setInterval(() => {
-          if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-            clearInterval(interval);
-            resolve(true);
-          }
-        }, 1000);
-      });
-    }
-
-    // Connect the wallet using TronLink
-    async function connectWallet() {
-      if (await checkTronLinkInstalled()) {
+    if (await checkTronLinkInstalled()) {
         await initializeTronWeb();
-      } else {
+        setInterval(updateAllUI, 60000); // Update UI every minute
+    } else {
         console.error('TronLink is not installed.');
-      }
     }
+});
 
-    // Initialize TronWeb and the contracts
-    async function initializeTronWeb() {
-      try {
+// Check if TronLink is installed
+async function checkTronLinkInstalled() {
+    return new Promise((resolve) => {
+        const interval = setInterval(() => {
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                clearInterval(interval);
+                resolve(true);
+            }
+        }, 1000);
+    });
+}
+
+// Connect the wallet using TronLink
+async function connectWallet() {
+    try {
+        await tronLink.request({ method: 'tron_requestAccounts' });
+        await initializeTronWeb();
+    } catch (e) {
+        console.error('Failed to connect to TronLink:', e);
+    }
+}
+
+// Initialize TronWeb and the contracts
+async function initializeTronWeb() {
+    try {
         tronWeb = window.tronWeb;
         userAddress = tronWeb.defaultAddress.base58;
 
@@ -1090,29 +1086,34 @@
 
         // Initialize staking contracts
         for (let token in stakingContractAddresses) {
-          stakingContracts[token] = await tronWeb.contract(stakingContractAbi, stakingContractAddresses[token]);
+            stakingContracts[token] = await tronWeb.contract(stakingContractAbi, stakingContractAddresses[token]);
         }
 
         await updateAllUI();
-      } catch (error) {
+    } catch (error) {
         console.error('Error initializing TronWeb:', error);
-      }
     }
+}
 
-    async function updateAllUI() {
-      try {
+// Function to add delay
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function updateAllUI() {
+    try {
         for (let token in stakingContracts) {
-          await delay(1000); // Add a 1-second delay between updates
-          await updateTokenUI(token);
+            await delay(1000); // Add a 1-second delay between updates
+            await updateTokenUI(token);
         }
-      } catch (error) {
+    } catch (error) {
         console.error('Error updating UI:', error);
-      }
     }
+}
 
-    // Update UI for a specific token
-    async function updateTokenUI(token) {
-      try {
+// Update UI for a specific token
+async function updateTokenUI(token) {
+    try {
         await updateClaimableRewards(token);
         await delay(1000);
         await updateStakedAmount(token);
@@ -1122,126 +1123,126 @@
         await updateTotalStaked(token);
         await delay(1000);
         await updateProjectedYearlyEarnings(token);
-      } catch (error) {
+    } catch (error) {
         console.error(`Error updating UI for ${token}:`, error);
-      }
     }
+}
 
-    // Function to update the total staked amount
-    async function updateTotalStaked(token) {
-      try {
+// Function to update the total staked amount
+async function updateTotalStaked(token) {
+    try {
         const totalStakedRaw = await stakingContracts[token].methods.viewTotalStaked().call();
         const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
         const decimals = await tokenContract.methods.decimals().call();
 
         const totalStaked = totalStakedRaw / Math.pow(10, decimals);
         document.getElementById(`total-staked-${token}`).innerText = formatNumber(totalStaked) + '';
-      } catch (error) {
+    } catch (error) {
         console.error(`Error fetching total staked TRX for ${token}:`, error);
-      }
     }
+}
 
-    // Function to update claimable rewards
-    async function updateClaimableRewards(token) {
-      try {
+// Function to update claimable rewards
+async function updateClaimableRewards(token) {
+    try {
         const claimableRewardsRaw = await stakingContracts[token].methods.viewPendingReward(userAddress).call();
         const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
         const decimals = await tokenContract.methods.decimals().call();
 
         const claimableRewards = claimableRewardsRaw / Math.pow(10, decimals);
         document.getElementById(`claimable-rewards-${token}`).innerText = formatNumber(claimableRewards) + ' BBT';
-      } catch (error) {
+    } catch (error) {
         console.error(`Error fetching claimable rewards for ${token}:`, error);
-      }
     }
+}
 
-    // Function to update the staked amount
-    async function updateStakedAmount(token) {
-      try {
+// Function to update the staked amount
+async function updateStakedAmount(token) {
+    try {
         const stakedAmountRaw = await stakingContracts[token].methods.viewStakedAmount(userAddress).call();
         const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
         const decimals = await tokenContract.methods.decimals().call();
 
         const stakedAmount = stakedAmountRaw / Math.pow(10, decimals);
         document.getElementById(`staked-amount-${token}`).innerText = formatWholeNumber(stakedAmount) + ' ';
-      } catch (error) {
+    } catch (error) {
         console.error(`Error fetching staked amount for ${token}:`, error);
-      }
     }
+}
 
-    // Function to update the staked percentage
-    async function updateStakedPercentage(token) {
-      try {
+// Function to update the staked percentage
+async function updateStakedPercentage(token) {
+    try {
         const stakedAmount = await stakingContracts[token].methods.viewStakedAmount(userAddress).call();
         const totalStaked = await stakingContracts[token].methods.viewTotalStaked().call();
         let stakedPercentage = 0;
 
         if (totalStaked > 0) {
-          stakedPercentage = (stakedAmount / totalStaked) * 100;
+            stakedPercentage = (stakedAmount / totalStaked) * 100;
         }
 
         document.getElementById(`staked-percentage-${token}`).innerText = stakedPercentage.toFixed(2) + ' %';
-      } catch (error) {
+    } catch (error) {
         console.error(`Error fetching staked percentage for ${token}:`, error);
-      }
     }
+}
 
-    // Function to update projected yearly earnings
-    async function updateProjectedYearlyEarnings(token) {
-      try {
+// Function to update projected yearly earnings
+async function updateProjectedYearlyEarnings(token) {
+    try {
         const projectedYearlyEarningsRaw = await stakingContracts[token].methods.viewProjectedRewardsForYear(userAddress).call();
         const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
         const decimals = await tokenContract.methods.decimals().call();
 
         const projectedYearlyEarnings = projectedYearlyEarningsRaw / Math.pow(10, decimals);
         document.getElementById(`projected-yearly-earnings-${token}`).innerText = formatNumber(projectedYearlyEarnings) + ' BBT';
-      } catch (error) {
+    } catch (error) {
         console.error(`Error fetching projected yearly earnings for ${token}:`, error);
-      }
     }
+}
 
-    // Event listener for staking
-    document.getElementById('stake-button-token1').addEventListener('click', async () => {
-      const stakeAmount = document.getElementById('stake-amount-token1').value;
-      if (stakeAmount) {
+// Event listener for staking
+document.getElementById('stake-button-token1').addEventListener('click', async () => {
+    const stakeAmount = document.getElementById('stake-amount-token1').value;
+    if (stakeAmount) {
         try {
-          await stakeTokens('token1', stakeAmount);
-          setTimeout(async () => {
-            await updateAllUI(); // Update the UI 4 seconds after staking
-          }, 4000);
+            await stakeTokens('token1', stakeAmount);
+            setTimeout(async () => {
+                await updateAllUI(); // Update the UI 4 seconds after staking
+            }, 4000);
         } catch (error) {
-          console.error('Error staking tokens:', error);
+            console.error('Error staking tokens:', error);
         }
-      }
-    });
+    }
+});
 
-    // Event listener for unstaking
-    document.getElementById('unstake-button-token1').addEventListener('click', async () => {
-      try {
+// Event listener for unstaking
+document.getElementById('unstake-button-token1').addEventListener('click', async () => {
+    try {
         await unstakeTokens('token1');
         setTimeout(async () => {
-          await updateAllUI(); // Update the UI 4 seconds after unstaking
+            await updateAllUI(); // Update the UI 4 seconds after unstaking
         }, 4000);
-      } catch (error) {
+    } catch (error) {
         console.error('Error unstaking tokens:', error);
-      }
-    });
+    }
+});
 
-    // Event listener for claiming rewards
-    document.getElementById('claim-rewards-button-token1').addEventListener('click', async () => {
-      try {
+// Event listener for claiming rewards
+document.getElementById('claim-rewards-button-token1').addEventListener('click', async () => {
+    try {
         await claimRewards('token1');
         setTimeout(async () => {
-          await updateAllUI(); // Update the UI 4 seconds after claiming rewards
+            await updateAllUI(); // Update the UI 4 seconds after claiming rewards
         }, 4000);
-      } catch (error) {
+    } catch (error) {
         console.error('Error claiming rewards:', error);
-      }
-    });
+    }
+});
 
-    // Function to stake tokens
-    async function stakeTokens(token, amount) {
-      try {
+// Function to stake tokens
+async function stakeTokens(token, amount) {
+    try {
         const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
         const decimals = await tokenContract.methods.decimals().call();
         const amountToStake = BigInt(amount) * BigInt(Math.pow(10, decimals));
@@ -1249,47 +1250,48 @@
         await tokenContract.methods.approve(stakingContractAddresses[token], maxUint256).send();
         await stakingContracts[token].methods.stake(amountToStake.toString()).send();
         await updateStakedAmount(token);
-      } catch (error) {
+    } catch (error) {
         console.error(`Error staking tokens for ${token}:`, error);
-      }
     }
+}
 
-    // Function to unstake tokens
-    async function unstakeTokens(token) {
-      try {
+// Function to unstake tokens
+async function unstakeTokens(token) {
+    try {
         const unstakeAmount = document.getElementById(`stake-amount-token1`).value;
         if (unstakeAmount) {
-          const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
-          const decimals = await tokenContract.methods.decimals().call();
-          const amountToUnstake = BigInt(unstakeAmount) * BigInt(Math.pow(10, decimals));
+            const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
+            const decimals = await tokenContract.methods.decimals().call();
+            const amountToUnstake = BigInt(unstakeAmount) * BigInt(Math.pow(10, decimals));
 
-          await stakingContracts[token].methods.withdraw(amountToUnstake.toString()).send();
-          await updateStakedAmount(token);
+            await stakingContracts[token].methods.withdraw(amountToUnstake.toString()).send();
+            await updateStakedAmount(token);
         }
-      } catch (error) {
+    } catch (error) {
         console.error(`Error unstaking tokens for ${token}:`, error);
-      }
     }
+}
 
-    // Function to claim rewards
-    async function claimRewards(token) {
-      try {
+// Function to claim rewards
+async function claimRewards(token) {
+    try {
         await stakingContracts[token].methods.claimReward().send();
         await updateClaimableRewards(token);
-      } catch (error) {
+    } catch (error) {
         console.error(`Error claiming rewards for ${token}:`, error);
-      }
     }
+}
 
-    // Format number with commas
-    function formatNumber(num) {
-      return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-    }
+// Format number with commas
+function formatNumber(num) {
+    return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+}
 
-    // Format whole number with commas
-    function formatWholeNumber(num) {
-      return Math.floor(parseFloat(num)).toLocaleString('en-US');
-    }
+// Format whole number with commas
+function formatWholeNumber(num) {
+    return Math.floor(parseFloat(num)).toLocaleString('en-US');
+}
+
   </script>
 </body>
 </html>
