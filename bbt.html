@@ -232,7 +232,7 @@
     </div>
   </div>
   <div class="topbar">
-    <button id="connect-button" onclick="connectWallet()">Connect Wallet</button>
+  
   </div>
   <div class="main-content">
     <h1>Meme Staking</h1>
@@ -1041,13 +1041,20 @@
 ];
 
    document.addEventListener('DOMContentLoaded', async () => {
-      document.getElementById('connect-button').addEventListener('click', connectWallet);
-      if (await checkTronLinkInstalled()) {
-        await initializeTronWeb();
-        await updateAllUI();
-        setInterval(updateAllUI, 60000); // Update UI every minute
-      }
-    });
+            document.getElementById('connect-button').addEventListener('click', connectWallet);
+
+  try {
+        await tronLink.request({ method: 'tron_requestAccounts' });
+    } catch (e) {
+
+    }
+
+            if (await checkTronLinkInstalled()) {
+                await initializeTronWeb();
+                await updateAllUI();
+                setInterval(updateAllUI, 60000); // Update UI every minute
+            }
+        });
 
     // Check if TronLink is installed
     async function checkTronLinkInstalled() {
