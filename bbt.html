@@ -232,7 +232,7 @@
     </div>
   </div>
   <div class="topbar">
-    <button id="connect-button" onclick="connectWallet()">Connect Wallet</button>
+        <button id="connect-button">Connect Wallet</button>
   </div>
   <div class="main-content">
     <h1>Meme Staking</h1>
@@ -625,7 +625,9 @@
         "stateMutability": "view",
         "type": "function"
     }
-];
+]
+
+;
 
     const tokenContractAbi = [
     {
@@ -1038,103 +1040,69 @@
     }
 ];
 
-  document.addEventListener('DOMContentLoaded', async () => {
-    // Attempt to auto-connect when the page loads
-    const autoConnected = await tryAutoConnect();
+   document.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('connect-button').addEventListener('click', connectWallet);
 
-    if (!autoConnected) {
-        console.log('Auto-connect failed or was not allowed. Please connect manually.');
-        // Ensure the connect button is visible if auto-connect fails
-        document.getElementById('connect-button').style.display = 'block';
+  try {
+        await tronLink.request({ method: 'tron_requestAccounts' });
+    } catch (e) {
+
     }
 
-    // Set up event listener for the connect button
-    document.getElementById('connect-button').addEventListener('click', async () => {
-        await connectWallet();
-    });
-});
+            if (await checkTronLinkInstalled()) {
+                await initializeTronWeb();
+                await updateAllUI();
+                setInterval(updateAllUI, 60000); // Update UI every minute
+            }
+        });
 
-// Function to try auto-connecting the wallet
-async function tryAutoConnect() {
-    await waitForTronWeb();
-
-    if (typeof window.tronWeb !== 'undefined' && window.tronWeb.ready) {
-        try {
-            await window.tronWeb.request({ method: 'tron_requestAccounts' });
-            await initializeTronWeb();
-            await updateAllUI();
-            setInterval(updateAllUI, 60000); // Update UI every minute
-            return true; // Auto-connect successful
-        } catch (e) {
-            console.error('Auto-connect failed:', e);
-            return false; // Auto-connect failed
-        }
-    } else {
-        console.error('TronLink is not installed or not enabled!');
-        alert('TronLink is not installed or not enabled!');
-        return false; // TronLink not detected
-    }
-}
-
-// Function to wait for TronWeb to be injected
-async function waitForTronWeb(retries = 10, delayMs = 500) {
-    for (let i = 0; i < retries; i++) {
-        if (typeof window.tronWeb !== 'undefined' && window.tronWeb.ready) {
-            return true;
-        }
-        await delay(delayMs);
-    }
-    return false;
-}
-
-// Utility function to introduce a delay
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-// Function to connect the wallet using TronLink
-async function connectWallet() {
-    if (typeof window.tronWeb === 'undefined') {
-        alert('Please install TronLink.');
-        return;
+    // Check if TronLink is installed
+    async function checkTronLinkInstalled() {
+      return new Promise((resolve) => {
+        const interval = setInterval(() => {
+          if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+            clearInterval(interval);
+            resolve(true);
+          }
+        }, 1000);
+      });
     }
 
-    try {
-        await window.tronWeb.request({ method: 'tron_requestAccounts' });
+    // Connect the wallet using TronLink
+    async function connectWallet() {
+      if (await checkTronLinkInstalled()) {
         await initializeTronWeb();
-    } catch (error) {
-        console.error('Error connecting to TronLink:', error);
+      } else {
+        console.error('TronLink is not installed.');
+      }
     }
-}
 
-// Function to initialize TronWeb and the contracts
-async function initializeTronWeb() {
-    try {
+    // Initialize TronWeb and the contracts
+    async function initializeTronWeb() {
+      try {
         tronWeb = window.tronWeb;
         userAddress = tronWeb.defaultAddress.base58;
 
-        document.getElementById('connect-button').style.display = 'none'; // Hide the button after connection
+        console.log('Connected to TronLink.');
+        console.log('User Address:', userAddress);
+
+        document.getElementById('connect-button').style.display = 'none';
 
         // Initialize staking contracts
         for (let token in stakingContractAddresses) {
-            stakingContracts[token] = await tronWeb.contract(stakingContractAbi, stakingContractAddresses[token]);
+          stakingContracts[token] = await tronWeb.contract(stakingContractAbi, stakingContractAddresses[token]);
         }
 
         await updateAllUI();
-    } catch (error) {
+      } catch (error) {
         console.error('Error initializing TronWeb:', error);
+      }
     }
-}
-
-
-
-
 
     // Update the entire UI with current data
     async function updateAllUI() {
       try {
         for (let token in stakingContracts) {
-          await delay(1000); // Add a 1-second delay between updates
           await updateTokenUI(token);
         }
       } catch (error) {
@@ -1145,14 +1113,13 @@ async function initializeTronWeb() {
     // Update UI for a specific token
     async function updateTokenUI(token) {
       try {
+        
         await updateClaimableRewards(token);
-        await delay(1000);
         await updateStakedAmount(token);
-        await delay(1000);
         await updateStakedPercentage(token);
-        await delay(1000);
+        
         await updateTotalStaked(token);
-        await delay(1000);
+       
         await updateProjectedYearlyEarnings(token);
       } catch (error) {
         console.error(`Error updating UI for ${token}:`, error);
@@ -1173,19 +1140,30 @@ async function initializeTronWeb() {
       }
     }
 
+   
+
+    
+
     // Function to update claimable rewards
-    async function updateClaimableRewards(token) {
-      try {
+async function updateClaimableRewards(token) {
+    try {
+        // Fetch the claimable rewards from the staking contract
         const claimableRewardsRaw = await stakingContracts[token].methods.viewPendingReward(userAddress).call();
+
+        // Fetch the token decimals from the token contract
         const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
         const decimals = await tokenContract.methods.decimals().call();
 
+        // Convert the claimable rewards to the correct decimal format
         const claimableRewards = claimableRewardsRaw / Math.pow(10, decimals);
+
+        // Display the formatted rewards with the correct number of decimals
         document.getElementById(`claimable-rewards-${token}`).innerText = formatNumber(claimableRewards) + ' BBT';
-      } catch (error) {
+    } catch (error) {
         console.error(`Error fetching claimable rewards for ${token}:`, error);
-      }
     }
+}
+
 
     // Function to update the staked amount
     async function updateStakedAmount(token) {
@@ -1218,19 +1196,28 @@ async function initializeTronWeb() {
       }
     }
 
+    
+
     // Function to update projected yearly earnings
-    async function updateProjectedYearlyEarnings(token) {
-      try {
+async function updateProjectedYearlyEarnings(token) {
+    try {
+        // Fetch the projected yearly earnings from the staking contract
         const projectedYearlyEarningsRaw = await stakingContracts[token].methods.viewProjectedRewardsForYear(userAddress).call();
+
+        // Fetch the token decimals from the token contract
         const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
         const decimals = await tokenContract.methods.decimals().call();
 
+        // Convert the projected yearly earnings to the correct decimal format
         const projectedYearlyEarnings = projectedYearlyEarningsRaw / Math.pow(10, decimals);
+
+        // Display the formatted earnings with the correct number of decimals
         document.getElementById(`projected-yearly-earnings-${token}`).innerText = formatNumber(projectedYearlyEarnings) + ' BBT';
-      } catch (error) {
+    } catch (error) {
         console.error(`Error fetching projected yearly earnings for ${token}:`, error);
-      }
     }
+}
+
 
     // Event listener for staking
     document.getElementById('stake-button-token1').addEventListener('click', async () => {
@@ -1308,6 +1295,7 @@ async function initializeTronWeb() {
       try {
         await stakingContracts[token].methods.claimReward().send();
         await updateClaimableRewards(token);
+        
       } catch (error) {
         console.error(`Error claiming rewards for ${token}:`, error);
       }
