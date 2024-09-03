@@ -1039,20 +1039,32 @@
 ];
 
    document.addEventListener('DOMContentLoaded', async () => {
-            document.getElementById('connect-button').addEventListener('click', connectWallet);
+    console.log('DOM fully loaded and parsed.');
 
-  try {
-        await tronLink.request({ method: 'tron_requestAccounts' });
-    } catch (e) {
+    document.getElementById('connect-button').addEventListener('click', async () => {
+        console.log('Connect Wallet button clicked.');
+        await connectWallet();
+    });
 
+    await waitForTronWeb();
+
+    if (typeof window.tronWeb === 'undefined' || !window.tronWeb.ready) {
+        console.error('TronLink is not installed or not enabled after waiting.');
+        alert('TronLink is not installed or not enabled!');
+        return;
     }
 
-            if (await checkTronLinkInstalled()) {
-                await initializeTronWeb();
-                await updateAllUI();
-                setInterval(updateAllUI, 60000); // Update UI every minute
-            }
-        });
+    try {
+        console.log('Requesting TronLink account access...');
+        await window.tronWeb.request({ method: 'tron_requestAccounts' });
+        console.log('TronWeb and TronLink are initialized.');
+        await initializeTronWeb();
+        await updateAllUI();
+        setInterval(updateAllUI, 60000); // Update UI every minute
+    } catch (e) {
+        console.error('User rejected connection or there was an issue:', e);
+    }
+});
 
 
 
