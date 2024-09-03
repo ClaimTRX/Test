@@ -232,7 +232,7 @@
     </div>
   </div>
   <div class="topbar">
-        <button onclick="connectWallet()">Connect Wallet</button>
+    <button id="connect-button">Connect Wallet</button>
   </div>
   <div class="main-content">
     <h1>Meme Staking</h1>
@@ -625,9 +625,7 @@
         "stateMutability": "view",
         "type": "function"
     }
-]
-
-;
+];
 
     const tokenContractAbi = [
     {
@@ -1041,20 +1039,27 @@
 ];
 
    document.addEventListener('DOMContentLoaded', async () => {
-            document.getElementById('connect-button').addEventListener('onclick', connectWallet);
+  document.getElementById('connect-button').addEventListener('click', connectWallet);
 
   try {
-        await tronLink.request({ method: 'tron_requestAccounts' });
-    } catch (e) {
+    await tronLink.request({ method: 'tron_requestAccounts' });
+  } catch (e) {
+    console.error('User rejected connection or TronLink is not installed:', e);
+    return;
+  }
 
+  if (await checkTronLinkInstalled()) {
+    await initializeTronWeb();
+    await updateAllUI();
+    setInterval(updateAllUI, 60000); // Update UI every minute
+  }
+});
+
+
+    // Add a delay function
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
     }
-
-            if (await checkTronLinkInstalled()) {
-                await initializeTronWeb();
-                await updateAllUI();
-                setInterval(updateAllUI, 60000); // Update UI every minute
-            }
-        });
 
     // Check if TronLink is installed
     async function checkTronLinkInstalled() {
@@ -1103,6 +1108,7 @@
     async function updateAllUI() {
       try {
         for (let token in stakingContracts) {
+          await delay(1000); // Add a 1-second delay between updates
           await updateTokenUI(token);
         }
       } catch (error) {
@@ -1113,13 +1119,14 @@
     // Update UI for a specific token
     async function updateTokenUI(token) {
       try {
-        
         await updateClaimableRewards(token);
+        await delay(1000);
         await updateStakedAmount(token);
+        await delay(1000);
         await updateStakedPercentage(token);
-        
+        await delay(1000);
         await updateTotalStaked(token);
-       
+        await delay(1000);
         await updateProjectedYearlyEarnings(token);
       } catch (error) {
         console.error(`Error updating UI for ${token}:`, error);
@@ -1140,30 +1147,19 @@
       }
     }
 
-   
-
-    
-
     // Function to update claimable rewards
-async function updateClaimableRewards(token) {
-    try {
-        // Fetch the claimable rewards from the staking contract
+    async function updateClaimableRewards(token) {
+      try {
         const claimableRewardsRaw = await stakingContracts[token].methods.viewPendingReward(userAddress).call();
-
-        // Fetch the token decimals from the token contract
         const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
         const decimals = await tokenContract.methods.decimals().call();
 
-        // Convert the claimable rewards to the correct decimal format
         const claimableRewards = claimableRewardsRaw / Math.pow(10, decimals);
-
-        // Display the formatted rewards with the correct number of decimals
         document.getElementById(`claimable-rewards-${token}`).innerText = formatNumber(claimableRewards) + ' BBT';
-    } catch (error) {
+      } catch (error) {
         console.error(`Error fetching claimable rewards for ${token}:`, error);
+      }
     }
-}
-
 
     // Function to update the staked amount
     async function updateStakedAmount(token) {
@@ -1196,28 +1192,19 @@ async function updateClaimableRewards(token) {
       }
     }
 
-    
-
     // Function to update projected yearly earnings
-async function updateProjectedYearlyEarnings(token) {
-    try {
-        // Fetch the projected yearly earnings from the staking contract
+    async function updateProjectedYearlyEarnings(token) {
+      try {
         const projectedYearlyEarningsRaw = await stakingContracts[token].methods.viewProjectedRewardsForYear(userAddress).call();
-
-        // Fetch the token decimals from the token contract
         const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
         const decimals = await tokenContract.methods.decimals().call();
 
-        // Convert the projected yearly earnings to the correct decimal format
         const projectedYearlyEarnings = projectedYearlyEarningsRaw / Math.pow(10, decimals);
-
-        // Display the formatted earnings with the correct number of decimals
         document.getElementById(`projected-yearly-earnings-${token}`).innerText = formatNumber(projectedYearlyEarnings) + ' BBT';
-    } catch (error) {
+      } catch (error) {
         console.error(`Error fetching projected yearly earnings for ${token}:`, error);
+      }
     }
-}
-
 
     // Event listener for staking
     document.getElementById('stake-button-token1').addEventListener('click', async () => {
@@ -1295,7 +1282,6 @@ async function updateProjectedYearlyEarnings(token) {
       try {
         await stakingContracts[token].methods.claimReward().send();
         await updateClaimableRewards(token);
-        
       } catch (error) {
         console.error(`Error claiming rewards for ${token}:`, error);
       }
