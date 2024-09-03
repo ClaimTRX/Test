@@ -1041,7 +1041,7 @@
 ];
 
    document.addEventListener('DOMContentLoaded', async () => {
-            document.getElementById('connect-button').addEventListener('click', connectWallet);
+            document.getElementById('connect-button').addEventListener('onclick', connectWallet);
 
   try {
         await tronLink.request({ method: 'tron_requestAccounts' });
