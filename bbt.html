@@ -1141,14 +1141,25 @@
     
 
     // Function to update claimable rewards
-    async function updateClaimableRewards(token) {
-      try {
-        const claimableRewards = await stakingContracts[token].methods.viewPendingReward(userAddress).call();
-        document.getElementById(`claimable-rewards-${token}`).innerText = formatNumber(tronWeb.fromSun(claimableRewards)) + ' ';
-      } catch (error) {
+async function updateClaimableRewards(token) {
+    try {
+        // Fetch the claimable rewards from the staking contract
+        const claimableRewardsRaw = await stakingContracts[token].methods.viewPendingReward(userAddress).call();
+
+        // Fetch the token decimals from the token contract
+        const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
+        const decimals = await tokenContract.methods.decimals().call();
+
+        // Convert the claimable rewards to the correct decimal format
+        const claimableRewards = claimableRewardsRaw / Math.pow(10, decimals);
+
+        // Display the formatted rewards with the correct number of decimals
+        document.getElementById(`claimable-rewards-${token}`).innerText = formatNumber(claimableRewards) + ' BBT';
+    } catch (error) {
         console.error(`Error fetching claimable rewards for ${token}:`, error);
-      }
     }
+}
+
 
     // Function to update the staked amount
     async function updateStakedAmount(token) {
@@ -1184,14 +1195,25 @@
     
 
     // Function to update projected yearly earnings
-    async function updateProjectedYearlyEarnings(token) {
-      try {
-        const projectedYearlyEarnings = await stakingContracts[token].methods.viewProjectedRewardsForYear(userAddress).call();
-        document.getElementById(`projected-yearly-earnings-${token}`).innerText = formatNumber(tronWeb.fromSun(projectedYearlyEarnings)) + ' BBT';
-      } catch (error) {
+async function updateProjectedYearlyEarnings(token) {
+    try {
+        // Fetch the projected yearly earnings from the staking contract
+        const projectedYearlyEarningsRaw = await stakingContracts[token].methods.viewProjectedRewardsForYear(userAddress).call();
+
+        // Fetch the token decimals from the token contract
+        const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
+        const decimals = await tokenContract.methods.decimals().call();
+
+        // Convert the projected yearly earnings to the correct decimal format
+        const projectedYearlyEarnings = projectedYearlyEarningsRaw / Math.pow(10, decimals);
+
+        // Display the formatted earnings with the correct number of decimals
+        document.getElementById(`projected-yearly-earnings-${token}`).innerText = formatNumber(projectedYearlyEarnings) + ' BBT';
+    } catch (error) {
         console.error(`Error fetching projected yearly earnings for ${token}:`, error);
-      }
     }
+}
+
 
     // Event listener for staking
     document.getElementById('stake-button-token1').addEventListener('click', async () => {
