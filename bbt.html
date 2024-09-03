@@ -1038,7 +1038,7 @@
     }
 ];
 
-   document.addEventListener('DOMContentLoaded', async () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM fully loaded and parsed.');
 
     document.getElementById('connect-button').addEventListener('click', async () => {
@@ -1066,55 +1066,67 @@
     }
 });
 
-
-
-    // Add a delay function
-    function delay(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+// Function to wait for TronWeb to be injected
+async function waitForTronWeb(retries = 10, delayMs = 500) {
+    console.log('Waiting for TronWeb to be available...');
+    for (let i = 0; i < retries; i++) {
+        if (typeof window.tronWeb !== 'undefined' && window.tronWeb.ready) {
+            console.log('TronWeb detected.');
+            return true;
+        }
+        console.log(`TronWeb not detected, retrying... (${i + 1}/${retries})`);
+        await delay(delayMs);
     }
+    console.error('TronWeb was not detected after waiting.');
+    return false;
+}
 
-    // Check if TronLink is installed
-    async function checkTronLinkInstalled() {
-      return new Promise((resolve) => {
-        const interval = setInterval(() => {
-          if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-            clearInterval(interval);
-            resolve(true);
-          }
-        }, 1000);
-      });
-    }
+// Utility function to introduce a delay
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-    // Connect the wallet using TronLink
-    async function connectWallet() {
-      if (await checkTronLinkInstalled()) {
-        await initializeTronWeb();
-      } else {
+// Function to connect the wallet using TronLink
+async function connectWallet() {
+    console.log('Attempting to connect to TronLink...');
+    if (typeof window.tronWeb === 'undefined') {
         console.error('TronLink is not installed.');
-      }
+        alert('Please install TronLink.');
+        return;
     }
 
-    // Initialize TronWeb and the contracts
-    async function initializeTronWeb() {
-      try {
+    try {
+        console.log('Requesting TronLink account access...');
+        await window.tronWeb.request({ method: 'tron_requestAccounts' });
+        console.log('TronLink account access granted.');
+        await initializeTronWeb();
+    } catch (error) {
+        console.error('Error connecting to TronLink:', error);
+    }
+}
+
+// Function to initialize TronWeb and the contracts
+async function initializeTronWeb() {
+    try {
         tronWeb = window.tronWeb;
         userAddress = tronWeb.defaultAddress.base58;
-
-        console.log('Connected to TronLink.');
         console.log('User Address:', userAddress);
 
         document.getElementById('connect-button').style.display = 'none';
+        console.log('Connect button hidden.');
 
         // Initialize staking contracts
         for (let token in stakingContractAddresses) {
-          stakingContracts[token] = await tronWeb.contract(stakingContractAbi, stakingContractAddresses[token]);
+            stakingContracts[token] = await tronWeb.contract(stakingContractAbi, stakingContractAddresses[token]);
+            console.log(`Staking contract for ${token} initialized.`);
         }
 
         await updateAllUI();
-      } catch (error) {
+    } catch (error) {
         console.error('Error initializing TronWeb:', error);
-      }
     }
+}
+
 
     // Update the entire UI with current data
     async function updateAllUI() {
