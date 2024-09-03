@@ -1113,7 +1113,7 @@ async function initializeTronWeb() {
         tronWeb = window.tronWeb;
         userAddress = tronWeb.defaultAddress.base58;
 
-        document.getElementById('connect-button').style.display = 'none';
+        document.getElementById('connect-button').style.display = 'none'; // Hide the button after connection
 
         // Initialize staking contracts
         for (let token in stakingContractAddresses) {
