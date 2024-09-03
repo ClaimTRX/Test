@@ -1039,29 +1039,27 @@
 ];
 
   document.addEventListener('DOMContentLoaded', async () => {
+    // Attempt to auto-connect when the page loads
+    await waitForTronWeb();
+
+    if (typeof window.tronWeb !== 'undefined' && window.tronWeb.ready) {
+        try {
+            await window.tronWeb.request({ method: 'tron_requestAccounts' });
+            await initializeTronWeb();
+            await updateAllUI();
+            setInterval(updateAllUI, 60000); // Update UI every minute
+        } catch (e) {
+            console.error('Auto-connect failed:', e);
+        }
+    } else {
+        console.error('TronLink is not installed or not enabled!');
+        alert('TronLink is not installed or not enabled!');
+    }
+
     // Set up event listener for the connect button
     document.getElementById('connect-button').addEventListener('click', async () => {
         await connectWallet();
     });
-
-    // Wait for TronWeb to be injected
-    await waitForTronWeb();
-
-    // Check if TronWeb is available
-    if (typeof window.tronWeb === 'undefined' || !window.tronWeb.ready) {
-        alert('TronLink is not installed or not enabled!');
-        return;
-    }
-
-    // Attempt to connect and initialize
-    try {
-        await window.tronWeb.request({ method: 'tron_requestAccounts' });
-        await initializeTronWeb();
-        await updateAllUI();
-        setInterval(updateAllUI, 60000); // Update UI every minute
-    } catch (e) {
-        console.error('Error during TronLink connection or initialization:', e);
-    }
 });
 
 // Function to wait for TronWeb to be injected
@@ -1113,6 +1111,7 @@ async function initializeTronWeb() {
         console.error('Error initializing TronWeb:', error);
     }
 }
+
 
 
 
