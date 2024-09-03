@@ -1099,10 +1099,10 @@
       }
     }
 
-    // Update the entire UI with current data
     async function updateAllUI() {
       try {
         for (let token in stakingContracts) {
+          await delay(1000); // Add a 1-second delay between updates
           await updateTokenUI(token);
         }
       } catch (error) {
@@ -1113,13 +1113,14 @@
     // Update UI for a specific token
     async function updateTokenUI(token) {
       try {
-        
         await updateClaimableRewards(token);
+        await delay(1000);
         await updateStakedAmount(token);
+        await delay(1000);
         await updateStakedPercentage(token);
-        
+        await delay(1000);
         await updateTotalStaked(token);
-       
+        await delay(1000);
         await updateProjectedYearlyEarnings(token);
       } catch (error) {
         console.error(`Error updating UI for ${token}:`, error);
