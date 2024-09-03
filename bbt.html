@@ -1109,13 +1109,13 @@
     // Update UI for a specific token
     async function updateTokenUI(token) {
       try {
-        await updateDailyReward(token);
+        
         await updateClaimableRewards(token);
         await updateStakedAmount(token);
         await updateStakedPercentage(token);
-        await updateTotalClaimed(token);
+        
         await updateTotalStaked(token);
-        await updateTotalClaimedAllUsers(token);
+       
         await updateProjectedYearlyEarnings(token);
       } catch (error) {
         console.error(`Error updating UI for ${token}:`, error);
@@ -1136,27 +1136,9 @@
       }
     }
 
-    // Function to update the total claimed by all users
-    async function updateTotalClaimedAllUsers(token) {
-      try {
-        const totalClaimedAll = await stakingContracts[token].methods.viewTotalClaimedRewards().call();
-        document.getElementById(`total-claimed-all-token1`).innerText = formatNumber(tronWeb.fromSun(totalClaimedAll)) + '';
-      } catch (error) {
-        console.error(`Error fetching total claimed TRX for all users for ${token}:`, error);
-      }
-    }
+   
 
-    // Function to update the daily reward
-    async function updateDailyReward(token) {
-      try {
-        const dailyReward = await stakingContracts[token].methods.viewDailyReward().call();
-        const dailyRewardInTrx = tronWeb.fromSun(dailyReward);
-        document.getElementById(`daily-reward-${token}`).innerText = `Daily TRX Reward: ${dailyRewardInTrx} BBT`;
-      } catch (error) {
-        console.error(`Error fetching daily reward for ${token}:`, error);
-        document.getElementById(`daily-reward-${token}`).innerText = 'Daily TRX Reward: Unable to fetch';
-      }
-    }
+    
 
     // Function to update claimable rewards
     async function updateClaimableRewards(token) {
@@ -1199,15 +1181,7 @@
       }
     }
 
-    // Function to update the total claimed amount by the user
-    async function updateTotalClaimed(token) {
-      try {
-        const totalClaimed = await stakingContracts[token].methods.viewTotalClaimedRewards(userAddress).call();
-        document.getElementById(`total-claimed-${token}`).innerText = formatNumber(tronWeb.fromSun(totalClaimed)) + ' ';
-      } catch (error) {
-        console.error(`Error fetching total claimed TRX for ${token}:`, error);
-      }
-    }
+    
 
     // Function to update projected yearly earnings
     async function updateProjectedYearlyEarnings(token) {
@@ -1295,7 +1269,7 @@
       try {
         await stakingContracts[token].methods.claimReward().send();
         await updateClaimableRewards(token);
-        await updateTotalClaimed(token);
+        
       } catch (error) {
         console.error(`Error claiming rewards for ${token}:`, error);
       }
