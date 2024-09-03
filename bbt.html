@@ -1040,6 +1040,22 @@
 
   document.addEventListener('DOMContentLoaded', async () => {
     // Attempt to auto-connect when the page loads
+    const autoConnected = await tryAutoConnect();
+
+    if (!autoConnected) {
+        console.log('Auto-connect failed or was not allowed. Please connect manually.');
+        // Ensure the connect button is visible if auto-connect fails
+        document.getElementById('connect-button').style.display = 'block';
+    }
+
+    // Set up event listener for the connect button
+    document.getElementById('connect-button').addEventListener('click', async () => {
+        await connectWallet();
+    });
+});
+
+// Function to try auto-connecting the wallet
+async function tryAutoConnect() {
     await waitForTronWeb();
 
     if (typeof window.tronWeb !== 'undefined' && window.tronWeb.ready) {
@@ -1048,19 +1064,17 @@
             await initializeTronWeb();
             await updateAllUI();
             setInterval(updateAllUI, 60000); // Update UI every minute
+            return true; // Auto-connect successful
         } catch (e) {
             console.error('Auto-connect failed:', e);
+            return false; // Auto-connect failed
         }
     } else {
         console.error('TronLink is not installed or not enabled!');
         alert('TronLink is not installed or not enabled!');
+        return false; // TronLink not detected
     }
-
-    // Set up event listener for the connect button
-    document.getElementById('connect-button').addEventListener('click', async () => {
-        await connectWallet();
-    });
-});
+}
 
 // Function to wait for TronWeb to be injected
 async function waitForTronWeb(retries = 10, delayMs = 500) {
@@ -1111,6 +1125,7 @@ async function initializeTronWeb() {
         console.error('Error initializing TronWeb:', error);
     }
 }
+
 
 
 
