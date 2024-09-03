@@ -1039,45 +1039,39 @@
 ];
 
   document.addEventListener('DOMContentLoaded', async () => {
-    console.log('DOM fully loaded and parsed.');
-
+    // Set up event listener for the connect button
     document.getElementById('connect-button').addEventListener('click', async () => {
-        console.log('Connect Wallet button clicked.');
         await connectWallet();
     });
 
+    // Wait for TronWeb to be injected
     await waitForTronWeb();
 
+    // Check if TronWeb is available
     if (typeof window.tronWeb === 'undefined' || !window.tronWeb.ready) {
-        console.error('TronLink is not installed or not enabled after waiting.');
         alert('TronLink is not installed or not enabled!');
         return;
     }
 
+    // Attempt to connect and initialize
     try {
-        console.log('Requesting TronLink account access...');
         await window.tronWeb.request({ method: 'tron_requestAccounts' });
-        console.log('TronWeb and TronLink are initialized.');
         await initializeTronWeb();
         await updateAllUI();
         setInterval(updateAllUI, 60000); // Update UI every minute
     } catch (e) {
-        console.error('User rejected connection or there was an issue:', e);
+        console.error('Error during TronLink connection or initialization:', e);
     }
 });
 
 // Function to wait for TronWeb to be injected
 async function waitForTronWeb(retries = 10, delayMs = 500) {
-    console.log('Waiting for TronWeb to be available...');
     for (let i = 0; i < retries; i++) {
         if (typeof window.tronWeb !== 'undefined' && window.tronWeb.ready) {
-            console.log('TronWeb detected.');
             return true;
         }
-        console.log(`TronWeb not detected, retrying... (${i + 1}/${retries})`);
         await delay(delayMs);
     }
-    console.error('TronWeb was not detected after waiting.');
     return false;
 }
 
@@ -1088,17 +1082,13 @@ function delay(ms) {
 
 // Function to connect the wallet using TronLink
 async function connectWallet() {
-    console.log('Attempting to connect to TronLink...');
     if (typeof window.tronWeb === 'undefined') {
-        console.error('TronLink is not installed.');
         alert('Please install TronLink.');
         return;
     }
 
     try {
-        console.log('Requesting TronLink account access...');
         await window.tronWeb.request({ method: 'tron_requestAccounts' });
-        console.log('TronLink account access granted.');
         await initializeTronWeb();
     } catch (error) {
         console.error('Error connecting to TronLink:', error);
@@ -1110,15 +1100,12 @@ async function initializeTronWeb() {
     try {
         tronWeb = window.tronWeb;
         userAddress = tronWeb.defaultAddress.base58;
-        console.log('User Address:', userAddress);
 
         document.getElementById('connect-button').style.display = 'none';
-        console.log('Connect button hidden.');
 
         // Initialize staking contracts
         for (let token in stakingContractAddresses) {
             stakingContracts[token] = await tronWeb.contract(stakingContractAbi, stakingContractAddresses[token]);
-            console.log(`Staking contract for ${token} initialized.`);
         }
 
         await updateAllUI();
@@ -1126,6 +1113,7 @@ async function initializeTronWeb() {
         console.error('Error initializing TronWeb:', error);
     }
 }
+
 
 
     // Update the entire UI with current data
