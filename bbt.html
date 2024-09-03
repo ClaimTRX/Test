@@ -1039,21 +1039,22 @@
 ];
 
    document.addEventListener('DOMContentLoaded', async () => {
-  document.getElementById('connect-button').addEventListener('click', connectWallet);
-
-  try {
-    await tronLink.request({ method: 'tron_requestAccounts' });
-  } catch (e) {
-    console.error('User rejected connection or TronLink is not installed:', e);
-    return;
-  }
-
-  if (await checkTronLinkInstalled()) {
-    await initializeTronWeb();
-    await updateAllUI();
-    setInterval(updateAllUI, 60000); // Update UI every minute
-  }
+    if (typeof window.tronWeb === 'undefined') {
+        alert('TronLink is not installed or not enabled!');
+        return;
+    }
+    
+    try {
+        await tronWeb.request({ method: 'tron_requestAccounts' });
+        console.log('TronWeb and TronLink are initialized.');
+        await initializeTronWeb();
+        await updateAllUI();
+        setInterval(updateAllUI, 60000); // Update UI every minute
+    } catch (e) {
+        console.error('User rejected connection or there was an issue:', e);
+    }
 });
+
 
 
     // Add a delay function
