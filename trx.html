@@ -238,8 +238,8 @@
           <button id="stake-button" class="btn btn-success">Stake</button><br>
           <button id="unstake-button" class="btn btn-danger">Unstake</button>
           
-          <h5 class="card-title mt-3">Available $CFT in Wallet</h5>
-          <p class="card-text" id="available-tokens-token1">Loading...</p>
+          <h5 class="card-title">Available CFT in Wallet</h5>
+          <p class="card-text" id="available-tokens">Loading...</p>
 
           <h5 class="card-title">Your Staked CFT</h5>
           <p class="card-text" id="staked-amount">Loading...</p>
@@ -926,30 +926,30 @@
             await delay(500);
             await updateTotalStaked();
             await delay(500);
-            await updateAvailableToken('token1');
+            await updateAvailableTokens();
             await delay(500);
         } catch (error) {
             console.error('Error updating UI:', error);
         }
     }
 
-    // Function to update available (unstaked) tokens in the user's wallet
-async function updateAvailableTokens(token) {
+   // Function to update available (unstaked) tokens in the user's wallet
+async function updateAvailableTokens() {
     try {
         // Get total token balance in the wallet
-        const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContract[token]);
         const balanceRaw = await tokenContract.methods.balanceOf(userAddress).call();
         const decimals = await tokenContract.methods.decimals().call();
-        
+
         // Convert balance to the correct decimal format
         const balance = balanceRaw / Math.pow(10, decimals);
 
         // Update UI with available tokens
-        document.getElementById(`available-tokens-${token}`).innerText = formatNumber(balance) + ' ';
+        document.getElementById('available-tokens').innerText = formatNumber(balance) + ' CFT';
     } catch (error) {
-        console.error(`Error fetching available tokens for ${token}:`, error);
+        console.error('Error fetching available tokens:', error);
     }
 }
+
 
     async function updateClaimableRewards() {
         try {
