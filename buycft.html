@@ -878,7 +878,7 @@
     async function updateTotalBuyCFT() {
         try {
             const totalBuyCFT = await tokenContract.methods.balanceOf(buyCftContractAddress).call();
-            document.getElementById('total-buy-cft').innerText = formatWholeNumber(tronWeb.fromSun(totalBuyCFT)) + ' CFT';
+            document.getElementById('total-buy-cft').innerText = formatWholeNumber(tronWeb.fromSun(totalBuyCFT)) + ' CFT Left before 0.1 TRX price increase';
         } catch (error) {
             console.error('Error fetching total CFT tokens in buy contract:', error);
         }
