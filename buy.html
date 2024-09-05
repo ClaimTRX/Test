@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketplace</title>
+  <link rel="icon" href="https://raw.githubusercontent.com/ClaimTRX/Test/main/favicon-32x32.png" type="image/png">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body {
+        background-color: #1a1a2e;
+        color: #fff;
+        font-family: Arial, sans-serif;
+    }
+
+    .sidebar {
+        height: 100vh;
+        background-color: #162447;
+        padding: 15px;
+        position: fixed;
+        width: 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .sidebar a {
+        color: #fff;
+        text-decoration: none;
+        display: block;
+        padding: 10px 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .sidebar a:hover {
+        background-color: #1f4068;
+    }
+
+    .sidebar .social-links {
+        display: flex;
+        margin-top: 20px;
+    }
+
+    .sidebar .social-icon {
+        color: white;
+        font-size: 20px;
+        margin-right: 10px;
+        text-decoration: none;
+    }
+
+    .sidebar .social-icon:last-child {
+        margin-right: 0;
+    }
+
+    .topbar {
+        background-color: #162447;
+        padding: 10px;
+        margin-left: 200px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .topbar a.social-icon {
+        color: white;
+        margin-left: 15px;
+        font-size: 20px;
+        text-decoration: none;
+    }
+
+    .topbar button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+
+    .main-content {
+        margin-left: 220px;
+        padding: 20px;
+    }
+
+    .card {
+        background-color: #2c3e50;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 1200px;
+        margin: 20px auto;
+    }
+
+    .card-body {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        gap: 20px;
+        width: 100%;
+    }
+
+    .card-text-section {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        text-align: center;
+    }
+
+    .card-image-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .main-content h1 {
+        text-align: center;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .card-image {
+        width: 100%;
+        max-width: 400px;
+        height: auto;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .telegram-link {
+        margin-top: 10px;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .btn {
+        width: 100%;
+        max-width: 200px;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 767.98px) {
+        .sidebar {
+            height: auto;
+            padding: 10px;
+            width: 100%;
+            position: relative;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .topbar {
+            margin-left: 0;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 0;
+        }
+
+        .card-body {
+            flex-direction: column;
+        }
+
+        .card-text-section {
+            width: 100%;
+            padding: 0 10px;
+            margin-bottom: 20px;
+        }
+
+        .card-image-container {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .card-image {
+            width: 80%; /* Slightly larger image for mobile */
+            max-width: 250px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .telegram-link {
+            margin-top: 20px;
+        }
+    }
+  </style>
+</head>
+<body>
+    <div class="sidebar">
+      <h2>CFT</h2>
+
+       <a href="index.html">Welcome</a>
+    <a href="buy.html">Buy CFT</a>
+    <a href="staking.html">CFT Staking</a>
+    <a href="Swap.html">Swap</a>
+    <a href="meme.html">Meme Staking</a>
+      <div class="social-links">
+        <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
+          <i class="fab fa-twitter"></i>
+        </a>
+        <a href="https://t.me/claimfreetrxnow" target="_blank" class="social-icon">
+          <i class="fab fa-telegram-plane"></i>
+        </a>
+      </div>
+    </div>
+    <div class="topbar">
+      
+    </div>
+    <div class="main-content">
+      <h1>Marketplace</h1>
+
+      <div class="card mt-4">
+        <div class="card-body">
+          <div class="card-text-section">
+            <h5 class="card-title">To buy CFT press enter.</h5>
+            <button id="enter-button1" class="btn btn-success btn-lg">Enter</button>
+          </div>
+
+          <div class="card-image-container mt-4">
+           <img src="https://raw.githubusercontent.com/ClaimTRX/ClaimTRX/main/66d80aecb2a23_download.jpg" class="card-image" alt="Token Image">
+            <!-- Telegram Link -->
+            <div class="telegram-link mt-3">
+              <a href="https://t.me/claimfreetrxnow" target="_blank">
+                <i class="fab fa-telegram-plane"></i> Join our Telegram
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-body">
+          <div class="card-text-section">
+            <h5 class="card-title">To sell CFT press enter.</h5>
+            <button id="enter-button2" class="btn btn-success btn-lg">Enter</button>
+          </div>
+
+          <div class="card-image-container mt-4">
+            <img src="https://raw.githubusercontent.com/ClaimTRX/ClaimTRX/main/66d80aecb2a23_download.jpg" class="card-image" alt="Token Image">
+            <!-- Telegram Link -->
+            <div class="telegram-link mt-3">
+              <a href="https://t.me/claimfreetrxnow" target="_blank">
+                <i class="fab fa-telegram-plane"></i> Join our Telegram
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<script>
+    
+
+    document.getElementById("enter-button1").onclick = function () {
+        window.location.href = "buycft.html";
+    };
+    document.getElementById("enter-button2").onclick = function () {
+        window.location.href = "sellcft.html";
+    };
+</script>
+</body>
+</html>
