@@ -261,11 +261,9 @@
     <h2>CFT</h2>
     <a href="index.html">CFT Token</a>
     <a href="usdt.html">USDT Rewards</a>
-    <a href="lottery.html">Lottery</a>
-    <a href="draw.html">Draw</a>
-    <a href="claim.html">Claim</a>
     <a href="treasury.html">Treasury</a>
     <a href="Swap.html">Swap</a>
+      <a href="meme.html">Meme Staking</a>
     
     <div class="social-links">
         <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
@@ -320,7 +318,7 @@
         <div class="card-text-section">
           <h5 class="card-title">Total Sold CFT Tokens</h5>
           <p class="card-text" id="total-sold-cft">Loading...</p>
-          <h5 class="card-title">Burned Tokens (Held by TLsV52sRDL79HXGGm9yzwKibb6BeruhUzy)</h5>
+          <h5 class="card-title">Burned CFT Tokens</h5>
           <p class="card-text" id="burned-tokens">Loading...</p>
         </div>
       </div>
@@ -883,7 +881,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function fetchStakingData() {
       try {
-        const stakedTRX = 284398; // Replace with actual contract call
+        const stakedTRX = 486074; // Replace with actual contract call
         document.getElementById('voting-power').innerText = `${formatNumber(stakedTRX)} TRX`;
 
         const totalStakedCFT = await stakingContract.methods.viewTotalStaked().call();
@@ -985,6 +983,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   </script>
 </body>
 </html>
+
+
+
+
 
 
 
