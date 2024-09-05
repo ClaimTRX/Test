@@ -242,14 +242,22 @@
           <input type="number" id="new-stake-amount" class="form-control" placeholder="Enter amount to stake">
           <button id="new-stake-button" class="btn btn-success">Stake</button><br>
           <button id="new-unstake-button" class="btn btn-danger">Unstake</button>
+          
+          <h5 class="card-title mt-3">Available $BBT in Wallet</h5>
+          <p class="card-text" id="available-tokens-token1">Loading...</p>
+
           <h5 class="card-title mt-3">Your Staked CFT</h5>
           <p id="new-staked-amount">Loading...</p>
+          
           <h5 class="card-title mt-3">Your Staked Percentage</h5>
           <p id="new-staked-percentage">Loading...</p>
+          
           <h5 class="card-title mt-3">APR</h5>
           <div id="apr" class="mt-2">Loading APR...</div>
+          
           <h5 class="card-title mt-3">Claimable USDT Rewards</h5>
           <p id="new-claimable-rewards">Loading...</p>
+          
           <button id="new-claim-rewards-button" class="btn btn-success">Claim Rewards</button>
         </div>
         <div class="card-image-container mt-4">
@@ -990,9 +998,30 @@ async function updateUI() {
     await delay(500);
     await calculateApr();
     await delay(500);
+    await updateAvailableTokens('token1');
+    await delay(500);
+    
   } catch (error) {
     console.error('Error updating UI:', error);
   }
+}
+
+    // Function to update available (unstaked) tokens in the user's wallet
+async function updateAvailableTokens(token) {
+    try {
+        // Get total token balance in the wallet
+        const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
+        const balanceRaw = await tokenContract.methods.balanceOf(userAddress).call();
+        const decimals = await tokenContract.methods.decimals().call();
+        
+        // Convert balance to the correct decimal format
+        const balance = balanceRaw / Math.pow(10, decimals);
+
+        // Update UI with available tokens
+        document.getElementById(`available-tokens-${token}`).innerText = formatNumber(balance) + ' ';
+    } catch (error) {
+        console.error(`Error fetching available tokens for ${token}:`, error);
+    }
 }
 
 // Function to update claimable rewards
