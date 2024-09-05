@@ -156,28 +156,32 @@
       margin-bottom: 10px;
     }
     
-   .rolling-text {
+   /* Rolling text (marquee) */
+.rolling-text {
   background-color: #162447;
   color: white;
+  white-space: nowrap;
   overflow: hidden;
-  position: relative;
-  width: 100%;
+  position: absolute; /* Ensure it stays on top */
+  top: 10px; /* Positioning the text below the header */
+  left: 200px; /* Adjust to avoid overlap with the sidebar */
+  width: calc(100% - 200px); /* Subtracting the sidebar width */
   padding: 10px;
-  z-index: 1;
+  z-index: 10; /* Ensure it's above other content */
 }
 
 .rolling-text span {
   display: inline-block;
-  padding-right: 100%; /* Ensures there's enough space for the text to fully scroll out */
-  animation: continuousScroll 30s linear infinite;
+  padding-right: 100%; /* Extra space for continuous scroll */
+  animation: continuousScroll 20s linear infinite; /* Slowed down for smoother scroll */
 }
 
 @keyframes continuousScroll {
   0% {
-    transform: translateX(100%); /* Start outside from the right */
+    transform: translateX(100%); /* Start from outside the right edge */
   }
   100% {
-    transform: translateX(-100%); /* Move completely out to the left */
+    transform: translateX(-100%); /* End at the left side, creating a loop */
   }
 }
 
@@ -241,8 +245,10 @@
       }
       
   .rolling-text {
-    font-size: 14px; /* Smaller font for mobile */
-    padding: 5px;
+    top: 60px; /* Move it below the topbar on mobile */
+    left: 0; /* Full width for mobile */
+    width: 100%; /* Take up the entire width on smaller screens */
+    font-size: 14px;
   }
 
   .rolling-text span {
