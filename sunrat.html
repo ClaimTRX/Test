@@ -252,7 +252,9 @@
 <button id="stake-button-token1" class="btn btn-success">Stake</button><br>
 <button id="unstake-button-token1" class="btn btn-danger">Unstake</button>
 
-      
+      <h5 class="card-title mt-3">Available $SUNRAT in Wallet</h5>
+      <p class="card-text" id="available-tokens-token1">Loading...</p>
+
       <h5 class="card-title mt-3">Total Staked $SUNRAT</h5>
       <p class="card-text" id="total-staked-token1">Loading...</p>
       
@@ -1147,10 +1149,30 @@ async function updateTokenUI(token) {
       await delay(500);
                 await updateTotalClaimedAllUsers(token);
       await delay(500);
+      await updateAvailableTokens('token1');
+      await delay(500);
+      
             } catch (error) {
                 console.error(`Error updating UI for ${token}:`, error);
             }
         }
+
+      async function updateAvailableTokens(token) {
+    try {
+        // Get total token balance in the wallet
+        const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
+        const balanceRaw = await tokenContract.methods.balanceOf(userAddress).call();
+        const decimals = await tokenContract.methods.decimals().call();
+        
+        // Convert balance to the correct decimal format
+        const balance = balanceRaw / Math.pow(10, decimals);
+
+        // Update UI with available tokens
+        document.getElementById(`available-tokens-${token}`).innerText = formatNumber(balance) + ' ';
+    } catch (error) {
+        console.error(`Error fetching available tokens for ${token}:`, error);
+    }
+}
 
         // Function to update the total staked amount
         async function updateTotalStaked(token) {
