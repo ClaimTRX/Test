@@ -933,22 +933,18 @@
         }
     }
 
-   // Function to update available (unstaked) tokens in the user's wallet
-async function updateAvailableTokens() {
+  async function updateAvailableTokens() {
+    console.log("Updating available tokens...");
     try {
-        // Get total token balance in the wallet
         const balanceRaw = await tokenContract.methods.balanceOf(userAddress).call();
         const decimals = await tokenContract.methods.decimals().call();
-
-        // Convert balance to the correct decimal format
         const balance = balanceRaw / Math.pow(10, decimals);
-
-        // Update UI with available tokens
         document.getElementById('available-tokens').innerText = formatNumber(balance) + ' CFT';
     } catch (error) {
         console.error('Error fetching available tokens:', error);
     }
 }
+
 
 
     async function updateClaimableRewards() {
