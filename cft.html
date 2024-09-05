@@ -159,31 +159,27 @@
    .rolling-text {
   background-color: #162447;
   color: white;
-  white-space: nowrap;
   overflow: hidden;
   position: relative;
   width: 100%;
   padding: 10px;
-  margin-top: 10px;
   z-index: 1;
 }
 
 .rolling-text span {
   display: inline-block;
-  animation: rollText 20s linear infinite;
-  white-space: nowrap; /* Ensure no word wrapping */
+  padding-right: 100%; /* Ensures there's enough space for the text to fully scroll out */
+  animation: continuousScroll 30s linear infinite;
 }
 
-@keyframes rollText {
+@keyframes continuousScroll {
   0% {
-    transform: translateX(100%); /* Start outside the right edge */
+    transform: translateX(100%); /* Start outside from the right */
   }
   100% {
-    transform: translateX(100%); /* Move completely out to the left */
+    transform: translateX(-100%); /* Move completely out to the left */
   }
 }
-
-
 
 
     /* Mobile responsiveness */
@@ -250,10 +246,9 @@
   }
 
   .rolling-text span {
-    animation: rollText 15s linear infinite; /* Faster scroll for mobile */
+    animation: continuousScroll 15s linear infinite; /* Faster scroll for mobile */
   }
 }
-
   </style>
 </head>
 <body>
