@@ -161,16 +161,17 @@
   color: white;
   white-space: nowrap;
   overflow: hidden;
-  position: absolute;
+  position: relative; /* Changed from absolute to relative */
   width: 100%;
-  top: 0;
   padding: 10px;
+  margin-top: 10px; /* Adds space below the top bar */
+  z-index: 1; /* Ensures it doesn't block the sidebar or wallet button */
 }
 
 .rolling-text span {
   display: inline-block;
   padding-left: 100%;
-  animation: rollText 10s linear infinite;
+  animation: rollText 20s linear infinite; /* Increased time to slow down the speed */
 }
 
 @keyframes rollText {
@@ -180,7 +181,8 @@
   100% {
     transform: translateX(-100%);
   }
-}
+
+
 
 
     /* Mobile responsiveness */
