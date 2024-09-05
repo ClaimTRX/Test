@@ -243,8 +243,8 @@
           <button id="new-stake-button" class="btn btn-success">Stake</button><br>
           <button id="new-unstake-button" class="btn btn-danger">Unstake</button>
           
-          <h5 class="card-title mt-3">Available $BBT in Wallet</h5>
-          <p class="card-text" id="available-tokens-token1">Loading...</p>
+          <h5 class="card-title">Available CFT in Wallet</h5>
+          <p class="card-text" id="available-tokens">Loading...</p>
 
           <h5 class="card-title mt-3">Your Staked CFT</h5>
           <p id="new-staked-amount">Loading...</p>
@@ -998,7 +998,7 @@ async function updateUI() {
     await delay(500);
     await calculateApr();
     await delay(500);
-    await updateAvailableTokens('token1');
+    await updateAvailableTokens(); 
     await delay(500);
     
   } catch (error) {
@@ -1006,23 +1006,18 @@ async function updateUI() {
   }
 }
 
-    // Function to update available (unstaked) tokens in the user's wallet
-async function updateAvailableTokens(token) {
+   async function updateAvailableTokens() {
+    console.log("Updating available tokens...");
     try {
-        // Get total token balance in the wallet
-        const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
         const balanceRaw = await tokenContract.methods.balanceOf(userAddress).call();
         const decimals = await tokenContract.methods.decimals().call();
-        
-        // Convert balance to the correct decimal format
         const balance = balanceRaw / Math.pow(10, decimals);
-
-        // Update UI with available tokens
-        document.getElementById(`available-tokens-${token}`).innerText = formatNumber(balance) + ' ';
+        document.getElementById('available-tokens').innerText = formatNumber(balance) + ' CFT';
     } catch (error) {
-        console.error(`Error fetching available tokens for ${token}:`, error);
+        console.error('Error fetching available tokens:', error);
     }
 }
+
 
 // Function to update claimable rewards
 async function updateNewClaimableRewards() {
