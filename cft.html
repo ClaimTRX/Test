@@ -156,31 +156,30 @@
       margin-bottom: 10px;
     }
     
-    /* Rolling text (marquee) */
-.rolling-text {
+   .rolling-text {
   background-color: #162447;
   color: white;
   white-space: nowrap;
   overflow: hidden;
-  position: relative; /* Changed from absolute to relative */
+  position: relative;
   width: 100%;
   padding: 10px;
-  margin-top: 10px; /* Adds space below the top bar */
-  z-index: 1; /* Ensures it doesn't block the sidebar or wallet button */
+  margin-top: 10px;
+  z-index: 1;
 }
 
 .rolling-text span {
   display: inline-block;
-  padding-left: 100%;
-  animation: rollText 35s linear infinite; /* Slowed down the scrolling */
+  animation: rollText 20s linear infinite;
+  white-space: nowrap; /* Ensure no word wrapping */
 }
 
 @keyframes rollText {
   0% {
-    transform: translateX(100%);
+    transform: translateX(100%); /* Start outside the right edge */
   }
   100% {
-    transform: translateX(-100%);
+    transform: translateX(-100%); /* Move completely out to the left */
   }
 }
 
@@ -244,12 +243,16 @@
       .telegram-link {
         margin-top: 20px;
       }
+      
   .rolling-text {
-    font-size: 14px; /* Make text smaller on mobile */
+    font-size: 14px; /* Smaller font for mobile */
     padding: 5px;
   }
 
-    }
+  .rolling-text span {
+    animation: rollText 15s linear infinite; /* Faster scroll for mobile */
+  }
+}
 
   </style>
 </head>
