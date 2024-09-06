@@ -276,9 +276,7 @@
     </div>
   </div>
   <div class="topbar">
-    <div class="rolling-text">
-  <span>Welcome to CFT! Stake CFT and earn rewards daily in CFT, TRX or USDT! New $BBT meme staking is now live!</span>
-</div>
+    <div id="scrolling-text-container"></div>
 
         <button id="connect-button">Connect Wallet</button>
   </div>
@@ -1181,6 +1179,13 @@ async function updateTokenUI(token) {
         console.error(`Error updating UI for ${token}:`, error);
     }
 }
+
+    fetch('scrolling-text.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('scrolling-text-container').innerHTML = data;
+    })
+    .catch(error => console.error('Error loading scrolling text:', error));
 
 // Function to update the total staked amount
 async function updateTotalStaked(token) {
