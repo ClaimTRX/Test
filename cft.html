@@ -156,32 +156,31 @@
       margin-bottom: 10px;
     }
     
-   /* Rolling text (marquee) */
-.rolling-text {
+   .rolling-text {
   background-color: #162447;
   color: white;
   white-space: nowrap;
   overflow: hidden;
-  position: absolute; /* Ensure it stays on top */
-  top: 10px; /* Positioning the text below the header */
-  left: 200px; /* Adjust to avoid overlap with the sidebar */
-  width: calc(100% - 200px); /* Subtracting the sidebar width */
+  position: absolute;
+  top: 10px;
+  left: 200px;
+  width: calc(100% - 200px);
   padding: 10px;
-  z-index: 10; /* Ensure it's above other content */
+  z-index: 10;
 }
 
 .rolling-text span {
   display: inline-block;
-  padding-right: 100%; /* Extra space for continuous scroll */
-  animation: continuousScroll 20s linear infinite; /* Slowed down for smoother scroll */
+  padding-right: 100%;
+  animation: continuousScroll 20s linear infinite;
 }
 
 @keyframes continuousScroll {
   0% {
-    transform: translateX(100%); /* Start from outside the right edge */
+    transform: translateX(100%);
   }
   100% {
-    transform: translateX(-100%); /* End at the left side, creating a loop */
+    transform: translateX(-100%);
   }
 }
 
@@ -245,14 +244,14 @@
       }
       
   .rolling-text {
-    top: 60px; /* Move it below the topbar on mobile */
-    left: 0; /* Full width for mobile */
-    width: 100%; /* Take up the entire width on smaller screens */
+    top: 60px;
+    left: 0;
+    width: 100%;
     font-size: 14px;
   }
 
   .rolling-text span {
-    animation: continuousScroll 15s linear infinite; /* Faster scroll for mobile */
+    animation: continuousScroll 15s linear infinite;
   }
 }
   </style>
