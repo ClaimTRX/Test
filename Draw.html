@@ -9,233 +9,289 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <style>
     body {
-  background-color: #1a1a2e;
-  color: #fff;
-font-family: Arial, sans-serif;
-        }
+      background-color: #1a1a2e;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
 
-.sidebar {
-  height: 100vh;
-  background-color: #162447;
-  padding: 15px;
-  position: fixed;
-  width: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+    .sidebar {
+      height: 100vh;
+      background-color: #162447;
+      padding: 15px;
+      position: fixed;
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-.sidebar a {
-  color: #fff;
-  text-decoration: none;
-  display: block;
-  padding: 10px 0;
-  width: 100%;
-  text-align: center;
-}
+    .sidebar a {
+      color: #fff;
+      text-decoration: none;
+      display: block;
+      padding: 10px 0;
+      width: 100%;
+      text-align: center;
+    }
 
-.sidebar a:hover {
-  background-color: #1f4068;
-}
+    .sidebar a:hover {
+      background-color: #1f4068;
+    }
 
-.sidebar .social-links {
-  display: flex;
-  margin-top: 20px;
-}
+    .sidebar .social-links {
+      display: flex;
+      margin-top: 20px;
+    }
 
-.sidebar .social-icon {
-  color: white;
-  font-size: 20px;
-  margin-right: 10px;
-  text-decoration: none;
-}
+    .sidebar .social-icon {
+      color: white;
+      font-size: 20px;
+      margin-right: 10px;
+      text-decoration: none;
+    }
 
-.sidebar .social-icon:last-child {
-  margin-right: 0;
-}
+    .sidebar .social-icon:last-child {
+      margin-right: 0;
+    }
 
-.topbar {
-  background-color: #162447;
-  padding: 10px;
-  text-align: right;
-  margin-left: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
+    .topbar {
+      background-color: #162447;
+      padding: 10px;
+      text-align: right;
+      margin-left: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
 
-.topbar button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  padding: 8px 16px;
-}
+    .topbar a.social-icon {
+      color: white;
+      margin-left: 15px;
+      font-size: 20px;
+      text-decoration: none;
+    }
 
-.main-content {
-  margin-left: 220px;
-  padding: 20px;
-}
+    .topbar button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 8px 16px;
+    }
 
-.card {
-  background-color: #2c3e50;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  padding: 20px;
-}
+    .main-content {
+      margin-left: 220px;
+      padding: 20px;
+    }
 
-.card-body {
-  display: flex;
-  flex-direction: column;
-}
+    .card {
+      background-color: #2c3e50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 1200px;
+      margin: 20px auto;
+    }
 
-.card-title {
-  font-size: 1.5rem;
-}
+    .card-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 20px;
+      width: 100%;
+    }
 
-.card-text {
-  font-size: 1rem;
-}
+    .card-title {
+      font-size: 1.5rem;
+    }
 
-.btn-success, .btn-danger, .btn-primary {
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  padding: 8px 16px;
-  width: 20%;
-  margin-top: 10px;
-}
+    .card-image-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-.btn-danger {
-  background-color: #ff4c4c;
-}
+    .card-image {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
 
-.btn-primary {
-  background-color: #007bff;
-}
+    .card-text {
+      font-size: 1rem;
+    }
 
-.form-control {
-  width: 20%;
-  padding: 8px;
-  font-size: 0.875rem;
-  border-radius: 5px;
-  margin-bottom: 10px;
-}
+    .btn {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
 
-.card-explanation {
-  margin-top: 10px;
-  font-size: 0.875rem;
-}
+    .btn-success {
+      background-color: #4CAF50;
+    }
 
-input[type=number] {
-  -moz-appearance: textfield;
-}
+    .btn-danger {
+      background-color: #ff4c4c;
+    }
 
-input[type=number]::-webkit-outer-spin-button,
-input[type=number]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
+    .btn-primary {
+      background-color: #007bff;
+    }
 
-@media (min-width: 768px) {
-  .card-body {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
+    .main-content h1 {
+      text-align: center;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-  .card-text-section {
-    flex: 1;
-    margin-right: 20px;
-  }
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
 
-  .card-explanation {
-    flex: 1;
-  }
-}
+    .card-explanation {
+      margin-top: 10px;
+      font-size: 0.875rem;
+    }
 
-@media (max-width: 767.98px) {
-  .sidebar {
-    height: auto;
-    padding: 10px;
-    width: 100%;
-    position: relative;
-    flex-direction: column;
-    align-items: center;
-  }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
 
-  .topbar {
-    text-align: center;
-    margin-left: 0;
-    justify-content: center;
-  }
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
 
-  .main-content {
-    margin-left: 0;
-  }
+    /* Mobile responsiveness */
+    @media (max-width: 767.98px) {
+      .listing button {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        width: 100%;
+      }
 
-  .card-title {
-    font-size: 1.25rem;
-  }
+      .sidebar {
+        height: auto;
+        padding: 10px;
+        width: 100%;
+        position: relative;
+        flex-direction: column;
+        align-items: center;
+      }
 
-  .card-text {
-    font-size: 0.875rem;
-  }
+      .topbar {
+        text-align: center;
+        margin-left: 0;
+        justify-content: center;
+      }
 
-  .btn-success, .btn-danger, .btn-primary {
-    font-size: 0.75rem;
-    padding: 6px 12px;
-    width: 100%;
-  }
+      .main-content {
+        margin-left: 0;
+      }
 
-  .form-control {
-    font-size: 0.75rem;
-    padding: 6px;
-    width: 100%;
-  }
+      .card-title {
+        font-size: 1.25rem;
+      }
 
-  .card-explanation {
-    margin-top: 20px;
-  }
+      .card-body {
+        grid-template-columns: 1fr;
+      }
 
-  .sidebar .social-links {
-    justify-content: center;
-  }
+      .card-text {
+        font-size: 0.875rem;
+      }
 
-  .sidebar .social-icon {
-    margin-bottom: 10px;
-  }
-}
+      .card-image-container {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+
+      .card-image {
+        width: 80%; /* Slightly larger image for mobile */
+        max-width: 250px;
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        width: 100%;
+      }
+
+      .form-control {
+        font-size: 0.75rem;
+        padding: 6px;
+        width: 100%;
+      }
+
+      .card-explanation {
+        margin-top: 20px;
+      }
+
+      .sidebar .social-links {
+        justify-content: center;
+      }
+
+      .sidebar .social-icon {
+        margin-bottom: 10px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .card-body {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+
+      .card-text-section {
+        flex: 1;
+        margin-right: 20px;
+      }
+
+      .card-explanation {
+        flex: 1;
+      }
+    }
 
   </style>
 </head>
 <body>
   <div class="sidebar">
-  <h2>CFT</h2>
-   <a href="index.html">CFT Token</a>
-    <a href="usdt.html">USDT Rewards</a>
-    <a href="down.html">Lottery</a>
-    <a href="down.html">Draw</a>
-    <a href="down.html">Claim</a>
-    <a href="treasury.html">Treasury</a>
+    <h2>CFT</h2>
+   <a href="index.html">Welcome</a>
+    <a href="buy.html">Buy CFT</a>
+    <a href="staking.html">CFT Staking</a>
+      <a href="games.html">Games</a>
     <a href="Swap.html">Swap</a>
-  <div class="social-links">
-    <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
-      <i class="fab fa-twitter"></i>
-    </a>
-    <a href="https://t.me/claimfreetrxnow" target="_blank" class="social-icon">
-      <i class="fab fa-telegram-plane"></i>
-    </a>
-  </div>
-  <div class="language-switcher">
-    <button id="language-switcher" class="btn btn-secondary" onclick="switchLanguage('zh')">中文</button>
-  </div>
-</div>
+    <a href="meme.html">Meme Staking</a>
+    <div class="social-links">
+      <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+      <a href="https://telegram.org" target="_blank" class="social-icon"><i class="fab fa-telegram-plane"></i></a>
+    </div>
+
+    
   <div class="topbar">
     <button id="connect-button" onclick="connectWallet()">Connect Wallet</button>
   </div>
