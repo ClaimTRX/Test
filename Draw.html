@@ -243,8 +243,8 @@ input[type=number]::-webkit-inner-spin-button {
     <h1>Draw</h1>
     <!-- TRX Draw Card -->
     <div class="card mt-4">
-      <div class="card-body">
-        <div class="card-text-section">
+        <div class="card-body">
+          <div class="card-text-section">
           <h5 class="card-title">TRX Draw</h5>
           <div id="trxWarningMessage" class="card-text" style="color: red; display: none;">To register, please have 50 CFT unstaked in your wallet.</div>
           <div id="trxStatusMessage" class="card-text hidden" style="color: green;"></div>
@@ -253,439 +253,30 @@ input[type=number]::-webkit-inner-spin-button {
           <button id="trxRegisterButton" class="btn btn-success" disabled>Register</button>
           <button id="trxDrawButton" class="btn btn-primary" disabled>Draw</button>
         </div>
-        <div class="card-explanation">
-          <div><p>Register every 24 hours to participate in the Draw. 50 TRX to be won daily.</p></div>
-          <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
-          <div><p>To participate you need 50 CFT tokens unstaked in your wallet.</p></div>
-          <div id="visitText"><a href="https://explorer.just.money/address/TNs9CfS3T3ZnwQAvLeLftJn8kDJi9NQTad" target="_blank" rel="noopener noreferrer">TRX Draw Contract</a></div>
-         
+        <div class="card-image-container mt-4">
+            <img src="https://raw.githubusercontent.com/ClaimTRX/ClaimTRX/main/66d80aecb2a23_download.jpg" class="card-image" alt="Token Image">
+            <!-- Telegram Link -->
+            <div class="telegram-link mt-3">
+              <a href="https://t.me/claimfreetrxnow" target="_blank">
+                <i class="fab fa-telegram-plane"></i> Join our Telegram
+              </a>
+            </div>
+          </div>
         </div>
       </div>
+
+     
     </div>
-  
-    <!-- TRC20 Draw Card -->
-    <div class="card mt-4">
-      <div class="card-body">
-        <div class="card-text-section">
-          <h5 class="card-title">TRC20 Draw</h5>
-          <div id="trc20WarningMessage" class="card-text" style="color: red; display: none;">To register, please have 100 CFT unstaked in your wallet.</div>
-          <div id="trc20StatusMessage" class="card-text hidden" style="color: green;"></div>
-          <div id="trc20Timer">Next draw in: --:--:--</div>
-          <div id="trc20PrizeAmount">Current prize: 50 USDD</div> <!-- Manually change token amount and name here -->
-          <button id="trc20RegisterButton" class="btn btn-success" disabled>Register</button>
-          <button id="trc20DrawButton" class="btn btn-primary" disabled>Draw</button>
-        </div>
-        <div class="card-explanation">
-          <div><p>Register every 24 hours to participate in the Draw. New TRC20 tokens added each week.</p></div>
-          <div><p>Contract owner pays energy fees. Only bandwidth cost will be taken from user</p></div>
-          <div><p>To participate you need 100 CFT tokens unstaked in your wallet.</p></div>
-          <div id="visitText"><a href="https://explorer.just.money/address/TSvQFgoTzi8V8qwZXzBDCssDJjJENNHSg2" target="_blank" rel="noopener noreferrer">TRC20 Draw Contract</a></div>
-        </div>
-      </div>
-    </div>
-  </div>
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
   <script>
-    const trc20DrawContractAddress = 'TSvQFgoTzi8V8qwZXzBDCssDJjJENNHSg2';
+   
     const trxDrawContractAddress = 'TNs9CfS3T3ZnwQAvLeLftJn8kDJi9NQTad';
     const cftTokenAddress = 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA';
-    let tronWeb, userAddress, trc20DrawContract, trxDrawContract, cftTokenContract;
+    let tronWeb, userAddress,  trxDrawContract, cftTokenContract;
 
-    const trc20DrawContractAbi = [
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "_interval",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "_prizeAmount",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "address",
-                    "name": "_cftTokenAddress",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "_prizeTokenAddress",
-                    "type": "address"
-                }
-            ],
-            "stateMutability": "nonpayable",
-            "type": "constructor"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "participant",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "numParticipants",
-                    "type": "uint256"
-                }
-            ],
-            "name": "Registered",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "winner",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "string",
-                    "name": "tgUsername",
-                    "type": "string"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "txHash",
-                    "type": "bytes32"
-                }
-            ],
-            "name": "Winner",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "user",
-                    "type": "address"
-                }
-            ],
-            "name": "Blacklisted",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "newPrizeAmount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "PrizeAmountUpdated",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "newInterval",
-                    "type": "uint256"
-                }
-            ],
-            "name": "IntervalUpdated",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "txHash",
-                    "type": "bytes32"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "address",
-                    "name": "winner",
-                    "type": "address"
-                }
-            ],
-            "name": "PaymentMade",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "address",
-                    "name": "newCFTTokenAddress",
-                    "type": "address"
-                }
-            ],
-            "name": "CFTTokenAddressUpdated",
-            "type": "event"
-        },
-        {
-            "inputs": [],
-            "name": "draw",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "register",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "user",
-                    "type": "address"
-                }
-            ],
-            "name": "addToBlacklist",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "user",
-                    "type": "address"
-                }
-            ],
-            "name": "removeFromBlacklist",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "newInterval",
-                    "type": "uint256"
-                }
-            ],
-            "name": "setInterval",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "newPrizeAmount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "setPrizeAmount",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "newCFTTokenAddress",
-                    "type": "address"
-                }
-            ],
-            "name": "setCFTTokenAddress",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "getLastWinner",
-            "outputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                },
-                {
-                    "internalType": "string",
-                    "name": "",
-                    "type": "string"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "bytes32",
-                    "name": "",
-                    "type": "bytes32"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "depositPrizeTokens",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "withdrawPrizeTokens",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "name": "blacklist",
-            "outputs": [
-                {
-                    "internalType": "bool",
-                    "name": "",
-                    "type": "bool"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "interval",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "lastDrawTime",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "lastTxHash",
-            "outputs": [
-                {
-                    "internalType": "bytes32",
-                    "name": "",
-                    "type": "bytes32"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "lastWinner",
-            "outputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "lastWinnerUsername",
-            "outputs": [
-                {
-                    "internalType": "string",
-                    "name": "",
-                    "type": "string"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "prizeAmount",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "prizeToken",
-            "outputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        }
-    ];
-
+    
     const trxDrawContractAbi = [
     {
         "inputs": [
@@ -1383,7 +974,7 @@ async function initializeTronWeb() {
     const balance = await tronWeb.trx.getBalance(userAddress);
     console.log('Balance:', tronWeb.fromSun(balance), 'TRX');
 
-    trc20DrawContract = await tronWeb.contract().at(trc20DrawContractAddress);
+   
     trxDrawContract = await tronWeb.contract().at(trxDrawContractAddress);
     cftTokenContract = await tronWeb.contract(cftTokenContractAbi, cftTokenAddress);
 
@@ -1419,16 +1010,9 @@ async function checkCFTTokenBalance() {
     const cftTokenBalance = tronWeb.toDecimal(balance);
     const cftTokenDecimals = 10 ** 6; // Assuming CFT has 6 decimals
 
-    const requiredBalanceTRC20 = 100 * cftTokenDecimals;
+    
     const requiredBalanceTRX = 50 * cftTokenDecimals;
 
-    if (cftTokenBalance >= requiredBalanceTRC20) {
-      document.getElementById('trc20WarningMessage').style.display = 'none';
-      document.getElementById('trc20RegisterButton').disabled = false;
-    } else {
-      document.getElementById('trc20WarningMessage').style.display = 'block';
-      document.getElementById('trc20RegisterButton').disabled = true;
-    }
 
     if (cftTokenBalance >= requiredBalanceTRX) {
       document.getElementById('trxWarningMessage').style.display = 'none';
@@ -1444,15 +1028,9 @@ async function checkCFTTokenBalance() {
 
 async function checkRegistrationStatus() {
   try {
-    const isRegisteredTRC20 = await trc20DrawContract.methods.hasRegistered(userAddress).call();
+    
     const isRegisteredTRX = await trxDrawContract.methods.hasRegistered(userAddress).call();
 
-    if (isRegisteredTRC20) {
-      document.getElementById('trc20RegisterButton').innerText = 'Registered';
-      document.getElementById('trc20RegisterButton').disabled = true;
-    } else {
-      document.getElementById('trc20RegisterButton').innerText = 'Register';
-    }
 
     if (isRegisteredTRX) {
       document.getElementById('trxRegisterButton').innerText = 'Registered';
@@ -1467,34 +1045,11 @@ async function checkRegistrationStatus() {
 
 async function startDataUpdates() {
   setInterval(() => {
-    updateTimerTRC20();
+    
     updateTimerTRX();
   }, 1000);
 }
 
-async function updateTimerTRC20() {
-  try {
-    const lastDrawTime = parseInt(await trc20DrawContract.methods.lastDrawTime().call());
-    const interval = parseInt(await trc20DrawContract.methods.interval().call());
-    const currentTime = Math.floor(Date.now() / 1000);
-    const timeLeft = lastDrawTime + interval - currentTime;
-
-    const hours = Math.floor(timeLeft / 3600);
-    const minutes = Math.floor((timeLeft % 3600) / 60);
-    const seconds = timeLeft % 60;
-
-    const timerDisplay = document.getElementById('trc20Timer');
-    if (timeLeft > 0) {
-      timerDisplay.innerText = `Next draw in: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-      document.getElementById('trc20DrawButton').disabled = true;
-    } else {
-      timerDisplay.innerText = "Draw is available!";
-      document.getElementById('trc20DrawButton').disabled = false;
-    }
-  } catch (error) {
-    console.error('Error updating timer:', error);
-  }
-}
 
 async function updateTimerTRX() {
   try {
@@ -1520,27 +1075,8 @@ async function updateTimerTRX() {
   }
 }
 
-document.getElementById('trc20RegisterButton').addEventListener('click', async () => {
-  try {
-    await trc20DrawContract.methods.register().send();
-    alert('Registered successfully!');
-    updateUI();
-  } catch (error) {
-    console.error('Error registering:', error);
-    alert('Error registering: ' + error.message);
-  }
-});
 
-document.getElementById('trc20DrawButton').addEventListener('click', async () => {
-  try {
-    await trc20DrawContract.methods.draw().send();
-    alert('Draw executed successfully!');
-    updateUI();
-  } catch (error) {
-    console.error('Error executing draw:', error);
-    alert('Error executing draw: ' + error.message);
-  }
-});
+
 
 document.getElementById('trxRegisterButton').addEventListener('click', async () => {
   try {
