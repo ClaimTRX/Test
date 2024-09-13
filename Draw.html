@@ -308,6 +308,7 @@
           <div id="trxPrizeAmount">Current prize: 50 TRX</div> <!-- Manually change token amount and name here -->
           <button id="trxRegisterButton" class="btn btn-success" disabled>Register</button>
           <button id="trxDrawButton" class="btn btn-primary" disabled>Draw</button>
+            <p id="lastWinnerAddress">Winner Address: --</p>
         </div>
         <div class="card-image-container mt-4">
             <img src="https://raw.githubusercontent.com/ClaimTRX/ClaimTRX/main/66d80aecb2a23_download.jpg" class="card-image" alt="Token Image">
@@ -1035,6 +1036,7 @@ async function initializeTronWeb() {
     cftTokenContract = await tronWeb.contract(cftTokenContractAbi, cftTokenAddress);
 
     updateUI();
+    getLastWinner();  // Fetch and display the latest winner
   } catch (error) {
     console.error('Error fetching balance:', error);
   }
@@ -1059,6 +1061,30 @@ async function updateUI() {
     console.error('Error updating UI:', error);
   }
 }
+
+    async function getLastWinner() {
+      try {
+        const events = await tronWeb.getEventResult(trxDrawContractAddress, {
+          eventName: 'Winner',
+          size: 1,  // Limit to the latest event
+          sort: 'desc'  // Get the latest event
+        });
+
+        if (events.length > 0) {
+          const winnerEvent = events[0];
+          const winnerAddress = winnerEvent.result.winner;
+          const winnerAmount = winnerEvent.result.amount;
+
+          document.getElementById('lastWinnerAddress').textContent = `Winner Address: ${winnerAddress}`;
+          document.getElementById('lastWinnerAmount').textContent = `Amount Won: ${tronWeb.fromSun(winnerAmount)} TRX`;
+        } else {
+          document.getElementById('lastWinnerAddress').textContent = 'Winner Address: --';
+          document.getElementById('lastWinnerAmount').textContent = 'Amount Won: --';
+        }
+      } catch (error) {
+        console.error('Error fetching latest winner:', error);
+      }
+    }
 
 async function checkCFTTokenBalance() {
   try {
