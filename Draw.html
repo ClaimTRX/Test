@@ -219,8 +219,12 @@
       }
 
       .card-text {
-        font-size: 0.875rem;
-      }
+    font-size: 0.875rem;
+    overflow-wrap: break-word; /* Prevent text overflow */
+    word-wrap: break-word;
+    hyphens: auto;
+    text-align: center; /* Center-align the text */
+  }
 
       .card-image-container {
         width: 100%;
