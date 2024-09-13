@@ -1079,7 +1079,8 @@ async function updateUI() {
 
     if (events.length > 0) {
       const winnerEvent = events[0];
-      const winnerAddress = winnerEvent.result.winner;
+      const winnerHexAddress = winnerEvent.result.winner;  // This is the address in hex format
+      const winnerAddress = tronWeb.address.fromHex(winnerHexAddress);  // Convert hex to TRON Base58 address
       const winnerAmount = winnerEvent.result.amount;
 
       document.getElementById('lastWinnerAddress').textContent = `Winner Address: ${winnerAddress}`;
@@ -1092,6 +1093,7 @@ async function updateUI() {
     console.error('Error fetching latest winner:', error);
   }
 }
+
 
 
 async function checkCFTTokenBalance() {
