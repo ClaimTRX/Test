@@ -1065,29 +1065,34 @@ async function updateUI() {
   }
 }
 
-    async function getLastWinner() {
-      try {
-        const events = await tronWeb.getEventResult(trxDrawContractAddress, {
-          eventName: 'Winner',
-          size: 1,  // Limit to the latest event
-          sort: 'desc'  // Get the latest event
-        });
+   async function getLastWinner() {
+  try {
+    console.log("Fetching the latest winner event...");
 
-        if (events.length > 0) {
-          const winnerEvent = events[0];
-          const winnerAddress = winnerEvent.result.winner;
-          const winnerAmount = winnerEvent.result.amount;
+    const events = await tronWeb.getEventResult(trxDrawContractAddress, {
+      eventName: 'Winner',
+      size: 1,  // Limit to the latest event
+      sort: 'desc'  // Get the latest event
+    });
 
-          document.getElementById('lastWinnerAddress').textContent = `Winner Address: ${winnerAddress}`;
-          document.getElementById('lastWinnerAmount').textContent = `Amount Won: ${tronWeb.fromSun(winnerAmount)} TRX`;
-        } else {
-          document.getElementById('lastWinnerAddress').textContent = 'Winner Address: --';
-          document.getElementById('lastWinnerAmount').textContent = 'Amount Won: --';
-        }
-      } catch (error) {
-        console.error('Error fetching latest winner:', error);
-      }
+    console.log("Events received:", events);
+
+    if (events.length > 0) {
+      const winnerEvent = events[0];
+      const winnerAddress = winnerEvent.result.winner;
+      const winnerAmount = winnerEvent.result.amount;
+
+      document.getElementById('lastWinnerAddress').textContent = `Winner Address: ${winnerAddress}`;
+      document.getElementById('lastWinnerAmount').textContent = `Amount Won: ${tronWeb.fromSun(winnerAmount)} TRX`;
+    } else {
+      document.getElementById('lastWinnerAddress').textContent = 'Winner Address: --';
+      document.getElementById('lastWinnerAmount').textContent = 'Amount Won: --';
     }
+  } catch (error) {
+    console.error('Error fetching latest winner:', error);
+  }
+}
+
 
 async function checkCFTTokenBalance() {
   try {
