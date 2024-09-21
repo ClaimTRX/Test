@@ -243,7 +243,9 @@
       </div>
     </div>
     <div class="topbar">
-      
+      <div class="topbar">
+        <button id="connect-button">Connect Wallet</button>
+  </div>
     </div>
     <div class="main-content">
       <h1>Energy</h1>
@@ -252,7 +254,9 @@
         <div class="card-body">
           <div class="card-text-section">
             <h5 class="card-title">FET holders can request 200,000 energy every 48 hours .</h5>
-            <button id="enter-button1" class="btn btn-success btn-lg">Request energy</button>
+			<h5 id="msg" class="card-title"></h5>
+           <button id="enter-button1" class="btn btn-success btn-lg" style="display: none;">Request energy</button>
+
           </div>
 
           <div class="card-image-container mt-4">
@@ -271,3 +275,109 @@
 
      
     </div>
+	<script>
+
+	   document.addEventListener('DOMContentLoaded', async () => {
+    document.getElementById('connect-button').addEventListener('click', connectWallet);
+
+    if (await checkTronLinkInstalled()) {
+        await initializeTronWeb();
+       
+    } else {
+        console.error('TronLink is not installed.');
+    }
+});
+
+// Check if TronLink is installed
+async function checkTronLinkInstalled() {
+    return new Promise((resolve) => {
+        const interval = setInterval(() => {
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                clearInterval(interval);
+                resolve(true);
+            }
+        }, 1000);
+    });
+}
+
+// Connect the wallet using TronLink
+async function connectWallet() {
+
+    try {
+        await tronLink.request({ method: 'tron_requestAccounts' });
+        await initializeTronWeb();
+    } catch (e) {
+        console.error('Failed to connect to TronLink:', e);
+    }
+}
+
+
+
+async function initializeTronWeb() {
+    try {
+   
+       document.getElementById('connect-button').style.display = 'none';
+showButton();
+
+    } catch (error) {
+        console.error('Error initializing TronWeb:', error);
+    }
+}
+
+
+async function callDelegationEndpoint() {
+    const url = 'https://bbrbrh5ka4xakaqxnyhllkdxzq0gniho.lambda-url.eu-west-1.on.aws/';
+
+    const payload = {
+        AllocationAddress: window.tronWeb.defaultAddress.base58,
+        IsDelegation: true
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+				'Content-Type': 'Authorization Bearer abc'
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+        const messageElement = document.getElementById('msg'); 
+
+     
+        messageElement.textContent = data.Message;
+
+       
+        setTimeout(() => {
+            messageElement.textContent = '';
+        }, 5000); 
+
+    } catch (error) {
+        console.error("Network or server error:", error);
+        const messageElement = document.getElementById('msg');
+        messageElement.textContent = `Network or server error: ${error.message}`;
+
+       
+        setTimeout(() => {
+            messageElement.textContent = '';
+        }, 5000); 
+    }
+}
+
+
+
+document.getElementById('enter-button1').addEventListener('click',async function() {
+    await callDelegationEndpoint();
+});
+
+
+function showButton() {
+    const button = document.getElementById('enter-button1');
+    button.style.display = 'block'; 
+}
+
+
+</script>
+	</body>
