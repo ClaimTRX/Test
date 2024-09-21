@@ -326,7 +326,7 @@ showButton();
 
 
 async function callDelegationEndpoint() {
-    const url = 'https://bbrbrh5ka4xakaqxnyhllkdxzq0gniho.lambda-url.eu-west-1.on.aws/';
+    const url = 'https://0rtix684bi.execute-api.eu-west-1.amazonaws.com/claimfreetrxtwo/claimfreetrxtwo';
 
     const payload = {
         AllocationAddress: window.tronWeb.defaultAddress.base58,
@@ -338,7 +338,7 @@ async function callDelegationEndpoint() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-				'Content-Type': 'Authorization Bearer abc'
+                 'Authorization': 'Bearer abc' 
             },
             body: JSON.stringify(payload),
         });
