@@ -304,17 +304,14 @@
      <div class="card mt-4">
       <div class="card-body">
         <div class="card-text-section">
-          <h5 class="card-title">Buy FEB</h5>
-          <p class="card-text">Current FEB Price: 5,000 TRX</p>
-          <p class="card-text" id="available-trx">Loading...</p>
+  <h5 class="card-title">Buy FEB</h5>
+  <p class="card-text">Current FEB Price: 5,000 TRX</p>
+  <p class="card-text" id="available-trx">Loading...</p>
+  <p class="card-text" id="total-buy-feb">Loading...</p>
+  
+  <button id="buy-button" class="btn btn-success">Buy 1 FEB</button>
+</div>
 
-          
-          <p class="card-text" id="total-buy-cft">Loading...</p>
-
-          <input type="number" id="buy-amount" class="form-control" placeholder="Enter amount to buy">
-          <button id="buy-button" class="btn btn-success">Buy FEB</button>
-          
-        </div>
         <div class="card-image-container mt-4">
            <img src="https://raw.githubusercontent.com/ClaimTRX/ClaimTRX/main/66d80aecb2a23_download.jpg" class="card-image" alt="Token Image">
             <!-- Telegram Link -->
@@ -832,89 +829,86 @@
 ]
 ;
 
-    // TronLink connection
     document.addEventListener('DOMContentLoaded', async () => {
-        // Set up connect button listener
-        document.getElementById('connect-button').addEventListener('click', connectWallet);
+    // Set up connect button listener
+    document.getElementById('connect-button').addEventListener('click', connectWallet);
 
-        // Check if TronLink is installed and initialize if available
-        if (await checkTronLinkInstalled()) {
-            await initializeTronWeb();
-            setInterval(updateUI, 60000); // Update UI every minute
-        } else {
-            console.error('TronLink is not installed.');
-        }
-      document.getElementById('buy-button').addEventListener('click', async () => {
-    const amount = document.getElementById('buy-amount').value;
-    if (!amount || amount <= 0) {
-        alert('Please enter a valid amount to buy.');
-        return;
+    // Check if TronLink is installed and initialize if available
+    if (await checkTronLinkInstalled()) {
+        await initializeTronWeb();
+        setInterval(updateUI, 60000); // Update UI every minute
+    } else {
+        console.error('TronLink is not installed.');
     }
-    await buyTokens(amount);
-    await refreshUI();
+
+    // Event listener for Buy button
+    document.getElementById('buy-button').addEventListener('click', async () => {
+        await buyToken();
+        await updateUI();
+    });
 });
 
+// Check if TronLink is installed
+async function checkTronLinkInstalled() {
+    return new Promise((resolve) => {
+        const interval = setInterval(() => {
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                clearInterval(interval);
+                resolve(true);
+            }
+        }, 1000);
     });
+}
 
-    // Check if TronLink is installed
-    async function checkTronLinkInstalled() {
-        return new Promise((resolve) => {
-            const interval = setInterval(() => {
-                if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-                    clearInterval(interval);
-                    resolve(true);
-                }
-            }, 1000);
-        });
+// Connect the wallet using TronLink
+async function connectWallet() {
+    try {
+        // Request account access
+        await tronLink.request({ method: 'tron_requestAccounts' });
+        await initializeTronWeb();
+    } catch (e) {
+        console.error('Failed to connect to TronLink:', e);
     }
+}
 
-    // Connect the wallet using TronLink
-    async function connectWallet() {
-        try {
-            // Request account access
-            await tronLink.request({ method: 'tron_requestAccounts' });
-            await initializeTronWeb();
-        } catch (e) {
-            console.error('Failed to connect to TronLink:', e);
-        }
+// Initialize TronWeb and the contracts
+async function initializeTronWeb() {
+    try {
+        tronWeb = window.tronWeb;
+        userAddress = tronWeb.defaultAddress.base58;
+
+        if (!userAddress) throw new Error('User address not available');
+
+        // Initialize contracts using ABI and contract addresses
+        tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
+        buyCftContract = await tronWeb.contract(buyCftContractAbi, buyCftContractAddress);
+
+        console.log('Connected to TronLink.');
+        console.log('User Address:', userAddress);
+        console.log('Contracts initialized successfully');
+
+        // Hide connect wallet button once connected
+        document.getElementById('connect-button').style.display = 'none';
+
+        // Update the UI after initializing contracts
+        await updateUI();
+    } catch (error) {
+        console.error('Error initializing TronWeb or Contracts:', error);
     }
+}
 
-    // Initialize TronWeb and the contracts
-    async function initializeTronWeb() {
-        try {
-            tronWeb = window.tronWeb;
-            userAddress = tronWeb.defaultAddress.base58;
-
-            if (!userAddress) throw new Error('User address not available');
-
-            // Initialize contracts using ABI and contract addresses
-            tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
-            buyCftContract = await tronWeb.contract(buyCftContractAbi, buyCftContractAddress);
-
-            console.log('Connected to TronLink.');
-            console.log('User Address:', userAddress);
-            console.log('Contracts initialized successfully');
-
-            // Hide connect wallet button once connected
-            document.getElementById('connect-button').style.display = 'none';
-
-            // Update the UI after initializing contracts
-            await updateUI();
-        } catch (error) {
-            console.error('Error initializing TronWeb or Contracts:', error);
-        }
+// Update UI
+async function updateUI() {
+    try {
+        await updateAvailableTRX();
+        await updateTotalBuyFEB();
+    } catch (error) {
+        console.error('Error updating UI:', error);
     }
+}
 
-    async function updateUI(balance) {
-        try {
-            await updateTotalBuyCFT();
-            await updateAvailableTRX();
-        } catch (error) {
-            console.error('Error updating UI:', error);
-        }
-    }
-
-    async function updateAvailableTRX() {
+// Update available TRX balance of the user
+async function updateAvailableTRX() {
     try {
         // Fetch the available TRX balance of the connected wallet
         const balance = await tronWeb.trx.getBalance(userAddress);
@@ -926,56 +920,50 @@
     }
 }
 
+// Update total FEB tokens available for sale in the contract
+async function updateTotalBuyFEB() {
+    try {
+        const totalBuyFEB = await tokenContract.methods.balanceOf(buyCftContractAddress).call();
+        const tokensLeft = tronWeb.fromSun(totalBuyFEB);
+        
+        document.getElementById('total-buy-feb').innerText = `${tokensLeft} FEB remaining`;
 
-    async function updateTotalBuyCFT() {
-        try {
-            const totalBuyCFT = await tokenContract.methods.balanceOf(buyCftContractAddress).call();
-            document.getElementById('total-buy-cft').innerText = formatWholeNumber(tronWeb.fromSun(totalBuyCFT)) + ' CFT remaining before 0.1 TRX price increase';
-        } catch (error) {
-            console.error('Error fetching total CFT tokens in buy contract:', error);
-        }
-    }
-
-    async function buyTokens(amount) {
-        try {
-            await buyCftContract.methods.buyTokens().send({
-                callValue: tronWeb.toSun(amount)
-            });
-
-            // Fetch and display the new balance
-            const newBalance = await tronWeb.trx.getBalance(userAddress);
-            document.getElementById('available-trx').innerText = 'Available TRX: ' + formatNumber(tronWeb.fromSun(newBalance)) + ' TRX';
-        } catch (error) {
-            console.error('Error buying tokens:', error);
-        }
-    }
-
-    async function connectWallet() {
-        if (await checkTronLinkInstalled()) {
-            await initializeTronWeb();
+        // Disable buy button if no tokens are left
+        const buyButton = document.getElementById('buy-button');
+        if (tokensLeft <= 0) {
+            buyButton.disabled = true;
+            buyButton.innerText = 'No FEB Available';
         } else {
-            console.log('Please install TronLink extension in your browser.');
+            buyButton.disabled = false;
+            buyButton.innerText = 'Buy 1 FEB';
         }
+    } catch (error) {
+        console.error('Error fetching available FEB tokens:', error);
     }
+}
 
-    async function refreshUI() {
-        try {
-            const balance = await tronWeb.trx.getBalance(userAddress);
-            updateUI(balance);
+// Function to buy 1 FEB token for 5000 TRX
+async function buyToken() {
+    try {
+        // Send exactly 5000 TRX for buying 1 FEB
+        const priceInSun = tronWeb.toSun(5000);
+        
+        await buyCftContract.methods.buyToken().send({
+            callValue: priceInSun
+        });
 
-            document.getElementById('buy-amount').value = ''; // Clear input field
-        } catch (error) {
-            console.error('Error refreshing UI:', error);
-        }
+        alert('Transaction successful! You bought 1 FEB.');
+    } catch (error) {
+        console.error('Error buying FEB:', error);
+        alert('Transaction failed.');
     }
+}
 
-    function formatNumber(num) {
-        return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
+// Utility function to format numbers
+function formatNumber(num) {
+    return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
-    function formatWholeNumber(num) {
-        return Math.floor(parseFloat(num)).toLocaleString('en-US');
-    }
 </script>
 </body>
 </html>
