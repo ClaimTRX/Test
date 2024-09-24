@@ -669,6 +669,8 @@
 ]
 
     const contractAddress = 'TEA7muu7aLfUgkFkuiuHeBDLocg6MHQbm9';
+    let tronWeb, userAddress, trxClaimerContract;
+    
 document.addEventListener('DOMContentLoaded', async () => {
         if (await checkTronLinkInstalled()) {
           await initializeTronWeb();
