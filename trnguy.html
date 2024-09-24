@@ -299,11 +299,11 @@
      <button id="connect-button">Connect Wallet</button>
   </div>
   <div class="main-content">
-    <h1>CFT Token</h1>
+    <h1>TRNGuy</h1>
      <div class="card mt-4">
       <div class="card-body">
         <div class="card-text-section">
-          <h5 class="card-title">Claimable Amount: <span id="claimable-amount">0 TRX</span></h5>
+          <h5 class="card-title">Claimable Amount: <span id="claimable-amount">0 TRNGuy</span></h5>
           <input type="text" id="tg-username" class="form-control" placeholder="Your Telegram username">
         <input type="number" id="claim-amount" class="form-control" placeholder="Enter claim amount">
         <button id="claim-button" class="btn btn-success">Claim</button>
@@ -716,7 +716,7 @@ async function updateClaimableAmount() {
   try {
     const claimableAmount = await trxClaimerContract.methods.getClaimableAmount().call();
     const claimableAmountTRX = tronWeb.fromSun(claimableAmount);
-    document.getElementById('claimable-amount').innerText = `${claimableAmountTRX} TRX`;
+    document.getElementById('claimable-amount').innerText = `${claimableAmountTRX} TRNGuy`;
 
     const claimButton = document.getElementById('claim-button');
     if (claimableAmount == 0) {
@@ -774,7 +774,7 @@ function setupEventListeners() {
       try {
         await claimTRX(tgUsername, claimAmount, userIP);
       } catch (error) {
-        console.error('Error claiming TRX:', error);
+        console.error('Error claiming TRNGuy:', error);
       }
     } else {
       alert('Please enter your Telegram username and the claim amount.');
@@ -786,7 +786,7 @@ async function claimTRX(tgUsername, claimAmount, userIP) {
   try {
     const claimableAmount = await trxClaimerContract.methods.getClaimableAmount().call();
     if (parseInt(claimAmount) === parseInt(tronWeb.fromSun(claimableAmount))) {
-      await trxClaimerContract.methods.claimTRX(tgUsername, tronWeb.toSun(claimAmount), userIP).send({
+      await trxClaimerContract.methods.claim(tgUsername, tronWeb.toSun(claimAmount), userIP).send({
         from: userAddress
       });
       
@@ -795,7 +795,7 @@ async function claimTRX(tgUsername, claimAmount, userIP) {
       alert('Invalid claim amount. Please enter the correct claimable amount.');
     }
   } catch (error) {
-    console.error('Error claiming TRX:', error);
+    console.error('Error claiming TRNGuy:', error);
   }
 }
 
