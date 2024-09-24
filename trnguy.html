@@ -757,11 +757,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       async function checkCooldown() {
   try {
-    // Ensure these calls align with your contract methods to get the last claim time and cooldown period.
     const lastClaimTime = parseInt(await trxClaimerContract.methods.lastClaimTime(userAddress).call());
     const cooldownPeriod = parseInt(await trxClaimerContract.methods.cooldownPeriod().call());
     const currentTime = Math.floor(Date.now() / 1000);
     const timeLeft = lastClaimTime + cooldownPeriod - currentTime;
+
+    console.log(`Last Claim Time: ${lastClaimTime}`);
+    console.log(`Cooldown Period: ${cooldownPeriod}`);
+    console.log(`Current Time: ${currentTime}`);
+    console.log(`Time Left: ${timeLeft}`);
 
     if (timeLeft > 0) {
       const hours = Math.floor(timeLeft / 3600);
