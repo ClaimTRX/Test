@@ -648,28 +648,30 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       async function checkCooldown() {
-        try {
-          const lastClaimTime = parseInt(await trxClaimerContract.methods.lastClaimTime(userAddress).call());
-          const cooldownPeriod = parseInt(await trxClaimerContract.methods.cooldownPeriod().call());
-          const currentTime = Math.floor(Date.now() / 1000);
-          const timeLeft = lastClaimTime + cooldownPeriod - currentTime;
+  try {
+    // Ensure these calls align with your contract methods to get the last claim time and cooldown period.
+    const lastClaimTime = parseInt(await trxClaimerContract.methods.lastClaimTime(userAddress).call());
+    const cooldownPeriod = parseInt(await trxClaimerContract.methods.cooldownPeriod().call());
+    const currentTime = Math.floor(Date.now() / 1000);
+    const timeLeft = lastClaimTime + cooldownPeriod - currentTime;
 
-          if (timeLeft > 0) {
-            const hours = Math.floor(timeLeft / 3600);
-            const minutes = Math.floor((timeLeft % 3600) / 60);
-            document.getElementById('cooldown-warning').innerText = `You are currently on a cooldown. Time left: ${hours}h ${minutes}m.`;
-            setTimeout(checkCooldown, 60000); // Check cooldown status every minute
-            return true;
-          } else {
-            document.getElementById('cooldown-warning').innerText = '';
-            return false;
-          }
-        } catch (error) {
-          console.error('Error checking cooldown:', error);
-          document.getElementById('cooldown-warning').innerText = 'Error checking cooldown period';
-          return true;
-        }
-      }
+    if (timeLeft > 0) {
+      const hours = Math.floor(timeLeft / 3600);
+      const minutes = Math.floor((timeLeft % 3600) / 60);
+      document.getElementById('cooldown-warning').innerText = `You are currently on a cooldown. Time left: ${hours}h ${minutes}m.`;
+      setTimeout(checkCooldown, 60000); // Check cooldown status every minute
+      return true;
+    } else {
+      document.getElementById('cooldown-warning').innerText = '';
+      return false;
+    }
+  } catch (error) {
+    console.error('Error checking cooldown:', error);
+    document.getElementById('cooldown-warning').innerText = 'Error checking cooldown period';
+    return true;
+  }
+}
+
 
       function setupEventListeners() {
         document.getElementById('claim-button').addEventListener('click', async () => {
