@@ -561,29 +561,33 @@
     }
 
     async function updateClaimableAmount() {
-        try {
-            const claimableAmount = await trxClaimerContract.methods.getClaimableAmount().call();
-            const claimableAmountInToken = claimableAmount / 1e18;  // Divide by 10^18 to get the proper token amount
-            const claimableAmountTRX = Math.floor(claimableAmountInToken);  // Round down to the nearest whole number
+  try {
+    const claimableAmount = await trxClaimerContract.methods.getClaimableAmount().call();
+    const claimableAmountInToken = claimableAmount / 1e18;  // Divide by 10^18 to get the proper token amount
+    const claimableAmountTRX = Math.floor(claimableAmountInToken);  // Round down to the nearest whole number
 
-            document.getElementById('claimable-amount').innerText = `${claimableAmountTRX} TRNGuy`;
+    // Format the number with commas for better readability
+    const formattedAmount = claimableAmountTRX.toLocaleString();
 
-            const claimButton = document.getElementById('claim-button');
-            if (claimableAmount == 0) {
-                claimButton.disabled = true;
-            } else {
-                const isUserInCooldown = await checkCooldown();
-                if (isUserInCooldown) {
-                    claimButton.disabled = true;
-                } else {
-                    claimButton.disabled = false;
-                }
-            }
-        } catch (error) {
-            console.error('Error updating claimable amount:', error);
-            document.getElementById('claimable-amount').innerText = 'Error loading claimable amount';
-        }
+    document.getElementById('claimable-amount').innerText = `${formattedAmount} TRNGuy`;
+
+    const claimButton = document.getElementById('claim-button');
+    if (claimableAmount == 0) {
+      claimButton.disabled = true;
+    } else {
+      const isUserInCooldown = await checkCooldown();
+      if (isUserInCooldown) {
+        claimButton.disabled = true;
+      } else {
+        claimButton.disabled = false;
+      }
     }
+  } catch (error) {
+    console.error('Error updating claimable amount:', error);
+    document.getElementById('claimable-amount').innerText = 'Error loading claimable amount';
+  }
+}
+
 
     async function checkCooldown() {
         try {
