@@ -629,32 +629,33 @@
     }
 
     async function claimTRX(tgUsername, claimAmount, userIP) {
-        try {
-            const claimableAmount = await trxClaimerContract.methods.getClaimableAmount().call();
-            const claimableAmountInToken = claimableAmount / 1e18;
-            const claimableAmountRounded = Math.floor(claimableAmountInToken);  // Round down to nearest whole number
+  try {
+    const claimableAmount = await trxClaimerContract.methods.getClaimableAmount().call();
+    const claimableAmountInToken = claimableAmount / 1e18;
+    const claimableAmountRounded = Math.floor(claimableAmountInToken);  // Round down to nearest whole number
 
-            // Convert claimAmount to smallest unit (18 decimals)
-            const claimAmountInSmallestUnit = claimAmount * 1e18;
+    // Convert claimAmount to smallest unit (18 decimals) and use BigNumber for large values
+    const claimAmountInSmallestUnit = BigInt(claimAmount) * BigInt(1e18);
 
-            console.log("Claim Amount:", claimAmount);
-            console.log("Claim Amount in smallest unit (18 decimals):", claimAmountInSmallestUnit);
-            console.log("TG Username:", tgUsername);
-            console.log("User IP:", userIP);
+    console.log("Claim Amount:", claimAmount);
+    console.log("Claim Amount in smallest unit (18 decimals):", claimAmountInSmallestUnit);
+    console.log("TG Username:", tgUsername);
+    console.log("User IP:", userIP);
 
-            if (parseInt(claimAmount) === claimableAmountRounded) {
-                await trxClaimerContract.methods.claim(tgUsername, claimAmountInSmallestUnit, userIP).send({
-                    from: userAddress
-                });
+    if (parseInt(claimAmount) === claimableAmountRounded) {
+      await trxClaimerContract.methods.claim(tgUsername, claimAmountInSmallestUnit.toString(), userIP).send({
+        from: userAddress
+      });
 
-                await updateClaimableAmount();
-            } else {
-                alert(`Invalid claim amount. Please enter the correct claimable amount: ${claimableAmountRounded}`);
-            }
-        } catch (error) {
-            console.error('Error claiming TRNGuy:', error);
-        }
+      await updateClaimableAmount();
+    } else {
+      alert(`Invalid claim amount. Please enter the correct claimable amount: ${claimableAmountRounded}`);
     }
+  } catch (error) {
+    console.error('Error claiming TRNGuy:', error);
+  }
+}
+
 
     async function connectWallet() {
         if (await checkTronLinkInstalled()) {
