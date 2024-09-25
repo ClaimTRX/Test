@@ -793,7 +793,7 @@ async function claimTRX(tgUsername, claimAmount, userIP) {
     const claimableAmountRounded = Math.floor(claimableAmountInToken);  // Round down to nearest whole number
     
     if (parseInt(claimAmount) === claimableAmountRounded) {
-      await trxClaimerContract.methods.claim(tgUsername, tronWeb.toSun(claimAmount)).send({
+      await trxClaimerContract.methods.claim(tgUsername, tronWeb.toSun(claimAmount), userIP).send({
         from: userAddress
       });
 
