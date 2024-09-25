@@ -716,7 +716,7 @@ async function updateClaimableAmount() {
   try {
     const claimableAmount = await trxClaimerContract.methods.getClaimableAmount().call();
     const claimableAmountInToken = claimableAmount / 1e18;  // Divide by 10^18 to get the proper token amount
-    const claimableAmountTRX = claimableAmountInToken.toFixed(2);  // Limit to 2 decimal places
+    const claimableAmountTRX = Math.floor(claimableAmountInToken);  // Round down to the nearest whole number
 
     document.getElementById('claimable-amount').innerText = `${claimableAmountTRX} TRNGuy`;
 
@@ -736,6 +736,7 @@ async function updateClaimableAmount() {
     document.getElementById('claimable-amount').innerText = 'Error loading claimable amount';
   }
 }
+
 
 
 async function checkCooldown() {
@@ -788,19 +789,23 @@ function setupEventListeners() {
 async function claimTRX(tgUsername, claimAmount, userIP) {
   try {
     const claimableAmount = await trxClaimerContract.methods.getClaimableAmount().call();
-    if (parseInt(claimAmount) === parseInt(tronWeb.fromSun(claimableAmount))) {
-      await trxClaimerContract.methods.claim(tgUsername, tronWeb.toSun(claimAmount), userIP).send({
+    const claimableAmountInToken = claimableAmount / 1e18;
+    const claimableAmountRounded = Math.floor(claimableAmountInToken);  // Round down to nearest whole number
+    
+    if (parseInt(claimAmount) === claimableAmountRounded) {
+      await trxClaimerContract.methods.claim(tgUsername, tronWeb.toSun(claimAmount)).send({
         from: userAddress
       });
-      
+
       await updateClaimableAmount();
     } else {
-      alert('Invalid claim amount. Please enter the correct claimable amount.');
+      alert(`Invalid claim amount. Please enter the correct claimable amount: ${claimableAmountRounded}`);
     }
   } catch (error) {
     console.error('Error claiming TRNGuy:', error);
   }
 }
+
 
 async function connectWallet() {
   if (await checkTronLinkInstalled()) {
