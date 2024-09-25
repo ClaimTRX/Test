@@ -715,7 +715,9 @@ async function isIPBlocked(userIP) {
 async function updateClaimableAmount() {
   try {
     const claimableAmount = await trxClaimerContract.methods.getClaimableAmount().call();
-    const claimableAmountTRX = tronWeb.fromSun(claimableAmount);
+    const claimableAmountInToken = claimableAmount / 1e18;  // Divide by 10^18 to get the proper token amount
+    const claimableAmountTRX = claimableAmountInToken.toFixed(2);  // Limit to 2 decimal places
+
     document.getElementById('claimable-amount').innerText = `${claimableAmountTRX} TRNGuy`;
 
     const claimButton = document.getElementById('claim-button');
@@ -734,6 +736,7 @@ async function updateClaimableAmount() {
     document.getElementById('claimable-amount').innerText = 'Error loading claimable amount';
   }
 }
+
 
 async function checkCooldown() {
   try {
