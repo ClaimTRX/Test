@@ -654,7 +654,15 @@
         from: userAddress
       });
 
+      console.log("Claim successful!");
+
+      // Optionally, update the claimable amount again
       await updateClaimableAmount();
+
+      // Auto-refresh the webpage after a short delay (1 second for example)
+      setTimeout(function() {
+        window.location.reload();
+      }, 1000);  // 1000ms delay before refresh
     } else {
       alert(`Invalid claim amount. Please enter the correct claimable amount: ${claimableAmountRounded}`);
     }
@@ -662,6 +670,7 @@
     console.error('Error claiming TRNGuy:', error);
   }
 }
+
 
 
     async function connectWallet() {
