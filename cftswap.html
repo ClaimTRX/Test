@@ -237,9 +237,9 @@
         <div class="card-text-section">
           <h5 class="card-title">Swap CFT Tokens</h5>
           <p class="card-text">Current Swap Rate: 1 CFT = 0.9 TRX</p>
-          <p class="card-text" id="available-trx">Loading...</p>
-          <p class="card-text" id="available-cft">Loading...</p>
+          <p class="card-text" id="available-trx-contract">Loading TRX in Contract...</p>
           <input type="number" id="swap-amount" class="form-control" placeholder="Enter amount to swap">
+          <p class="card-text" id="calculated-trx">TRX you will receive: 0 TRX</p>
           <button id="swap-button" class="btn btn-danger">Swap CFT</button>
         </div>
       </div>
@@ -251,8 +251,8 @@
   <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
   <script>
     let tronWeb, userAddress, tokenContract, swapContract;
-    const tokenContractAddress = 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA'; // Update with your TRC20 contract address
-    const swapContractAddress = 'TJVJvrg8gwgKmqyraJ2vREpaWjBedU4xGY'; // Replace with the actual swap contract address
+    const tokenContractAddress = 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA'; // TRC20 token contract address
+    const swapContractAddress = 'YOUR_SWAP_CONTRACT_ADDRESS'; // Swap contract address
     const maxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
     const tokenContractAbi = [
@@ -778,6 +778,8 @@
 ]
 ;  // Add your swap contract ABI
 
+    const swapRate = 0.9; // Swap rate 1 CFT = 0.9 TRX
+
     document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('connect-button').addEventListener('click', connectWallet);
 
@@ -788,13 +790,13 @@
         console.error('TronLink is not installed.');
       }
 
+      document.getElementById('swap-amount').addEventListener('input', calculateTRX);
       document.getElementById('swap-button').addEventListener('click', async () => {
         const amount = document.getElementById('swap-amount').value;
         if (!amount || amount <= 0) {
           alert('Please enter a valid amount to swap.');
           return;
         }
-        await approveMaxTokens();
         await swapTokens(amount);
         await refreshUI();
       });
@@ -839,40 +841,29 @@
 
     async function updateUI() {
       try {
-        await updateAvailableTRX();
-        await updateAvailableCFT();
+        await updateAvailableTRXContract();
       } catch (error) {
         console.error('Error updating UI:', error);
       }
     }
 
-    async function updateAvailableTRX() {
+    async function updateAvailableTRXContract() {
       try {
-        const balance = await tronWeb.trx.getBalance(userAddress);
-        document.getElementById('available-trx').innerText = 'Available TRX: ' + formatNumber(tronWeb.fromSun(balance)) + ' TRX';
+        const trxBalance = await tronWeb.trx.getBalance(swapContractAddress);
+        document.getElementById('available-trx-contract').innerText = 'Available TRX in Contract: ' + formatNumber(tronWeb.fromSun(trxBalance)) + ' TRX';
       } catch (error) {
-        console.error('Error fetching TRX balance:', error);
+        console.error('Error fetching contract TRX balance:', error);
       }
     }
 
-    async function updateAvailableCFT() {
-      try {
-        const cftBalance = await tokenContract.methods.balanceOf(userAddress).call();
-        document.getElementById('available-cft').innerText = 'Available CFT: ' + formatWholeNumber(tronWeb.fromSun(cftBalance)) + ' CFT';
-      } catch (error) {
-        console.error('Error fetching CFT balance:', error);
+    function calculateTRX() {
+      const amount = document.getElementById('swap-amount').value;
+      if (!amount || amount <= 0) {
+        document.getElementById('calculated-trx').innerText = 'TRX you will receive: 0 TRX';
+        return;
       }
-    }
-
-    async function approveMaxTokens() {
-      try {
-        await tokenContract.methods.approve(swapContractAddress, maxUint256).send({
-          from: userAddress
-        });
-        console.log('Max tokens approved.');
-      } catch (error) {
-        console.error('Error approving tokens:', error);
-      }
+      const trxAmount = amount * swapRate;
+      document.getElementById('calculated-trx').innerText = 'TRX you will receive: ' + formatNumber(trxAmount) + ' TRX';
     }
 
     async function swapTokens(amount) {
@@ -890,6 +881,7 @@
       try {
         await updateUI();
         document.getElementById('swap-amount').value = ''; // Clear input field
+        document.getElementById('calculated-trx').innerText = 'TRX you will receive: 0 TRX';
       } catch (error) {
         console.error('Error refreshing UI:', error);
       }
@@ -897,10 +889,6 @@
 
     function formatNumber(num) {
       return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-
-    function formatWholeNumber(num) {
-      return Math.floor(parseFloat(num)).toLocaleString('en-US');
     }
   </script>
 </body>
