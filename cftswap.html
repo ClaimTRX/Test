@@ -183,8 +183,14 @@
       margin: 0;
     }
 
-    /* Mobile responsiveness */
+     /* Mobile responsiveness */
     @media (max-width: 767.98px) {
+      .listing button {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        width: 100%;
+      }
+
       .sidebar {
         height: auto;
         padding: 10px;
@@ -202,6 +208,70 @@
 
       .main-content {
         margin-left: 0;
+      }
+
+      .card-title {
+        font-size: 1.25rem;
+      }
+
+      .card-body {
+        grid-template-columns: 1fr;
+      }
+
+      .card-text {
+        font-size: 0.875rem;
+      }
+
+      .card-image-container {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+
+      .card-image {
+        width: 80%; /* Slightly larger image for mobile */
+        max-width: 250px;
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        width: 100%;
+      }
+
+      .form-control {
+        font-size: 0.75rem;
+        padding: 6px;
+        width: 100%;
+      }
+
+      .card-explanation {
+        margin-top: 20px;
+      }
+
+      .sidebar .social-links {
+        justify-content: center;
+      }
+
+      .sidebar .social-icon {
+        margin-bottom: 10px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .card-body {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+
+      .card-text-section {
+        flex: 1;
+        margin-right: 20px;
+      }
+
+      .card-explanation {
+        flex: 1;
       }
     }
   </style>
