@@ -1042,16 +1042,7 @@
 }
 
 
-      try {
-        await buyCftContract.methods.buyTokens().send({
-          callValue: tronWeb.toSun(trxAmount)
-        });
-        alert('Purchase successful!');
-        await updateUI();
-      } catch (error) {
-        console.error('Error buying tokens:', error);
-      }
-    }
+     
   </script>
 </body>
 </html>
