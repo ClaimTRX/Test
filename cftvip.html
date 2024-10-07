@@ -50,6 +50,10 @@
       text-decoration: none;
     }
 
+    .sidebar .social-icon:last-child {
+      margin-right: 0;
+    }
+
     .topbar {
       background-color: #162447;
       padding: 10px;
@@ -58,6 +62,23 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
+    }
+
+    .topbar a.social-icon {
+      color: white;
+      margin-left: 15px;
+      font-size: 20px;
+      text-decoration: none;
+    }
+
+    .topbar button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 8px 16px;
     }
 
     .main-content {
@@ -90,6 +111,23 @@
       font-size: 1.5rem;
     }
 
+    .card-image-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .card-image {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
     .card-text {
       font-size: 1rem;
     }
@@ -107,9 +145,19 @@
       background-color: #4CAF50;
     }
 
+    .btn-danger {
+      background-color: #ff4c4c;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+    }
+
     .main-content h1 {
       text-align: center;
       width: 100%;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .form-control {
@@ -118,6 +166,113 @@
       font-size: 16px;
       border-radius: 5px;
       margin-bottom: 10px;
+    }
+
+    .card-explanation {
+      margin-top: 10px;
+      font-size: 0.875rem;
+    }
+
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+     /* Mobile responsiveness */
+    @media (max-width: 767.98px) {
+      .listing button {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        width: 100%;
+      }
+
+      .sidebar {
+        height: auto;
+        padding: 10px;
+        width: 100%;
+        position: relative;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .topbar {
+        text-align: center;
+        margin-left: 0;
+        justify-content: center;
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .card-title {
+        font-size: 1.25rem;
+      }
+
+      .card-body {
+        grid-template-columns: 1fr;
+      }
+
+      .card-text {
+        font-size: 0.875rem;
+      }
+
+      .card-image-container {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+
+      .card-image {
+        width: 80%; /* Slightly larger image for mobile */
+        max-width: 250px;
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        width: 100%;
+      }
+
+      .form-control {
+        font-size: 0.75rem;
+        padding: 6px;
+        width: 100%;
+      }
+
+      .card-explanation {
+        margin-top: 20px;
+      }
+
+      .sidebar .social-links {
+        justify-content: center;
+      }
+
+      .sidebar .social-icon {
+        margin-bottom: 10px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .card-body {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+
+      .card-text-section {
+        flex: 1;
+        margin-right: 20px;
+      }
+
+      .card-explanation {
+        flex: 1;
+      }
     }
   </style>
 </head>
@@ -555,138 +710,241 @@
     }
 ]; // Add your token contract ABI here
     const buyCftContractAbi = [
-  {
-    "inputs": [
-      {
-        "internalType": "contract ITRC20",
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_initialPrice",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "tokenPrice",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_newPrice",
-        "type": "uint256"
-      }
-    ],
-    "name": "setTokenPrice",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "buyTokens",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "swapTokensForTRX",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "withdrawTRX",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "withdrawTokens",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
-  },
-  {
-    "inputs": [],
-    "name": "getTRXBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getTokenBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-]; // Add your buy contract ABI here
+    {
+        "inputs": [
+            {
+                "internalType": "contract ITRC20",
+                "name": "_token",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_initialPrice",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_initialBuyPrice",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "inputs": [],
+        "name": "buyTokens",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "tokenAmount",
+                "type": "uint256"
+            }
+        ],
+        "name": "swapTokensForTRX",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "withdrawTRX",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "withdrawTokens",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_newPrice",
+                "type": "uint256"
+            }
+        ],
+        "name": "setTokenPrice",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_newBuyPrice",
+                "type": "uint256"
+            }
+        ],
+        "name": "setBuyPrice",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "tokenPrice",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "buyPrice",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "token",
+        "outputs": [
+            {
+                "internalType": "contract ITRC20",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "receive"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "buyer",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "TokensPurchased",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "seller",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "TokensSwapped",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "WithdrawnTRX",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "WithdrawnTokens",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "newPrice",
+                "type": "uint256"
+            }
+        ],
+        "name": "PriceUpdated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "newBuyPrice",
+                "type": "uint256"
+            }
+        ],
+        "name": "BuyPriceUpdated",
+        "type": "event"
+    }
+]
+; // Add your buy contract ABI here
 
     document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('connect-button').addEventListener('click', connectWallet);
