@@ -996,13 +996,15 @@
     }
 
     async function updateBuyPrice() {
-      try {
-        const buyPrice = await buyCftContract.methods.tokenPrice().call();
-        document.getElementById('buy-price').innerText = 'Current CFT Price: ' + tronWeb.fromSun(buyPrice) + ' TRX';
-      } catch (error) {
-        console.error('Error fetching buy price:', error);
-      }
-    }
+  try {
+    // Fetch the buy price from the contract
+    const buyPrice = await buyCftContract.methods.buyPrice().call();  // Changed from tokenPrice() to buyPrice()
+    document.getElementById('buy-price').innerText = 'Current CFT Price: ' + tronWeb.fromSun(buyPrice) + ' TRX';
+  } catch (error) {
+    console.error('Error fetching buy price:', error);
+  }
+}
+
 
     async function updateAvailableTokens() {
       try {
