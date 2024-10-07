@@ -1016,11 +1016,31 @@
     }
 
     async function buyTokens() {
-      const trxAmount = document.getElementById('buy-amount').value;
-      if (!trxAmount || trxAmount <= 0) {
-        alert('Please enter a valid amount of TRX.');
-        return;
-      }
+  const trxAmount = document.getElementById('buy-amount').value;
+  
+  if (!trxAmount || trxAmount <= 0) {
+    alert('Please enter a valid amount of TRX.');
+    return;
+  }
+
+  try {
+    // Fetch the buy price from the contract to calculate the number of tokens
+    const buyPrice = await buyCftContract.methods.buyPrice().call();
+
+    // Calculate the token amount based on the TRX input and the current buyPrice
+    const tokenAmount = (trxAmount * 1e6) / tronWeb.fromSun(buyPrice);  // Adjusted calculation
+
+    await buyCftContract.methods.buyTokens().send({
+      callValue: tronWeb.toSun(trxAmount)
+    });
+
+    alert(`Purchase successful! You bought ${tokenAmount.toFixed(2)} CFT`);
+    await updateUI();
+  } catch (error) {
+    console.error('Error buying tokens:', error);
+  }
+}
+
 
       try {
         await buyCftContract.methods.buyTokens().send({
