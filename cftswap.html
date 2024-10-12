@@ -999,168 +999,186 @@
 
     
 
-     document.addEventListener('DOMContentLoaded', async () => {
-      document.getElementById('connect-button').addEventListener('click', connectWallet);
+     <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        document.getElementById('connect-button').addEventListener('click', connectWallet);
 
-      if (await checkTronLinkInstalled()) {
-        await initializeTronWeb();
-        setInterval(updateUI, 60000); // Update every minute
-      } else {
-        console.error('TronLink is not installed.');
-      }
-
-      document.getElementById('swap-amount').addEventListener('input', calculateTRX);
-      document.getElementById('swap-button').addEventListener('click', async () => {
-        const amount = document.getElementById('swap-amount').value;
-        if (!amount || amount <= 0) {
-          alert('Please enter a valid amount to swap.');
-          return;
+        if (await checkTronLinkInstalled()) {
+            await initializeTronWeb();
+            setInterval(updateUI, 60000); // Update every minute
+        } else {
+            console.error('TronLink is not installed.');
         }
-        await approveAndSwap(amount, regularSwapRate);
-        await refreshUI();
-      });
 
-      document.getElementById('feb-swap-amount').addEventListener('input', calculateFebTRX);
-      document.getElementById('feb-swap-button').addEventListener('click', async () => {
-        const amount = document.getElementById('feb-swap-amount').value;
-        if (!amount || amount <= 0) {
-          alert('Please enter a valid amount to swap.');
-          return;
-        }
-        await approveAndSwap(amount, febSwapRate);
-        await refreshUI();
-      });
+        // Regular swap
+        document.getElementById('swap-amount').addEventListener('input', calculateTRX);
+        document.getElementById('swap-button').addEventListener('click', async () => {
+            const amount = document.getElementById('swap-amount').value;
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount to swap.');
+                return;
+            }
+            await approveAndSwap(amount, regularSwapRate, false);  // Regular user
+            await refreshUI();
+        });
+
+        // FEB holder swap
+        document.getElementById('feb-swap-amount').addEventListener('input', calculateFebTRX);
+        document.getElementById('feb-swap-button').addEventListener('click', async () => {
+            const amount = document.getElementById('feb-swap-amount').value;
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount to swap.');
+                return;
+            }
+            await approveAndSwap(amount, febSwapRate, true);  // FEB holder
+            await refreshUI();
+        });
     });
 
     async function checkTronLinkInstalled() {
-      return new Promise((resolve) => {
-        const interval = setInterval(() => {
-          if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-            clearInterval(interval);
-            resolve(true);
-          }
-        }, 1000);
-      });
+        return new Promise((resolve) => {
+            const interval = setInterval(() => {
+                if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                    clearInterval(interval);
+                    resolve(true);
+                }
+            }, 1000);
+        });
     }
 
     async function connectWallet() {
-      try {
-        await tronLink.request({ method: 'tron_requestAccounts' });
-        await initializeTronWeb();
-      } catch (e) {
-        console.error('Failed to connect to TronLink:', e);
-      }
+        try {
+            await tronLink.request({ method: 'tron_requestAccounts' });
+            await initializeTronWeb();
+        } catch (e) {
+            console.error('Failed to connect to TronLink:', e);
+        }
     }
 
     async function initializeTronWeb() {
-      try {
-        tronWeb = window.tronWeb;
-        userAddress = tronWeb.defaultAddress.base58;
+        try {
+            tronWeb = window.tronWeb;
+            userAddress = tronWeb.defaultAddress.base58;
 
-        if (!userAddress) throw new Error('User address not available');
+            if (!userAddress) throw new Error('User address not available');
 
-        tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
-        swapContract = await tronWeb.contract(swapContractAbi, swapContractAddress);
+            tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
+            swapContract = await tronWeb.contract(swapContractAbi, swapContractAddress);
 
-        document.getElementById('connect-button').style.display = 'none';
-        await updateUI();
-      } catch (error) {
-        console.error('Error initializing TronWeb or Contracts:', error);
-      }
+            document.getElementById('connect-button').style.display = 'none';
+            await updateUI();
+        } catch (error) {
+            console.error('Error initializing TronWeb or Contracts:', error);
+        }
     }
 
     async function updateUI() {
-      try {
-        await updateAvailableTRXContract();
-      } catch (error) {
-        console.error('Error updating UI:', error);
-      }
+        try {
+            await updateAvailableTRXContract();
+        } catch (error) {
+            console.error('Error updating UI:', error);
+        }
     }
 
     async function updateAvailableTRXContract() {
-      try {
-        const trxBalance = await tronWeb.trx.getBalance(swapContractAddress);
-        document.getElementById('available-trx-contract').innerText = 'Available TRX in Contract: ' + formatNumber(tronWeb.fromSun(trxBalance)) + ' TRX';
-      } catch (error) {
-        console.error('Error fetching contract TRX balance:', error);
-      }
+        try {
+            const trxBalance = await tronWeb.trx.getBalance(swapContractAddress);
+            document.getElementById('available-trx-contract').innerText = 'Available TRX in Contract: ' + formatNumber(tronWeb.fromSun(trxBalance)) + ' TRX';
+        } catch (error) {
+            console.error('Error fetching contract TRX balance:', error);
+        }
     }
 
     async function checkApproval(amount) {
-      try {
-        const allowance = await tokenContract.methods.allowance(userAddress, swapContractAddress).call();
-        return allowance >= tronWeb.toSun(amount);
-      } catch (error) {
-        console.error('Error checking approval:', error);
-        return false;
-      }
+        try {
+            const allowance = await tokenContract.methods.allowance(userAddress, swapContractAddress).call();
+            return allowance >= tronWeb.toSun(amount);
+        } catch (error) {
+            console.error('Error checking approval:', error);
+            return false;
+        }
     }
 
     async function approveMaxTokens() {
-      try {
-        await tokenContract.methods.approve(swapContractAddress, maxUint256).send({
-          from: userAddress
-        });
-        console.log('Max tokens approved.');
-      } catch (error) {
-        console.error('Error approving tokens:', error);
-      }
+        try {
+            await tokenContract.methods.approve(swapContractAddress, maxUint256).send({
+                from: userAddress
+            });
+            console.log('Max tokens approved.');
+        } catch (error) {
+            console.error('Error approving tokens:', error);
+        }
     }
 
-    async function approveAndSwap(amount, rate) {
-      const approved = await checkApproval(amount);
-      if (!approved) {
-        await approveMaxTokens();
-      }
-      await swapTokens(amount, rate);
+    async function approveAndSwap(amount, rate, isFEBHolder = false) {
+        const approved = await checkApproval(amount);
+        if (!approved) {
+            await approveMaxTokens();
+        }
+
+        if (isFEBHolder) {
+            await swapTokensAsFEB(amount, rate);
+        } else {
+            await swapTokens(amount, rate);
+        }
     }
 
     async function swapTokens(amount, rate) {
-      try {
-        await swapContract.methods.swapTokensForTRX(tronWeb.toSun(amount)).send({
-          from: userAddress
-        });
-        console.log('Tokens swapped for TRX.');
-      } catch (error) {
-        console.error('Error swapping tokens:', error);
-      }
+        try {
+            await swapContract.methods.swapTokensForTRX(tronWeb.toSun(amount)).send({
+                from: userAddress
+            });
+            console.log('Tokens swapped for TRX.');
+        } catch (error) {
+            console.error('Error swapping tokens:', error);
+        }
+    }
+
+    async function swapTokensAsFEB(amount, rate) {
+        try {
+            await swapContract.methods.swapTokensForTRXAsFEBHolder(tronWeb.toSun(amount)).send({
+                from: userAddress
+            });
+            console.log('Tokens swapped for TRX (FEB Holder).');
+        } catch (error) {
+            console.error('Error swapping tokens as FEB holder:', error);
+        }
     }
 
     async function refreshUI() {
-      try {
-        await updateUI();
-        document.getElementById('swap-amount').value = ''; // Clear input field
-        document.getElementById('calculated-trx').innerText = 'TRX you will receive: 0 TRX';
-        document.getElementById('feb-swap-amount').value = ''; // Clear input field for FEB
-        document.getElementById('feb-calculated-trx').innerText = 'TRX you will receive: 0 TRX';
-      } catch (error) {
-        console.error('Error refreshing UI:', error);
-      }
+        try {
+            await updateUI();
+            document.getElementById('swap-amount').value = '';  // Clear input field
+            document.getElementById('calculated-trx').innerText = 'TRX you will receive: 0 TRX';
+            document.getElementById('feb-swap-amount').value = '';  // Clear input field for FEB
+            document.getElementById('feb-calculated-trx').innerText = 'TRX you will receive: 0 TRX';
+        } catch (error) {
+            console.error('Error refreshing UI:', error);
+        }
     }
 
     function calculateTRX() {
-      const amount = document.getElementById('swap-amount').value;
-      if (!amount || amount <= 0) {
-        document.getElementById('calculated-trx').innerText = 'TRX you will receive: 0 TRX';
-        return;
-      }
-      const trxAmount = amount * regularSwapRate;
-      document.getElementById('calculated-trx').innerText = 'TRX you will receive: ' + formatNumber(trxAmount) + ' TRX';
+        const amount = document.getElementById('swap-amount').value;
+        if (!amount || amount <= 0) {
+            document.getElementById('calculated-trx').innerText = 'TRX you will receive: 0 TRX';
+            return;
+        }
+        const trxAmount = amount * regularSwapRate;
+        document.getElementById('calculated-trx').innerText = 'TRX you will receive: ' + formatNumber(trxAmount) + ' TRX';
     }
 
     function calculateFebTRX() {
-      const amount = document.getElementById('feb-swap-amount').value;
-      if (!amount || amount <= 0) {
-        document.getElementById('feb-calculated-trx').innerText = 'TRX you will receive: 0 TRX';
-        return;
-      }
-      const trxAmount = amount * febSwapRate;
-      document.getElementById('feb-calculated-trx').innerText = 'TRX you will receive: ' + formatNumber(trxAmount) + ' TRX';
+        const amount = document.getElementById('feb-swap-amount').value;
+        if (!amount || amount <= 0) {
+            document.getElementById('feb-calculated-trx').innerText = 'TRX you will receive: 0 TRX';
+            return;
+        }
+        const trxAmount = amount * febSwapRate;
+        document.getElementById('feb-calculated-trx').innerText = 'TRX you will receive: ' + formatNumber(trxAmount) + ' TRX';
     }
 
     function formatNumber(num) {
-      return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
-  </script>
-</body>
-</html>
+</script>
+
