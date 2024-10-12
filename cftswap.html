@@ -302,10 +302,12 @@
 
   <div class="main-content">
     <h1>Swap CFT for TRX</h1>
+
+    <!-- Regular Swap Card -->
     <div class="card mt-4">
       <div class="card-body">
         <div class="card-text-section">
-          <h5 class="card-title">Swap CFT Tokens</h5>
+          <h5 class="card-title">Regular Swap CFT Tokens</h5>
           <p class="card-text">Current Swap Rate: 1 CFT = 0.9 TRX</p>
           <p class="card-text" id="available-trx-contract">Loading TRX in Contract...</p>
           <input type="number" id="swap-amount" class="form-control" placeholder="Enter amount to swap">
@@ -320,8 +322,26 @@
                 <i class="fab fa-telegram-plane"></i> Join our Telegram
               </a>
             </div>
+        </div>
       </div>
     </div>
+
+    <!-- FEB Holder Swap Card -->
+    <div class="card mt-4">
+      <div class="card-body">
+        <div class="card-text-section">
+          <h5 class="card-title">FEB Holder Swap</h5>
+          <p class="card-text">Special Swap Rate for FEB Holders: 1 CFT = 1.0 TRX</p>
+          <input type="number" id="feb-swap-amount" class="form-control" placeholder="Enter amount to swap">
+          <p class="card-text" id="feb-calculated-trx">TRX you will receive: 0 TRX</p>
+          <button id="feb-swap-button" class="btn btn-danger">Swap CFT (FEB)</button>
+        </div>
+        <div class="card-image-container mt-4">
+           <img src="https://raw.githubusercontent.com/ClaimTRX/ClaimTRX/main/66d80aecb2a23_download.jpg" class="card-image" alt="Token Image">
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -330,8 +350,10 @@
   <script>
     let tronWeb, userAddress, tokenContract, swapContract;
     const tokenContractAddress = 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA'; // TRC20 token contract address
-    const swapContractAddress = 'THZNEw8C29myNizDfccgTP9evK2LWg7qor'; // Swap contract address
+    const swapContractAddress = 'TDgM1P88HkggeeQZeZQpUh86UdiDrrM6hG'; // Swap contract address
     const maxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+    const febSwapRate = 0.95; // Special swap rate for FEB holders
+    const regularSwapRate = 0.9; // Regular swap rate for non-FEB holders
 
     const tokenContractAbi = [
     {
@@ -730,8 +752,28 @@
         "type": "address"
       },
       {
+        "internalType": "contract ITRC20",
+        "name": "_febToken",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "_initialPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_initialBuyPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_initialPriceFEB",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_initialBuyPriceFEB",
         "type": "uint256"
       }
     ],
@@ -765,6 +807,45 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "buyPrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "tokenPriceFEB",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "buyPriceFEB",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -773,6 +854,45 @@
       }
     ],
     "name": "setTokenPrice",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_newBuyPrice",
+        "type": "uint256"
+      }
+    ],
+    "name": "setBuyPrice",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_newPriceFEB",
+        "type": "uint256"
+      }
+    ],
+    "name": "setTokenPriceFEB",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_newBuyPriceFEB",
+        "type": "uint256"
+      }
+    ],
+    "name": "setBuyPriceFEB",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -793,6 +913,26 @@
       }
     ],
     "name": "swapTokensForTRX",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "buyTokensAsFEBHolder",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "swapTokensForTRXAsFEBHolder",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -854,11 +994,12 @@
     "type": "function"
   }
 ]
+
 ;  // Add your swap contract ABI
 
-    const swapRate = 0.9; // Swap rate 1 CFT = 0.9 TRX
+    
 
-    document.addEventListener('DOMContentLoaded', async () => {
+     document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('connect-button').addEventListener('click', connectWallet);
 
       if (await checkTronLinkInstalled()) {
@@ -875,7 +1016,18 @@
           alert('Please enter a valid amount to swap.');
           return;
         }
-        await approveAndSwap(amount);
+        await approveAndSwap(amount, regularSwapRate);
+        await refreshUI();
+      });
+
+      document.getElementById('feb-swap-amount').addEventListener('input', calculateFebTRX);
+      document.getElementById('feb-swap-button').addEventListener('click', async () => {
+        const amount = document.getElementById('feb-swap-amount').value;
+        if (!amount || amount <= 0) {
+          alert('Please enter a valid amount to swap.');
+          return;
+        }
+        await approveAndSwap(amount, febSwapRate);
         await refreshUI();
       });
     });
@@ -955,15 +1107,15 @@
       }
     }
 
-    async function approveAndSwap(amount) {
+    async function approveAndSwap(amount, rate) {
       const approved = await checkApproval(amount);
       if (!approved) {
         await approveMaxTokens();
       }
-      await swapTokens(amount);
+      await swapTokens(amount, rate);
     }
 
-    async function swapTokens(amount) {
+    async function swapTokens(amount, rate) {
       try {
         await swapContract.methods.swapTokensForTRX(tronWeb.toSun(amount)).send({
           from: userAddress
@@ -979,6 +1131,8 @@
         await updateUI();
         document.getElementById('swap-amount').value = ''; // Clear input field
         document.getElementById('calculated-trx').innerText = 'TRX you will receive: 0 TRX';
+        document.getElementById('feb-swap-amount').value = ''; // Clear input field for FEB
+        document.getElementById('feb-calculated-trx').innerText = 'TRX you will receive: 0 TRX';
       } catch (error) {
         console.error('Error refreshing UI:', error);
       }
@@ -990,8 +1144,18 @@
         document.getElementById('calculated-trx').innerText = 'TRX you will receive: 0 TRX';
         return;
       }
-      const trxAmount = amount * swapRate;
+      const trxAmount = amount * regularSwapRate;
       document.getElementById('calculated-trx').innerText = 'TRX you will receive: ' + formatNumber(trxAmount) + ' TRX';
+    }
+
+    function calculateFebTRX() {
+      const amount = document.getElementById('feb-swap-amount').value;
+      if (!amount || amount <= 0) {
+        document.getElementById('feb-calculated-trx').innerText = 'TRX you will receive: 0 TRX';
+        return;
+      }
+      const trxAmount = amount * febSwapRate;
+      document.getElementById('feb-calculated-trx').innerText = 'TRX you will receive: ' + formatNumber(trxAmount) + ' TRX';
     }
 
     function formatNumber(num) {
