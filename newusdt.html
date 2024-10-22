@@ -292,11 +292,6 @@
                 "type": "address"
             },
             {
-                "internalType": "address",
-                "name": "_rewardToken",
-                "type": "address"
-            },
-            {
                 "internalType": "uint256",
                 "name": "_dailyReward",
                 "type": "uint256"
@@ -304,63 +299,6 @@
         ],
         "stateMutability": "nonpayable",
         "type": "constructor"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "previousOwner",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "newOwner",
-                "type": "address"
-            }
-        ],
-        "name": "OwnershipTransferred",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "user",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "RewardClaimed",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "user",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "RewardDeposited",
-        "type": "event"
     },
     {
         "anonymous": false,
@@ -404,6 +342,25 @@
         "anonymous": false,
         "inputs": [
             {
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "reward",
+                "type": "uint256"
+            }
+        ],
+        "name": "RewardClaimed",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
                 "indexed": false,
                 "internalType": "uint256",
                 "name": "amount",
@@ -427,54 +384,33 @@
         "type": "event"
     },
     {
-        "inputs": [],
-        "name": "claimReward",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
+        "anonymous": false,
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "depositReward",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "lastUpdateTime",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "owner",
-        "outputs": [
-            {
+                "indexed": true,
                 "internalType": "address",
-                "name": "",
+                "name": "previousOwner",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "newOwner",
                 "type": "address"
             }
         ],
-        "stateMutability": "view",
-        "type": "function"
+        "name": "OwnershipTransferred",
+        "type": "event"
     },
     {
-        "inputs": [],
-        "name": "ownerWithdraw",
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "stake",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -487,7 +423,14 @@
                 "type": "uint256"
             }
         ],
-        "name": "ownerWithdrawStakedTokens",
+        "name": "withdraw",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "claimReward",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -506,73 +449,14 @@
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "rewardPerTokenStored",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "stakingToken",
-        "outputs": [
-            {
-                "internalType": "contract ITRC20",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "rewardToken",
-        "outputs": [
-            {
-                "internalType": "contract ITRC20",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
             }
         ],
-        "name": "stake",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "totalDepositedRewards",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "totalStaked",
+        "name": "earned",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -591,20 +475,7 @@
                 "type": "address"
             }
         ],
-        "name": "viewTotalClaimedRewards",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "viewTotalDepositedRewards",
+        "name": "viewProjectedRewardsForYear",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -629,27 +500,8 @@
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "withdraw",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-            }
-        ],
-        "name": "viewPendingReward",
+        "inputs": [],
+        "name": "viewTotalStaked",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -687,7 +539,7 @@
                 "type": "address"
             }
         ],
-        "name": "viewStakedPercentage",
+        "name": "viewPendingReward",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -714,6 +566,25 @@
     {
         "inputs": [
             {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "viewTotalClaimedRewards",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "uint256",
                 "name": "_dailyReward",
                 "type": "uint256"
@@ -727,20 +598,27 @@
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-            }
-        ],
-        "name": "viewProjectedRewardsForYear",
-        "outputs": [
-            {
                 "internalType": "uint256",
-                "name": "",
+                "name": "amount",
                 "type": "uint256"
             }
         ],
-        "stateMutability": "view",
+        "name": "ownerWithdraw",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "ownerWithdrawStakedTokens",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -755,8 +633,13 @@
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "receive"
     }
 ]
+;
 
 
 ;
