@@ -864,8 +864,7 @@
 ]
 ;
 
-   // TronLink connection
-document.addEventListener('DOMContentLoaded', async () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('connect-button').addEventListener('click', connectWallet);
 
     if (await checkTronLinkInstalled()) {
@@ -944,13 +943,23 @@ function setupEventListeners() {
         const tokenAmount = document.getElementById('tokenAmount').value;
         const pricePerTokenInTRX = document.getElementById('pricePerTokenInTRX').value;
 
-        if (tokenAmount && pricePerTokenInTRX) {
-            try {
-                await approveAndListTokens(tokenAmount, pricePerTokenInTRX);
-                setTimeout(refreshUI, 3000);
-            } catch (error) {
-                console.error('Error listing tokens:', error);
-            }
+        console.log("Attempting to list tokens:", tokenAmount, "at price per token:", pricePerTokenInTRX, "TRX");
+
+        if (!tokenAmount || tokenAmount <= 0) {
+            alert('Please enter a valid token amount.');
+            return;
+        }
+        if (!pricePerTokenInTRX || pricePerTokenInTRX <= 0) {
+            alert('Please enter a valid price per token in TRX.');
+            return;
+        }
+
+        try {
+            await approveAndListTokens(tokenAmount, pricePerTokenInTRX);
+            setTimeout(refreshUI, 3000);
+        } catch (error) {
+            console.error('Error listing tokens:', error);
+            alert('Error listing tokens: ' + error.message);
         }
     });
 }
@@ -1001,39 +1010,10 @@ async function fetchMarketplaceListings() {
     }
 }
 
-async function buyToken(listingId, tokenAmount) {
-    try {
-        const pricePerTokenInTRX = document.getElementById('pricePerTokenInTRX').value;
-        const totalPrice = tronWeb.toSun(tokenAmount * pricePerTokenInTRX);
-
-        await marketplaceContract.methods.buyToken(listingId, tronWeb.toSun(tokenAmount)).send({
-            callValue: totalPrice
-        });
-
-        alert('Token purchased successfully!');
-        fetchMarketplaceListings();
-    } catch (error) {
-        console.error('Error buying token:', error);
-        alert('Failed to buy tokens.');
-    }
-}
-
-// Cancel a listing from the marketplace
-async function cancelListing(listingId) {
-    try {
-        await marketplaceContract.methods.cancelListing(listingId).send();
-        alert('Listing cancelled successfully!');
-        fetchMarketplaceListings();
-    } catch (error) {
-        console.error('Error cancelling listing:', error);
-        alert('Failed to cancel listing.');
-    }
-}
-
 // Approve and list tokens for sale
-async function approveAndListTokens(tokenAmount, priceInTRX) {
+async function approveAndListTokens(tokenAmount, pricePerTokenInTRX) {
     const adjustedTokenAmount = tronWeb.toSun(tokenAmount);
-    const adjustedPriceInTRX = tronWeb.toSun(priceInTRX);
+    const adjustedPriceInTRX = tronWeb.toSun(pricePerTokenInTRX);
 
     try {
         await tokenContract.methods.approve(marketplaceContractAddress, adjustedTokenAmount).send();
@@ -1041,21 +1021,10 @@ async function approveAndListTokens(tokenAmount, priceInTRX) {
         alert('Tokens listed successfully!');
         fetchMarketplaceListings();
     } catch (error) {
-        console.error(error);
+        console.error('Failed to list tokens:', error);
         alert('Failed to list tokens.');
     }
 }
-
-// Utility function to format numbers
-function formatNumber(num) {
-    return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-// Utility function to format whole numbers
-function formatWholeNumber(num) {
-    return Math.floor(parseFloat(num)).toLocaleString('en-US');
-}
-
   </script>
 </body>
 </html>
