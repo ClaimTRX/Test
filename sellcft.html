@@ -722,173 +722,147 @@
 ];
 
   
-  const marketplaceContractAbi = [ {
-  "inputs": [
-    {
-      "internalType": "address",
-      "name": "tokenAddress",
-      "type": "address"
-    }
-  ],
-  "stateMutability": "nonpayable",
-  "type": "constructor"
-},
-{
-  "inputs": [
-    {
-      "internalType": "uint256",
-      "name": "tokenAmount",
-      "type": "uint256"
-    },
-    {
-      "internalType": "uint256",
-      "name": "priceInTRX",
-      "type": "uint256"
-    }
-  ],
-  "name": "listToken",
-  "outputs": [],
-  "stateMutability": "nonpayable",
-  "type": "function"
-},
-{
-  "inputs": [
-    {
-      "internalType": "uint256",
-      "name": "listingId",
-      "type": "uint256"
-    }
-  ],
-  "name": "buyToken",
-  "outputs": [],
-  "stateMutability": "payable",
-  "type": "function"
-},
-{
-  "inputs": [
-    {
-      "internalType": "uint256",
-      "name": "listingId",
-      "type": "uint256"
-    }
-  ],
-  "name": "cancelListing",
-  "outputs": [],
-  "stateMutability": "nonpayable",
-  "type": "function"
-},
-{
-  "inputs": [],
-  "name": "getActiveListings",
-  "outputs": [
-    {
-      "internalType": "uint256[]",
-      "name": "",
-      "type": "uint256[]"
-    },
-    {
-      "components": [
-        {
-          "internalType": "address",
-          "name": "seller",
-          "type": "address"
-        },
-        {
-          "internalType": "uint128",
-          "name": "tokenAmount",
-          "type": "uint128"
-        },
-        {
-          "internalType": "uint128",
-          "name": "priceInTRX",
-          "type": "uint128"
-        },
-        {
-          "internalType": "bool",
-          "name": "isActive",
-          "type": "bool"
-        }
-      ],
-      "internalType": "struct TokenMarketplace.Listing[]",
-      "name": "",
-      "type": "tuple[]"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
-                                  {
-  "inputs": [
-    {
-      "internalType": "uint256",
-      "name": "listingId",
-      "type": "uint256"
-    },
-    {
-      "internalType": "uint256",
-      "name": "tokenAmount",
-      "type": "uint256"
-    }
-  ],
-  "name": "buyToken",
-  "outputs": [],
-  "stateMutability": "payable",
-  "type": "function"
-}
+  const marketplaceContractAbi = [
+  {
+    "inputs": [
       {
-  "inputs": [
-    {
-      "internalType": "uint256",
-      "name": "listingId",
-      "type": "uint256"
-    }
-  ],
-  "name": "cancelListing",
-  "outputs": [],
-  "stateMutability": "nonpayable",
-  "type": "function"
-}
-{
-  "anonymous": false,
-  "inputs": [
-    {
-      "indexed": false,
-      "internalType": "uint256",
-      "name": "listingId",
-      "type": "uint256"
-    },
-    {
-      "indexed": false,
-      "internalType": "uint256",
-      "name": "remainingTokenAmount",
-      "type": "uint256"
-    },
-    {
-      "indexed": false,
-      "internalType": "uint256",
-      "name": "partialFillAmount",
-      "type": "uint256"
-    }
-  ],
-  "name": "ListingPartiallyFilled",
-  "type": "event"
-}
-{
-  "anonymous": false,
-  "inputs": [
-    {
-      "indexed": false,
-      "internalType": "uint256",
-      "name": "listingId",
-      "type": "uint256"
-    }
-  ],
-  "name": "ListingRemoved",
-  "type": "event"
-}
-
-
-];
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "priceInTRX",
+        "type": "uint256"
+      }
+    ],
+    "name": "listToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "listingId",
+        "type": "uint256"
+      }
+    ],
+    "name": "cancelListing",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getActiveListings",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "seller",
+            "type": "address"
+          },
+          {
+            "internalType": "uint128",
+            "name": "tokenAmount",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "priceInTRX",
+            "type": "uint128"
+          },
+          {
+            "internalType": "bool",
+            "name": "isActive",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct TokenMarketplace.Listing[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "listingId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "buyToken",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "listingId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "remainingTokenAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "partialFillAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "ListingPartiallyFilled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "listingId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ListingRemoved",
+    "type": "event"
+  }
+]
+;
 
    // TronLink connection
 document.addEventListener('DOMContentLoaded', async () => {
