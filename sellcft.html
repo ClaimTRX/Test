@@ -835,6 +835,58 @@
   "stateMutability": "payable",
   "type": "function"
 }
+      {
+  "inputs": [
+    {
+      "internalType": "uint256",
+      "name": "listingId",
+      "type": "uint256"
+    }
+  ],
+  "name": "cancelListing",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+}
+{
+  "anonymous": false,
+  "inputs": [
+    {
+      "indexed": false,
+      "internalType": "uint256",
+      "name": "listingId",
+      "type": "uint256"
+    },
+    {
+      "indexed": false,
+      "internalType": "uint256",
+      "name": "remainingTokenAmount",
+      "type": "uint256"
+    },
+    {
+      "indexed": false,
+      "internalType": "uint256",
+      "name": "partialFillAmount",
+      "type": "uint256"
+    }
+  ],
+  "name": "ListingPartiallyFilled",
+  "type": "event"
+}
+{
+  "anonymous": false,
+  "inputs": [
+    {
+      "indexed": false,
+      "internalType": "uint256",
+      "name": "listingId",
+      "type": "uint256"
+    }
+  ],
+  "name": "ListingRemoved",
+  "type": "event"
+}
+
 
 ];
 
