@@ -981,33 +981,31 @@ async function fetchMarketplaceListings() {
         const listingsContainer = document.getElementById('listings');
         listingsContainer.innerHTML = '';
 
-        for (let i = 0; i < listingIds.length; i++) {
-            const listingId = listingIds[i];
-            const listing = listings[i];
+        listings.forEach((listing, index) => {
+            const listingId = listingIds[index];
+            const tokenAmount = tronWeb.fromSun(listing.tokenAmount);
+            const pricePerToken = tronWeb.fromSun(listing.pricePerTokenInTRX);  // Correct conversion
 
-            if (listing.isActive) {
-                const tokenAmount = tronWeb.fromSun(listing.tokenAmount);
-                const pricePerToken = tronWeb.fromSun(listing.pricePerTokenInTRX);
-                const isSeller = (listing.seller.trim().toLowerCase() === userAddress.trim().toLowerCase());
+            const isSeller = (listing.seller.trim().toLowerCase() === userAddress.trim().toLowerCase());
 
-                const listingElement = document.createElement('div');
-                listingElement.className = 'listing';
-                listingElement.innerHTML = `
-                    <p>Seller: ${listing.seller}</p>
-                    <p>Token Amount: ${tokenAmount}</p>
-                    <p>Price Per Token: ${pricePerToken} TRX</p>
-                    <input type="number" id="buyAmount${listingId}" class="form-control" placeholder="Amount to buy">
-                    <button class="btn btn-success mb-2" onclick="buyToken(${listingId}, document.getElementById('buyAmount${listingId}').value)">Buy</button>
-                    ${isSeller ? `<button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel</button>` : ''}
-                `;
-                listingsContainer.appendChild(listingElement);
-            }
-        }
+            const listingElement = document.createElement('div');
+            listingElement.className = 'listing';
+            listingElement.innerHTML = `
+                <p>Seller: ${listing.seller}</p>
+                <p>Token Amount: ${tokenAmount}</p>
+                <p>Price Per Token: ${pricePerToken} TRX</p>
+                <input type="number" id="buyAmount${listingId}" class="form-control" placeholder="Amount to buy">
+                <button class="btn btn-success mb-2" onclick="buyToken(${listingId}, document.getElementById('buyAmount${listingId}').value)">Buy</button>
+                ${isSeller ? `<button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel</button>` : ''}
+            `;
+            listingsContainer.appendChild(listingElement);
+        });
     } catch (error) {
-        console.error(error);
+        console.error("Failed to fetch listings:", error);
         alert('Failed to fetch listings.');
     }
 }
+
 
 
 // Approve and list tokens for sale
