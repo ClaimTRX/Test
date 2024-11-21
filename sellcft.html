@@ -988,8 +988,7 @@ async function fetchMarketplaceListings() {
             if (listing.isActive) {
                 const tokenAmount = tronWeb.fromSun(listing.tokenAmount);
                 const pricePerToken = tronWeb.fromSun(listing.pricePerTokenInTRX);
-                const totalPrice = tokenAmount * pricePerToken;
-                const isSeller = listing.seller.trim().toLowerCase() === userAddress.trim().toLowerCase();
+                const isSeller = (listing.seller.trim().toLowerCase() === userAddress.trim().toLowerCase());
 
                 const listingElement = document.createElement('div');
                 listingElement.className = 'listing';
@@ -1009,6 +1008,7 @@ async function fetchMarketplaceListings() {
         alert('Failed to fetch listings.');
     }
 }
+
 
 // Approve and list tokens for sale
 async function approveAndListTokens(tokenAmount, pricePerTokenInTRX) {
