@@ -276,41 +276,41 @@
   <div class="topbar">
     <button id="connect-button">Connect Wallet</button>
   </div>
-  <div class="main-content">
-    <h1>List your CFT for sale</h1>
-    
-    <!-- Marketplace Box -->
-    <div class="card mt-4">
-      <div class="card-body">
-        <div class="card-text-section">
-          
-          <p class="card-text">List your CFT Tokens</p>
-          <input type="number" id="tokenAmount" class="form-control" placeholder="Amount of Tokens">
-          <input type="number" id="pricePerTokenInTRX" class="form-control" placeholder="Total price in TRX">
-          <button id="approveAndListButton" class="btn btn-success">Approve and List</button>
-        </div>
-        <div class="card-explanation">
-          <p>To ensure users can trade their token, the ecosystem treasury will buy back any listed tokens that are not traded P2P within a reasonable timeframe.<br>
-          This only happens if the tokens are listed at the same price the seller bought them at.</p>
-          <p>Orders cannot be filled partially, so keep this in mind when listing your tokens.</p>
-        </div>
-      </div>
-    </div>
+ <div class="main-content">
+  <h1>List your CFT for sale</h1>
 
-    <!-- Listed for Sale Box -->
-    <div class="card mt-4">
-      <div class="card-body">
-        <div class="card-text-section">
-          <h5 class="card-title">Listed tokens</h5>
-          <div id="listings" class="card-text">Loading...</div>
-        </div>
-        <div class="card-explanation">
-          <p>Listed tokens will appear here. When there are tokens listed for sale at or below market price, we will close the buy option to ensure users who want to buy CFT<br>
-          will buy them from the Marketplace.</p>
-        </div>
+  <!-- Marketplace Box -->
+  <div class="card mt-4">
+    <div class="card-body">
+      <div class="card-text-section">
+        <p class="card-text">List your CFT Tokens</p>
+        <input type="number" id="tokenAmount" class="form-control" placeholder="Amount of Tokens">
+        <input type="number" id="pricePerTokenInTRX" class="form-control" placeholder="Price per Token in TRX">
+        <button id="approveAndListButton" class="btn btn-success">Approve and List</button>
+      </div>
+      <div class="card-explanation">
+        <p>To ensure users can trade their token, the ecosystem treasury will buy back any listed tokens that are not traded P2P within a reasonable timeframe.<br>
+        This only happens if the tokens are listed at the same price the seller bought them at.</p>
+        <p>Orders cannot be filled partially, so keep this in mind when listing your tokens.</p>
       </div>
     </div>
   </div>
+
+  <!-- Listed for Sale Box -->
+  <div class="card mt-4">
+    <div class="card-body">
+      <div class="card-text-section">
+        <h5 class="card-title">Listed tokens</h5>
+        <div id="listings" class="card-text">Loading...</div>
+      </div>
+      <div class="card-explanation">
+        <p>Listed tokens will appear here. When there are tokens listed for sale at or below market price, we will close the buy option to ensure users who want to buy CFT<br>
+        will buy them from the Marketplace.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
 
@@ -324,7 +324,7 @@
   <script>
     let tronWeb, userAddress,  tokenContract,  marketplaceContract;
     const tokenContractAddress = 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA';
-    const marketplaceContractAddress = 'TQaF95pNKxZp8HEVKT7Y4V9WMJYofsEKra';
+    const marketplaceContractAddress = 'TXsZPCRaZJ3cCy4eAew5whETo5oTnZC6V7';
     const maxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
 
@@ -817,6 +817,25 @@
   "stateMutability": "view",
   "type": "function"
 }
+                                  {
+  "inputs": [
+    {
+      "internalType": "uint256",
+      "name": "listingId",
+      "type": "uint256"
+    },
+    {
+      "internalType": "uint256",
+      "name": "tokenAmount",
+      "type": "uint256"
+    }
+  ],
+  "name": "buyToken",
+  "outputs": [],
+  "stateMutability": "payable",
+  "type": "function"
+}
+
 ];
 
    // TronLink connection
@@ -933,7 +952,8 @@ async function fetchMarketplaceListings() {
 
             if (listing.isActive) {
                 const tokenAmount = tronWeb.fromSun(listing.tokenAmount);
-                const totalPrice = tronWeb.fromSun(listing.priceInTRX);
+                const pricePerToken = tronWeb.fromSun(listing.pricePerTokenInTRX);
+                const totalPrice = tokenAmount * pricePerToken;
                 const isSeller = listing.seller.trim().toLowerCase() === userAddress.trim().toLowerCase();
 
                 const listingElement = document.createElement('div');
@@ -941,8 +961,9 @@ async function fetchMarketplaceListings() {
                 listingElement.innerHTML = `
                     <p>Seller: ${listing.seller}</p>
                     <p>Token Amount: ${tokenAmount}</p>
-                    <p>Total Price: ${totalPrice} TRX</p>
-                    <button class="btn btn-success mb-2" onclick="buyToken(${listingId}, ${totalPrice})">Buy</button>
+                    <p>Price Per Token: ${pricePerToken} TRX</p>
+                    <input type="number" id="buyAmount${listingId}" class="form-control" placeholder="Amount to buy">
+                    <button class="btn btn-success mb-2" onclick="buyToken(${listingId}, document.getElementById('buyAmount${listingId}').value)">Buy</button>
                     ${isSeller ? `<button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel</button>` : ''}
                 `;
                 listingsContainer.appendChild(listingElement);
@@ -954,11 +975,13 @@ async function fetchMarketplaceListings() {
     }
 }
 
-// Buy token from the marketplace
-async function buyToken(listingId, totalPrice) {
+async function buyToken(listingId, tokenAmount) {
     try {
-        await marketplaceContract.methods.buyToken(listingId).send({
-            callValue: tronWeb.toSun(totalPrice)
+        const pricePerTokenInTRX = document.getElementById('pricePerTokenInTRX').value;
+        const totalPrice = tronWeb.toSun(tokenAmount * pricePerTokenInTRX);
+
+        await marketplaceContract.methods.buyToken(listingId, tronWeb.toSun(tokenAmount)).send({
+            callValue: totalPrice
         });
 
         alert('Token purchased successfully!');
