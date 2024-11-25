@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Draw</title>
+  <link rel="icon" href="https://raw.githubusercontent.com/ClaimTRX/Test/main/favicon-32x32.png" type="image/png">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body {
+      background-color: #1a1a2e;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    .sidebar {
+      height: 100vh;
+      background-color: #162447;
+      padding: 15px;
+      position: fixed;
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sidebar a {
+      color: #fff;
+      text-decoration: none;
+      display: block;
+      padding: 10px 0;
+      width: 100%;
+      text-align: center;
+    }
+
+    .sidebar a:hover {
+      background-color: #1f4068;
+    }
+
+    .sidebar .social-links {
+      display: flex;
+      margin-top: 20px;
+    }
+
+    .sidebar .social-icon {
+      color: white;
+      font-size: 20px;
+      margin-right: 10px;
+      text-decoration: none;
+    }
+
+    .sidebar .social-icon:last-child {
+      margin-right: 0;
+    }
+
+    .topbar {
+      background-color: #162447;
+      padding: 10px;
+      text-align: right;
+      margin-left: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .topbar a.social-icon {
+      color: white;
+      margin-left: 15px;
+      font-size: 20px;
+      text-decoration: none;
+    }
+
+    .topbar button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 8px 16px;
+    }
+
+    .main-content {
+      margin-left: 220px;
+      padding: 20px;
+    }
+
+    .card {
+      background-color: #2c3e50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 1200px;
+      margin: 20px auto;
+    }
+
+    .card-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 20px;
+      width: 100%;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+    }
+
+    .card-image-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .card-image {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .card-text {
+      font-size: 1rem;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .btn-success {
+      background-color: #4CAF50;
+    }
+
+    .btn-danger {
+      background-color: #ff4c4c;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+    }
+
+    .main-content h1 {
+      text-align: center;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+
+    .card-explanation {
+      margin-top: 10px;
+      font-size: 0.875rem;
+    }
+
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+   /* Mobile responsiveness */
+@media (max-width: 767.98px) {
+  .listing button {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    width: 100%;
+  }
+
+  .sidebar {
+    height: auto;
+    padding: 10px;
+    width: 100%;
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .topbar {
+    text-align: center;
+    margin-left: 0;
+    justify-content: center;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 100%;
+    padding: 20px;
+    margin: 20px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+    text-align: center;
+  }
+
+  .card-body {
+    display: block;
+    text-align: center;
+  }
+
+  .card-text {
+    font-size: 0.875rem;
+    word-wrap: break-word;
+    hyphens: auto;
+    margin-bottom: 15px;
+  }
+
+  .card-image-container {
+    width: 100%;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .card-image {
+    width: 80%;
+    max-width: 250px;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .btn {
+    font-size: 0.75rem;
+    padding: 10px 12px;
+    width: 100%;
+  }
+
+  .form-control {
+    font-size: 0.75rem;
+    padding: 6px;
+    width: 100%;
+  }
+
+  .telegram-link {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .telegram-link a {
+    font-size: 0.9rem;
+  }
+
+  #trxWarningMessage {
+    font-size: 0.875rem;
+    text-align: center;
+  }
+}
+
+/* For larger screens */
+@media (min-width: 768px) {
+  .main-content {
+    margin-left: 220px;
+    padding: 20px;
+  }
+
+  .card {
+    background-color: #2c3e50;
+    color: white;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 600px;
+    margin: 20px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .card-image {
+    width: 100%;
+    max-width: 250px;
+    margin-bottom: 20px;
+  }
+}
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>CFT</h2>
+    <a href="index.html">Welcome</a>
+    <a href="buy.html">Buy Tokens</a>
+    <a href="staking.html">CFT Staking</a>
+    <a href="games.html">Games</a>
+    <a href="Swap.html">Swap</a>
+    <a href="meme.html">Meme Staking</a>
+    <a href="energy.html">Energy</a>
+    <div class="social-links">
+      <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+      <a href="https://telegram.org" target="_blank" class="social-icon"><i class="fab fa-telegram-plane"></i></a>
+    </div>
+  </div>
+  
+  <div class="topbar">
+    <button id="connect-button">Connect Wallet</button>
+  </div>
+    
+  <div class="main-content">
+    <h1>Draw</h1>
+    <!-- CFT Draw Card -->
+    <div class="card mt-4">
+      <div class="card-body">
+        <div class="card-text-section">
+          <h5 class="card-title">CFT Draw for JM holders</h5>
+          <div id="trxWarningMessage" class="card-text" style="color: red; display: none;">To register, please have 1,000,000 JM in your wallet.</div>
+          <div id="trxStatusMessage" class="card-text hidden" style="color: green;"></div>
+          <div id="trxTimer">Next draw in: --:--:--</div>
+          <div id="trxPrizeAmount">Current prize: 500 CFT</div>
+          <button id="trxRegisterButton" class="btn btn-success" disabled>Register</button>
+          <button id="trxDrawButton" class="btn btn-primary" disabled>Draw</button>
+          <p id="lastWinnerAddress">Last Winner Address: --</p>
+        </div>
+
+        <div class="card-image-container mt-4">
+          <img src="https://raw.githubusercontent.com/ClaimTRX/ClaimTRX/main/66d80aecb2a23_download.jpg" class="card-image" alt="Token Image">
+          <!-- Telegram Link -->
+          <div class="telegram-link mt-3">
+            <a href="https://t.me/claimfreetrxnow" target="_blank">
+              <i class="fab fa-telegram-plane"></i> Join our Telegram
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
+  <script>
+    const trxDrawContractAddress = 'TGpzYWv8R93HDaBirAEdEHTmFpRL1RbWPi'; // Update with your contract address
+    const cftTokenAddress = 'TVHH59uHVpHzLDMFFpUgCx2dNAQqCzPhcR'; // Update with your CFT token address
+    let tronWeb, userAddress, trxDrawContract, cftTokenContract;
+
+    const cftDecimals = 10 ** 8; // CFT token has 8 decimals (update if necessary)
+
+    const trxDrawContractAbi = [
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_interval",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_prizeAmount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "_cftTokenAddress",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "participant",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "numParticipants",
+                "type": "uint256"
+            }
+        ],
+        "name": "Registered",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "winner",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "tgUsername",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "txHash",
+                "type": "bytes32"
+            }
+        ],
+        "name": "Winner",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            }
+        ],
+        "name": "Blacklisted",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "newPrizeAmount",
+                "type": "uint256"
+            }
+        ],
+        "name": "PrizeAmountUpdated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "newInterval",
+                "type": "uint256"
+            }
+        ],
+        "name": "IntervalUpdated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "txHash",
+                "type": "bytes32"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "winner",
+                "type": "address"
+            }
+        ],
+        "name": "PaymentMade",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "newCFTTokenAddress",
+                "type": "address"
+            }
+        ],
+        "name": "CFTTokenAddressUpdated",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            }
+        ],
+        "name": "addToBlacklist",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "draw",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            }
+        ],
+        "name": "removeFromBlacklist",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "register",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "newInterval",
+                "type": "uint256"
+            }
+        ],
+        "name": "setInterval",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "newPrizeAmount",
+                "type": "uint256"
+            }
+        ],
+        "name": "setPrizeAmount",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "newCFTTokenAddress",
+                "type": "address"
+            }
+        ],
+        "name": "setCFTTokenAddress",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getLastWinner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "depositPrizeTRX",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "withdrawPrizeTRX",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "receive"
+    }
+]
+
+
+    const cftTokenContractAbi = [
+    {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "inputs": [],
+        "name": "name",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "symbol",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [
+            {
+                "internalType": "uint8",
+                "name": "",
+                "type": "uint8"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "totalSupply",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "taxAddress",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "taxRate",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "whitelist",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "balanceOf",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "allowance",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_to",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_value",
+                "type": "uint256"
+            }
+        ],
+        "name": "transfer",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "success",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_spender",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_value",
+                "type": "uint256"
+            }
+        ],
+        "name": "approve",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "success",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_from",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_to",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_value",
+                "type": "uint256"
+            }
+        ],
+        "name": "transferFrom",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "success",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_taxRate",
+                "type": "uint256"
+            }
+        ],
+        "name": "setTaxRate",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_taxAddress",
+                "type": "address"
+            }
+        ],
+        "name": "setTaxAddress",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_account",
+                "type": "address"
+            },
+            {
+                "internalType": "bool",
+                "name": "_isWhitelisted",
+                "type": "bool"
+            }
+        ],
+        "name": "updateWhitelist",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "value",
+                "type": "uint256"
+            }
+        ],
+        "name": "Transfer",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "spender",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "value",
+                "type": "uint256"
+            }
+        ],
+        "name": "Approval",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "oldRate",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "newRate",
+                "type": "uint256"
+            }
+        ],
+        "name": "TaxRateChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "oldAddress",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "newAddress",
+                "type": "address"
+            }
+        ],
+        "name": "TaxAddressChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "isWhitelisted",
+                "type": "bool"
+            }
+        ],
+        "name": "WhitelistUpdated",
+        "type": "event"
+    }
+];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (await checkTronLinkInstalled()) {
+        await initializeTronWeb();
+      }
+    });
+
+    async function checkTronLinkInstalled() {
+      return new Promise((resolve) => {
+        const interval = setInterval(() => {
+          if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+            clearInterval(interval);
+            resolve(true);
+          }
+        }, 1000);
+      });
+    }
+
+    async function initializeTronWeb() {
+      tronWeb = window.tronWeb;
+      userAddress = tronWeb.defaultAddress.base58;
+
+      // Hide the connect button
+      document.getElementById('connect-button').style.display = 'none';
+
+      console.log('Connected to TronLink.');
+      console.log('User Address:', userAddress);
+
+      try {
+        const balance = await tronWeb.trx.getBalance(userAddress);
+        console.log('Balance:', tronWeb.fromSun(balance), 'TRX');
+
+        trxDrawContract = await tronWeb.contract().at(trxDrawContractAddress);
+        cftTokenContract = await tronWeb.contract().at(cftTokenAddress);
+
+        updateUI();
+        getLastWinner(); // Fetch and display the latest winner
+      } catch (error) {
+        console.error('Error fetching balance:', error);
+      }
+    }
+
+    async function updateUI() {
+      try {
+        await checkCFTTokenBalance();
+        await checkRegistrationStatus();
+        startDataUpdates();
+      } catch (error) {
+        console.error('Error updating UI:', error);
+      }
+    }
+
+    async function getLastWinner() {
+  try {
+    console.log("Fetching the latest winner event...");
+
+    const events = await tronWeb.getEventResult(trxDrawContractAddress, {
+      eventName: 'Winner',
+      size: 1,  // Limit to the latest event
+      sort: 'desc'  // Get the latest event
+    });
+
+    console.log("Events received:", events);
+
+    if (events.length > 0) {
+      const winnerEvent = events[0];
+      const winnerHexAddress = winnerEvent.result.winner;  // This is the address in hex format
+      const winnerAddress = tronWeb.address.fromHex(winnerHexAddress);  // Convert hex to TRON Base58 address
+      const winnerAmount = winnerEvent.result.amount;
+
+      document.getElementById('lastWinnerAddress').textContent = `Winner Address: ${winnerAddress}`;
+      document.getElementById('lastWinnerAmount').textContent = `Amount Won: ${tronWeb.fromSun(winnerAmount)} CFT`;
+    } else {
+      document.getElementById('lastWinnerAddress').textContent = 'Winner Address: --';
+      document.getElementById('lastWinnerAmount').textContent = 'Amount Won: --';
+    }
+  } catch (error) {
+    console.error('Error fetching latest winner:', error);
+  }
+}
+
+
+    async function checkCFTTokenBalance() {
+      try {
+        const balance = await cftTokenContract.methods.balanceOf(userAddress).call();
+        const cftTokenBalance = tronWeb.toDecimal(balance);
+        const requiredBalanceCFT = 1000000 * cftDecimals; // 1000000 JM required to register
+
+        if (cftTokenBalance >= requiredBalanceCFT) {
+          document.getElementById('trxWarningMessage').style.display = 'none';
+          document.getElementById('trxRegisterButton').disabled = false;
+        } else {
+          document.getElementById('trxWarningMessage').style.display = 'block';
+          document.getElementById('trxRegisterButton').disabled = true;
+        }
+      } catch (error) {
+        console.error('Error checking CFT token balance:', error);
+      }
+    }
+
+    async function checkRegistrationStatus() {
+      try {
+        const isRegisteredCFT = await trxDrawContract.methods.hasRegistered(userAddress).call();
+
+        if (isRegisteredCFT) {
+          document.getElementById('trxRegisterButton').innerText = 'Registered';
+          document.getElementById('trxRegisterButton').disabled = true;
+        } else {
+          document.getElementById('trxRegisterButton').innerText = 'Register';
+        }
+      } catch (error) {
+        console.error('Error checking registration status:', error);
+      }
+    }
+
+    async function startDataUpdates() {
+      setInterval(() => {
+        updateTimerCFT();
+      }, 1000);
+    }
+
+    async function updateTimerCFT() {
+      try {
+        const lastDrawTime = parseInt(await trxDrawContract.methods.lastDrawTime().call());
+        const interval = parseInt(await trxDrawContract.methods.interval().call());
+        const currentTime = Math.floor(Date.now() / 1000);
+        const timeLeft = lastDrawTime + interval - currentTime;
+
+        const hours = Math.floor(timeLeft / 3600);
+        const minutes = Math.floor((timeLeft % 3600) / 60);
+        const seconds = timeLeft % 60;
+
+        const timerDisplay = document.getElementById('trxTimer');
+        if (timeLeft > 0) {
+          timerDisplay.innerText = `Next draw in: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+          document.getElementById('trxDrawButton').disabled = true;
+        } else {
+          timerDisplay.innerText = "Draw is available!";
+          document.getElementById('trxDrawButton').disabled = false;
+        }
+      } catch (error) {
+        console.error('Error updating timer:', error);
+      }
+    }
+
+    document.getElementById('trxRegisterButton').addEventListener('click', async () => {
+      try {
+        await trxDrawContract.methods.register().send();
+        alert('Registered successfully!');
+        updateUI();
+      } catch (error) {
+        console.error('Error registering:', error);
+        alert('Error registering: ' + error.message);
+      }
+    });
+
+    document.getElementById('trxDrawButton').addEventListener('click', async () => {
+      try {
+        await trxDrawContract.methods.draw().send();
+        alert('Draw executed successfully!');
+        updateUI();
+      } catch (error) {
+        console.error('Error executing draw:', error);
+        alert('Error executing draw: ' + error.message);
+      }
+    });
+
+    async function connectWallet() {
+      if (await checkTronLinkInstalled()) {
+        await initializeTronWeb();
+      } else {
+        console.log('Please install TronLink extension in your browser.');
+      }
+    }
+  </script>
+</body>
+</html>
