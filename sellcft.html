@@ -934,15 +934,19 @@ async function fetchMarketplaceListings() {
                 const tokenAmount = tronWeb.fromSun(listing.tokenAmount);
                 const totalPrice = tronWeb.fromSun(listing.priceInTRX);
 
-                // Create listing element with Cancel button visible to everyone
+                // Ensure seller address and user address are in the same format
+                const sellerAddress = tronWeb.address.fromHex(listing.seller); // Convert to base58 format
+                const isSeller = sellerAddress === userAddress; // Compare with user's address
+
+                // Create listing element
                 const listingElement = document.createElement('div');
                 listingElement.className = 'listing';
                 listingElement.innerHTML = `
-                    <p>Seller: ${listing.seller}</p>
+                    <p>Seller: ${sellerAddress}</p>
                     <p>Token Amount: ${tokenAmount}</p>
                     <p>Total Price: ${totalPrice} TRX</p>
                     <button class="btn btn-success mb-2" onclick="buyToken(${listingId}, ${totalPrice})">Buy</button>
-                    <button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel</button>
+                    ${isSeller ? `<button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel</button>` : ''}
                 `;
                 listingsContainer.appendChild(listingElement);
             }
@@ -952,6 +956,7 @@ async function fetchMarketplaceListings() {
         alert('Failed to fetch listings.');
     }
 }
+
 
 
 
