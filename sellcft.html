@@ -917,7 +917,6 @@ async function refreshUI() {
     await fetchMarketplaceListings();
 }
 
-// Fetch marketplace listings
 async function fetchMarketplaceListings() {
     try {
         const result = await marketplaceContract.methods.getActiveListings().call();
@@ -934,9 +933,8 @@ async function fetchMarketplaceListings() {
             if (listing.isActive) {
                 const tokenAmount = tronWeb.fromSun(listing.tokenAmount);
                 const totalPrice = tronWeb.fromSun(listing.priceInTRX);
-                const isSeller = listing.seller.trim().toLowerCase() === userAddress.trim().toLowerCase();
 
-                // Create listing element with Cancel button if user is the seller
+                // Create listing element with Cancel button visible to everyone
                 const listingElement = document.createElement('div');
                 listingElement.className = 'listing';
                 listingElement.innerHTML = `
@@ -944,7 +942,7 @@ async function fetchMarketplaceListings() {
                     <p>Token Amount: ${tokenAmount}</p>
                     <p>Total Price: ${totalPrice} TRX</p>
                     <button class="btn btn-success mb-2" onclick="buyToken(${listingId}, ${totalPrice})">Buy</button>
-                    ${isSeller ? `<button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel</button>` : ''}
+                    <button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel</button>
                 `;
                 listingsContainer.appendChild(listingElement);
             }
@@ -954,6 +952,7 @@ async function fetchMarketplaceListings() {
         alert('Failed to fetch listings.');
     }
 }
+
 
 
 // Buy token from the marketplace
