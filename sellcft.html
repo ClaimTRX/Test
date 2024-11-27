@@ -276,41 +276,41 @@
   <div class="topbar">
     <button id="connect-button">Connect Wallet</button>
   </div>
-  <div class="main-content">
-    <h1>List your CFT for sale</h1>
-    
-    <!-- Marketplace Box -->
-    <div class="card mt-4">
-      <div class="card-body">
-        <div class="card-text-section">
-          
-          <p class="card-text">List your CFT Tokens</p>
-          <input type="number" id="tokenAmount" class="form-control" placeholder="Amount of Tokens">
-          <input type="number" id="pricePerTokenInTRX" class="form-control" placeholder="Total price in TRX">
-          <button id="approveAndListButton" class="btn btn-success">Approve and List</button>
-        </div>
-        <div class="card-explanation">
-          <p>To ensure users can trade their token, the ecosystem treasury will buy back any listed tokens that are not traded P2P within a reasonable timeframe.<br>
-          This only happens if the tokens are listed at the same price the seller bought them at.</p>
-          <p>Orders cannot be filled partially, so keep this in mind when listing your tokens.</p>
-        </div>
-      </div>
-    </div>
+ <div class="main-content">
+  <h1>List your CFT for sale</h1>
 
-    <!-- Listed for Sale Box -->
-    <div class="card mt-4">
-      <div class="card-body">
-        <div class="card-text-section">
-          <h5 class="card-title">Listed tokens</h5>
-          <div id="listings" class="card-text">Loading...</div>
-        </div>
-        <div class="card-explanation">
-          <p>Listed tokens will appear here. When there are tokens listed for sale at or below market price, we will close the buy option to ensure users who want to buy CFT<br>
-          will buy them from the Marketplace.</p>
-        </div>
+  <!-- Marketplace Box -->
+  <div class="card mt-4">
+    <div class="card-body">
+      <div class="card-text-section">
+        <p class="card-text">List your CFT Tokens</p>
+        <input type="number" id="tokenAmount" class="form-control" placeholder="Amount of Tokens">
+        <input type="number" id="pricePerTokenInTRX" class="form-control" placeholder="Price per Token in TRX">
+        <button id="approveAndListButton" class="btn btn-success">Approve and List</button>
+      </div>
+      <div class="card-explanation">
+        <p>To ensure users can trade their token, the ecosystem treasury will buy back any listed tokens that are not traded P2P within a reasonable timeframe.<br>
+        This only happens if the tokens are listed at the same price the seller bought them at.</p>
+        <p>Orders cannot be filled partially, so keep this in mind when listing your tokens.</p>
       </div>
     </div>
   </div>
+
+  <!-- Listed for Sale Box -->
+  <div class="card mt-4">
+    <div class="card-body">
+      <div class="card-text-section">
+        <h5 class="card-title">Listed tokens</h5>
+        <div id="listings" class="card-text">Loading...</div>
+      </div>
+      <div class="card-explanation">
+        <p>Listed tokens will appear here. When there are tokens listed for sale at or below market price, we will close the buy option to ensure users who want to buy CFT<br>
+        will buy them from the Marketplace.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
 
@@ -324,7 +324,7 @@
   <script>
     let tronWeb, userAddress,  tokenContract,  marketplaceContract;
     const tokenContractAddress = 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA';
-    const marketplaceContractAddress = 'TQaF95pNKxZp8HEVKT7Y4V9WMJYofsEKra';
+    const marketplaceContractAddress = 'TXsZPCRaZJ3cCy4eAew5whETo5oTnZC6V7';
     const maxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
 
@@ -722,105 +722,149 @@
 ];
 
   
-  const marketplaceContractAbi = [ {
-  "inputs": [
-    {
-      "internalType": "address",
-      "name": "tokenAddress",
-      "type": "address"
-    }
-  ],
-  "stateMutability": "nonpayable",
-  "type": "constructor"
-},
-{
-  "inputs": [
-    {
-      "internalType": "uint256",
-      "name": "tokenAmount",
-      "type": "uint256"
-    },
-    {
-      "internalType": "uint256",
-      "name": "priceInTRX",
-      "type": "uint256"
-    }
-  ],
-  "name": "listToken",
-  "outputs": [],
-  "stateMutability": "nonpayable",
-  "type": "function"
-},
-{
-  "inputs": [
-    {
-      "internalType": "uint256",
-      "name": "listingId",
-      "type": "uint256"
-    }
-  ],
-  "name": "buyToken",
-  "outputs": [],
-  "stateMutability": "payable",
-  "type": "function"
-},
-{
-  "inputs": [
-    {
-      "internalType": "uint256",
-      "name": "listingId",
-      "type": "uint256"
-    }
-  ],
-  "name": "cancelListing",
-  "outputs": [],
-  "stateMutability": "nonpayable",
-  "type": "function"
-},
-{
-  "inputs": [],
-  "name": "getActiveListings",
-  "outputs": [
-    {
-      "internalType": "uint256[]",
-      "name": "",
-      "type": "uint256[]"
-    },
-    {
-      "components": [
-        {
-          "internalType": "address",
-          "name": "seller",
-          "type": "address"
-        },
-        {
-          "internalType": "uint128",
-          "name": "tokenAmount",
-          "type": "uint128"
-        },
-        {
-          "internalType": "uint128",
-          "name": "priceInTRX",
-          "type": "uint128"
-        },
-        {
-          "internalType": "bool",
-          "name": "isActive",
-          "type": "bool"
-        }
-      ],
-      "internalType": "struct TokenMarketplace.Listing[]",
-      "name": "",
-      "type": "tuple[]"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
-];
+  const marketplaceContractAbi = [
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "priceInTRX",
+        "type": "uint256"
+      }
+    ],
+    "name": "listToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "listingId",
+        "type": "uint256"
+      }
+    ],
+    "name": "cancelListing",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getActiveListings",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "seller",
+            "type": "address"
+          },
+          {
+            "internalType": "uint128",
+            "name": "tokenAmount",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "priceInTRX",
+            "type": "uint128"
+          },
+          {
+            "internalType": "bool",
+            "name": "isActive",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct TokenMarketplace.Listing[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "listingId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "buyToken",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "listingId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "remainingTokenAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "partialFillAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "ListingPartiallyFilled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "listingId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ListingRemoved",
+    "type": "event"
+  }
+]
+;
 
-   // TronLink connection
-document.addEventListener('DOMContentLoaded', async () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('connect-button').addEventListener('click', connectWallet);
 
     if (await checkTronLinkInstalled()) {
@@ -899,13 +943,23 @@ function setupEventListeners() {
         const tokenAmount = document.getElementById('tokenAmount').value;
         const pricePerTokenInTRX = document.getElementById('pricePerTokenInTRX').value;
 
-        if (tokenAmount && pricePerTokenInTRX) {
-            try {
-                await approveAndListTokens(tokenAmount, pricePerTokenInTRX);
-                setTimeout(refreshUI, 3000);
-            } catch (error) {
-                console.error('Error listing tokens:', error);
-            }
+        console.log("Attempting to list tokens:", tokenAmount, "at price per token:", pricePerTokenInTRX, "TRX");
+
+        if (!tokenAmount || tokenAmount <= 0) {
+            alert('Please enter a valid token amount.');
+            return;
+        }
+        if (!pricePerTokenInTRX || pricePerTokenInTRX <= 0) {
+            alert('Please enter a valid price per token in TRX.');
+            return;
+        }
+
+        try {
+            await approveAndListTokens(tokenAmount, pricePerTokenInTRX);
+            setTimeout(refreshUI, 3000);
+        } catch (error) {
+            console.error('Error listing tokens:', error);
+            alert('Error listing tokens: ' + error.message);
         }
     });
 }
@@ -917,6 +971,7 @@ async function refreshUI() {
     await fetchMarketplaceListings();
 }
 
+// Fetch marketplace listings
 async function fetchMarketplaceListings() {
     try {
         const result = await marketplaceContract.methods.getActiveListings().call();
@@ -926,71 +981,37 @@ async function fetchMarketplaceListings() {
         const listingsContainer = document.getElementById('listings');
         listingsContainer.innerHTML = '';
 
-        for (let i = 0; i < listingIds.length; i++) {
-            const listingId = listingIds[i];
-            const listing = listings[i];
+        listings.forEach((listing, index) => {
+            const listingId = listingIds[index];
+            const tokenAmount = tronWeb.fromSun(listing.tokenAmount);
+            const pricePerToken = tronWeb.fromSun(listing.pricePerTokenInTRX);  // Correct conversion
 
-            if (listing.isActive) {
-                const tokenAmount = tronWeb.fromSun(listing.tokenAmount);
-                const totalPrice = tronWeb.fromSun(listing.priceInTRX);
+            const isSeller = (listing.seller.trim().toLowerCase() === userAddress.trim().toLowerCase());
 
-                // Ensure seller address and user address are in the same format
-                const sellerAddress = tronWeb.address.fromHex(listing.seller); // Convert to base58 format
-                const isSeller = sellerAddress === userAddress; // Compare with user's address
-
-                // Create listing element
-                const listingElement = document.createElement('div');
-                listingElement.className = 'listing';
-                listingElement.innerHTML = `
-                    <p>Seller: ${sellerAddress}</p>
-                    <p>Token Amount: ${tokenAmount}</p>
-                    <p>Total Price: ${totalPrice} TRX</p>
-                    <button class="btn btn-success mb-2" onclick="buyToken(${listingId}, ${totalPrice})">Buy</button>
-                    ${isSeller ? `<button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel</button>` : ''}
-                `;
-                listingsContainer.appendChild(listingElement);
-            }
-        }
+            const listingElement = document.createElement('div');
+            listingElement.className = 'listing';
+            listingElement.innerHTML = `
+                <p>Seller: ${listing.seller}</p>
+                <p>Token Amount: ${tokenAmount}</p>
+                <p>Price Per Token: ${pricePerToken} TRX</p>
+                <input type="number" id="buyAmount${listingId}" class="form-control" placeholder="Amount to buy">
+                <button class="btn btn-success mb-2" onclick="buyToken(${listingId}, document.getElementById('buyAmount${listingId}').value)">Buy</button>
+                ${isSeller ? `<button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel</button>` : ''}
+            `;
+            listingsContainer.appendChild(listingElement);
+        });
     } catch (error) {
-        console.error(error);
+        console.error("Failed to fetch listings:", error);
         alert('Failed to fetch listings.');
     }
 }
 
 
 
-
-// Buy token from the marketplace
-async function buyToken(listingId, totalPrice) {
-    try {
-        await marketplaceContract.methods.buyToken(listingId).send({
-            callValue: tronWeb.toSun(totalPrice)
-        });
-
-        alert('Token purchased successfully!');
-        fetchMarketplaceListings();
-    } catch (error) {
-        console.error('Error buying token:', error);
-        alert('Failed to buy tokens.');
-    }
-}
-
-// Cancel a listing from the marketplace
-async function cancelListing(listingId) {
-    try {
-        await marketplaceContract.methods.cancelListing(listingId).send();
-        alert('Listing cancelled successfully!');
-        fetchMarketplaceListings();
-    } catch (error) {
-        console.error('Error cancelling listing:', error);
-        alert('Failed to cancel listing.');
-    }
-}
-
 // Approve and list tokens for sale
-async function approveAndListTokens(tokenAmount, priceInTRX) {
+async function approveAndListTokens(tokenAmount, pricePerTokenInTRX) {
     const adjustedTokenAmount = tronWeb.toSun(tokenAmount);
-    const adjustedPriceInTRX = tronWeb.toSun(priceInTRX);
+    const adjustedPriceInTRX = tronWeb.toSun(pricePerTokenInTRX);
 
     try {
         await tokenContract.methods.approve(marketplaceContractAddress, adjustedTokenAmount).send();
@@ -998,21 +1019,10 @@ async function approveAndListTokens(tokenAmount, priceInTRX) {
         alert('Tokens listed successfully!');
         fetchMarketplaceListings();
     } catch (error) {
-        console.error(error);
+        console.error('Failed to list tokens:', error);
         alert('Failed to list tokens.');
     }
 }
-
-// Utility function to format numbers
-function formatNumber(num) {
-    return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-// Utility function to format whole numbers
-function formatWholeNumber(num) {
-    return Math.floor(parseFloat(num)).toLocaleString('en-US');
-}
-
   </script>
 </body>
 </html>
