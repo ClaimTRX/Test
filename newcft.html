@@ -1177,14 +1177,7 @@ async function updateTotalStaked(token) {
         console.error(`Error fetching total staked TRX for ${token}:`, error);
     }
 }
-    async function updateTotalClaimedRewards() {
-  try {
-    const totalClaimedRewards = await stakingContracts[token].methods.viewTotalClaimedRewards(userAddress).call();
-    document.getElementById('total-claimed-rewards').innerText = formatNumber(tronWeb.fromSun(totalClaimedRewards)) + ' CFT';
-  } catch (error) {
-    console.error('Error fetching total claimed rewards:', error);
-  }
-}
+    
 
 
 // Function to update claimable rewards
@@ -1199,6 +1192,15 @@ async function updateClaimableRewards(token) {
     } catch (error) {
         console.error(`Error fetching claimable rewards for ${token}:`, error);
     }
+}
+
+    async function updateTotalClaimedRewards() {
+  try {
+    const totalClaimedRewards = await stakingContract.methods.viewTotalClaimedRewards(userAddress).call();
+    document.getElementById('total-claimed-rewards').innerText = formatNumber(tronWeb.fromSun(totalClaimedRewards)) + ' USDT';
+  } catch (error) {
+    console.error('Error fetching total claimed rewards:', error);
+  }
 }
 
 // Function to update the staked amount
