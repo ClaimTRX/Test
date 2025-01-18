@@ -1160,7 +1160,7 @@ async function updateTotalStaked(token) {
 }
     async function updateTotalClaimedRewards() {
   try {
-    const totalClaimedRewards = await newStakingContract.methods.viewTotalClaimedRewards(userAddress).call();
+    const totalClaimedRewards = await stakingContracts[token].methods.viewTotalClaimedRewards(userAddress).call();
     document.getElementById('total-claimed-rewards').innerText = formatNumber(tronWeb.fromSun(totalClaimedRewards)) + ' CFT';
   } catch (error) {
     console.error('Error fetching total claimed rewards:', error);
