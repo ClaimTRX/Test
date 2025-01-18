@@ -1196,12 +1196,13 @@ async function updateClaimableRewards(token) {
 
     async function updateTotalClaimedRewards() {
   try {
-    const totalClaimedRewards = await stakingContract.methods.viewTotalClaimedRewards(userAddress).call();
-    document.getElementById('total-claimed-rewards').innerText = formatNumber(tronWeb.fromSun(totalClaimedRewards)) + ' USDT';
+    const totalClaimedRewards = await stakingContracts['token1'].methods.viewTotalClaimedRewards(userAddress).call();
+    document.getElementById('total-claimed-rewards').innerText = formatNumber(tronWeb.fromSun(totalClaimedRewards)) + ' CFT';
   } catch (error) {
     console.error('Error fetching total claimed rewards:', error);
   }
 }
+
 
 // Function to update the staked amount
 async function updateStakedAmount(token) {
