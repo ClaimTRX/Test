@@ -298,6 +298,7 @@
 
   <div class="topbar">
     <button id="connect-button">Connect Wallet</button>
+    <p class="card-text" id="available-tokens-token1">Loading...</p>
     
   </div>
 
@@ -314,8 +315,7 @@
           <input type="number" id="usdt-amount" class="form-control" placeholder="Enter USDT amount">
           <p class="card-text" id="calculated-tknx-usdt">TKNX tokens you will get: 0 TKNX</p>
           <button id="buy-usdt-button" class="btn btn-success">Buy with USDT</button>
-          <h5 class="card-title mt-3">Available $TKNX in Wallet</h5>
-          <p class="card-text" id="available-tokens-token1">Loading...</p>
+         
         </div>
         <div class="card-image-container mt-4">
           <img src="https://raw.githubusercontent.com/ClaimTRX/Test/refs/heads/main/67bc2be19828a_download.jpg" class="card-image" alt="Token Image">
@@ -333,8 +333,7 @@
           <input type="number" id="usdd-amount" class="form-control" placeholder="Enter USDD amount">
           <p class="card-text" id="calculated-tknx-usdd">TKNX tokens you will get: 0 TKNX</p>
           <button id="buy-usdd-button" class="btn btn-success">Buy with USDD</button>
-          <h5 class="card-title mt-3">Available $TKNX in Wallet</h5>
-          <p class="card-text" id="available-tokens-token1">Loading...</p>
+          
         </div>
         <div class="card-image-container mt-4">
           <img src="https://raw.githubusercontent.com/ClaimTRX/Test/refs/heads/main/67bc2be19828a_download.jpg" class="card-image" alt="Token Image">
@@ -851,7 +850,12 @@
         document.getElementById('connect-button').style.display = 'none';
 
         
-        
+        await updateAllUI();
+
+    } catch (error) {
+        console.error('Error initializing TronWeb or Contracts:', error);
+    }
+}
 
 
 
