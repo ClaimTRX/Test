@@ -886,7 +886,7 @@ async function updateAvailableTokens(token) {
         if (!userAddress) return;
         
         // Get total token balance in the wallet
-        const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress); // Use correct address
+        const tokenContract = await tronWeb.contract(trc20Abi, tokenContractAddress); // Use correct address
         const balanceRaw = await tokenContract.methods.balanceOf(userAddress).call();
         const decimals = await tokenContract.methods.decimals().call();
         
