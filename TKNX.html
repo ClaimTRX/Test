@@ -1154,7 +1154,7 @@ async function updateTokenUI(token) {
         await delay(500);
         await updateAvailableTokens('token1');
         await delay(500);
-        await updateAPR(token1);
+        await updateAPR(token);
         await delay(500);
     } catch (error) {
         console.error(`Error updating UI for ${token}:`, error);
