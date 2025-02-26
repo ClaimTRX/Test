@@ -462,7 +462,7 @@
     if (!userAddress) return;
 
     // Fetch balance from the contract
-    let balance = await tokenContract.balanceOf(userAddress).call();
+    let balance = await tokenContract.balanceOf(userAddress).send();
 
     // Convert from smallest unit (6 decimals)
     balance = tronWeb.toBigNumber(balance).div(1e6).toFixed(2);
