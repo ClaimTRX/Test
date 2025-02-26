@@ -488,12 +488,13 @@
 
     document.getElementById('available-tknx').innerText = `TKNX available in contract: ${formattedBalance} TKNX`;
     document.getElementById('available-tknx-usdd').innerText = `TKNX available in contract: ${formattedBalance} TKNX`;
-  } call (error) {
+  } catch (error) {  // <-- Corrected 'catch' syntax
     console.error('Error fetching available TKNX:', error);
     document.getElementById('available-tknx').innerText = 'TKNX available in contract: Error loading';
     document.getElementById('available-tknx-usdd').innerText = 'TKNX available in contract: Error loading';
   }
 }
+
 
     async function buyTokensWithUSDT(amount) {
       try {
