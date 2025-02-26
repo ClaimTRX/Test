@@ -430,7 +430,7 @@
         if (!userAddress) throw new Error('User address not available');
 
         // Delay contract initialization
-        await new Promise(res => setTimeout(res, 2000)); 
+        await new Promise(res => setTimeout(res, 1000)); 
 
         tokenContract = await tronWeb.contract(trc20Abi, tokenContractAddress);
         usdtContract = await tronWeb.contract(trc20Abi, usdtContractAddress);
@@ -447,8 +447,7 @@
 
     async function updateUI() {
       try {
-        await updateBalances();
-        await updateAvailableTKNX();
+        
       } catch (error) {
         console.error('Error updating UI:', error);
       }
