@@ -860,10 +860,10 @@
 
 
 
-    async function updateAllUI() {
-    try {
-        // Ensure available tokens update correctly
-        await updateAvailableTokens("TKNX");
+    async function updateUI() {
+    await updateAvailableTokens();
+}
+
         
     } catch (error) {
         console.error("Error updating UI:", error);
@@ -881,24 +881,27 @@ async function updateTokenUI(token) {
 }
 
 // Fetch and update available TKNX balance
-async function updateAvailableTokens(token) {
+async function updateAvailableTokens() {
     try {
         if (!userAddress) return;
-        
-        // Get total token balance in the wallet
-        const tokenContract = await tronWeb.contract(trc20Abi, tokenContractAddress); // Use correct address
+
+        const tokenContract = await tronWeb.contract(trc20Abi, tokenContractAddress);
         const balanceRaw = await tokenContract.methods.balanceOf(userAddress).call();
         const decimals = await tokenContract.methods.decimals().call();
-        
-        // Convert balance to correct decimal format
         const balance = balanceRaw / Math.pow(10, decimals);
 
-        // Update UI with available tokens
-        document.getElementById(`available-tokens-${token}`).innerText = formatNumber(balance) + " TKNX";
+        // Ensure correct ID is used
+        let tokenDisplay = document.getElementById('available-tokens-token1');
+        if (tokenDisplay) {
+            tokenDisplay.innerText = formatNumber(balance) + " TKNX";
+        } else {
+            console.error("Element ID 'available-tokens-token1' not found in the HTML.");
+        }
     } catch (error) {
-        console.error(`Error fetching available tokens for ${token}:`, error);
+        console.error("Error fetching available tokens:", error);
     }
 }
+
 
 
     
