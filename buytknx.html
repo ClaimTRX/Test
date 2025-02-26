@@ -314,6 +314,8 @@
           <input type="number" id="usdt-amount" class="form-control" placeholder="Enter USDT amount">
           <p class="card-text" id="calculated-tknx-usdt">TKNX tokens you will get: 0 TKNX</p>
           <button id="buy-usdt-button" class="btn btn-success">Buy with USDT</button>
+          <h5 class="card-title">Your TKNX Balance</h5>
+    <p id="tknx-balance">Fetching...</p>
         </div>
         <div class="card-image-container mt-4">
           <img src="https://raw.githubusercontent.com/ClaimTRX/Test/refs/heads/main/67bc2be19828a_download.jpg" class="card-image" alt="Token Image">
@@ -331,6 +333,8 @@
           <input type="number" id="usdd-amount" class="form-control" placeholder="Enter USDD amount">
           <p class="card-text" id="calculated-tknx-usdd">TKNX tokens you will get: 0 TKNX</p>
           <button id="buy-usdd-button" class="btn btn-success">Buy with USDD</button>
+          <h5 class="card-title">Your TKNX Balance</h5>
+    <p id="tknx-balance">Fetching...</p>
         </div>
         <div class="card-image-container mt-4">
           <img src="https://raw.githubusercontent.com/ClaimTRX/Test/refs/heads/main/67bc2be19828a_download.jpg" class="card-image" alt="Token Image">
@@ -447,11 +451,28 @@
 
     async function updateUI() {
       try {
-        
+         await getUserTKNXBalance();
       } catch (error) {
         console.error('Error updating UI:', error);
       }
     }
+
+    async function getUserTKNXBalance() {
+  try {
+    if (!userAddress) return;
+
+    // Fetch balance from the contract
+    let balance = await tokenContract.balanceOf(userAddress).call();
+
+    // Convert from smallest unit (6 decimals)
+    balance = tronWeb.toBigNumber(balance).div(1e6).toFixed(2);
+
+    // Display balance on UI
+    document.getElementById('tknx-balance').innerText = `Your TKNX Balance: ${balance} TKNX`;
+  } catch (error) {
+    console.error('Error fetching TKNX balance:', error);
+  }
+}
 
     
 
