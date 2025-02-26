@@ -861,10 +861,8 @@
 
 
     async function updateUI() {
-    await updateAvailableTokens();
-}
-
-        
+    try {
+        await updateAvailableTokens();
     } catch (error) {
         console.error("Error updating UI:", error);
     }
