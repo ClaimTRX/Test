@@ -1165,7 +1165,7 @@ async function updateTokenUI(token) {
 async function updateAPR(token) {
     try {
         const aprRaw = await stakingContracts[token].methods.viewAPR().call();
-        const apr = aprRaw / 1e6; // Convert from 6 decimals
+        const apr = aprRaw / 1e4; // Convert from 6 decimals
 
         document.getElementById(`apr-${token}`).innerText = apr.toFixed(2) + " %";
     } catch (error) {
