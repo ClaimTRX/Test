@@ -910,26 +910,29 @@ async function updateAvailableTokens() {
 
 
     async function buyTokensWithUSDT(amount) {
-      try {
-        await usdtContract.approve(swapContractAddress, tronWeb.toSun(amount)).send({ from: userAddress });
-        await swapContract.buyWithUSDT(tronWeb.toSun(amount)).send({ from: userAddress });
-        console.log('Tokens purchased with USDT');
-        await updateUI();
-      } catch (error) {
-        console.error('Error buying tokens with USDT:', error);
-      }
-    }
+  try {
+    await usdtContract.approve(swapContractAddress, tronWeb.toSun(amount)).send({ from: userAddress });
+    await swapContract.buyWithUSDT(tronWeb.toSun(amount)).send({ from: userAddress });
+    console.log('Tokens purchased with USDT');
+    await updateUI();
+    setTimeout(() => location.reload(), 2000); // Refresh after 2 seconds
+  } catch (error) {
+    console.error('Error buying tokens with USDT:', error);
+  }
+}
 
-    async function buyTokensWithUSDD(amount) {
-      try {
-        await usddContract.approve(swapContractAddress, tronWeb.toSun(amount)).send({ from: userAddress });
-        await swapContract.buyWithUSDD(tronWeb.toSun(amount)).send({ from: userAddress });
-        console.log('Tokens purchased with USDD');
-        await updateUI();
-      } catch (error) {
-        console.error('Error buying tokens with USDD:', error);
-      }
-    }
+async function buyTokensWithUSDD(amount) {
+  try {
+    await usddContract.approve(swapContractAddress, tronWeb.toSun(amount)).send({ from: userAddress });
+    await swapContract.buyWithUSDD(tronWeb.toSun(amount)).send({ from: userAddress });
+    console.log('Tokens purchased with USDD');
+    await updateUI();
+    setTimeout(() => location.reload(), 2000); // Refresh after 2 seconds
+  } catch (error) {
+    console.error('Error buying tokens with USDD:', error);
+  }
+}
+
 
     function calculateTKNXUSDT() {
       const amount = document.getElementById('usdt-amount').value;
