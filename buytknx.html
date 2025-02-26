@@ -298,8 +298,7 @@
 
   <div class="topbar">
     <button id="connect-button">Connect Wallet</button>
-    <span id="user-usdt-balance" style="margin-left: 10px;">USDT Balance: 0 USDT</span>
-    <span id="user-usdd-balance" style="margin-left: 10px;">USDD Balance: 0 USDD</span>
+    
   </div>
 
   <div class="main-content">
@@ -455,30 +454,7 @@
       }
     }
 
-    async function updateBalances() {
-  try {
-    if (!userAddress || !tronWeb) {
-      document.getElementById('user-usdt-balance').innerText = 'USDT Balance: 0 USDT';
-      document.getElementById('user-usdd-balance').innerText = 'USDD Balance: 0 USDD';
-      return;
-    }
-
     
-    const usdtBalance = await usdtContract.methods.balanceOf(userAddress).call();
-    const usddBalance = await usddContract.methods.balanceOf(userAddress).call();
-
-    // Convert from Sun (TRON's smallest unit) to readable units and format
-    const usdtFormatted = parseFloat(tronWeb.fromSun(usdtBalance)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const usddFormatted = parseFloat(tronWeb.fromSun(usddBalance)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-    document.getElementById('user-usdt-balance').innerText = `USDT Balance: ${usdtFormatted} USDT`;
-    document.getElementById('user-usdd-balance').innerText = `USDD Balance: ${usddFormatted} USDD`;
-  } catch (error) {
-    console.error('Error fetching balances:', error);
-    document.getElementById('user-usdt-balance').innerText = 'USDT Balance: Error loading';
-    document.getElementById('user-usdd-balance').innerText = 'USDD Balance: Error loading';
-  }
-}
 
     async function updateAvailableTKNX() {
   try {
