@@ -310,7 +310,7 @@
         <div class="card-text-section">
           <h5 class="card-title">Buy TKNX with USDT</h5>
           <p class="card-text">Exchange Rate: 1 USDT = 1 TKNX</p>
-          <p class="card-text" id="available-tknx">Loading TKNX available...</p>
+          
           <input type="number" id="usdt-amount" class="form-control" placeholder="Enter USDT amount">
           <p class="card-text" id="calculated-tknx-usdt">TKNX tokens you will get: 0 TKNX</p>
           <button id="buy-usdt-button" class="btn btn-success">Buy with USDT</button>
@@ -327,7 +327,7 @@
         <div class="card-text-section">
           <h5 class="card-title">Buy TKNX with USDD</h5>
           <p class="card-text">Exchange Rate: 1 USDD = 1 TKNX</p>
-          <p class="card-text" id="available-tknx-usdd">Loading TKNX available...</p>
+          
           <input type="number" id="usdd-amount" class="form-control" placeholder="Enter USDD amount">
           <p class="card-text" id="calculated-tknx-usdd">TKNX tokens you will get: 0 TKNX</p>
           <button id="buy-usdd-button" class="btn btn-success">Buy with USDD</button>
@@ -456,25 +456,7 @@
 
     
 
-    async function updateAvailableTKNX() {
-  try {
-    if (!swapContractAddress || !tronWeb) {
-      document.getElementById('available-tknx').innerText = 'TKNX available in contract: Loading...';
-      document.getElementById('available-tknx-usdd').innerText = 'TKNX available in contract: Loading...';
-      return;
-    }
-
-    const tokenBalance = await tokenContract.methods.balanceOf(swapContractAddress).call();
-    const formattedBalance = parseFloat(tronWeb.fromSun(tokenBalance)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-    document.getElementById('available-tknx').innerText = `TKNX available in contract: ${formattedBalance} TKNX`;
-    document.getElementById('available-tknx-usdd').innerText = `TKNX available in contract: ${formattedBalance} TKNX`;
-  } catch (error) {  // <-- Corrected 'catch' syntax
-    console.error('Error fetching available TKNX:', error);
-    document.getElementById('available-tknx').innerText = 'TKNX available in contract: Error loading';
-    document.getElementById('available-tknx-usdd').innerText = 'TKNX available in contract: Error loading';
-  }
-}
+    
 
 
     async function buyTokensWithUSDT(amount) {
