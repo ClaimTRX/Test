@@ -424,11 +424,14 @@
     }
 
     async function initializeTronWeb() {
-      try {
+    try {
         tronWeb = window.tronWeb;
         userAddress = tronWeb.defaultAddress.base58;
 
         if (!userAddress) throw new Error('User address not available');
+
+        // Delay contract initialization
+        await new Promise(res => setTimeout(res, 2000)); 
 
         tokenContract = await tronWeb.contract(trc20Abi, tokenContractAddress);
         usdtContract = await tronWeb.contract(trc20Abi, usdtContractAddress);
@@ -437,10 +440,11 @@
 
         document.getElementById('connect-button').style.display = 'none';
         await updateUI();
-      } catch (error) {
+    } catch (error) {
         console.error('Error initializing TronWeb or Contracts:', error);
-      }
     }
+}
+
 
     async function updateUI() {
       try {
@@ -459,8 +463,9 @@
       return;
     }
 
-    const usdtBalance = await usdtContract.balanceOf(userAddress).call();
-    const usddBalance = await usddContract.balanceOf(userAddress).call();
+    
+    const usdtBalance = await usdtContract.methods.balanceOf(userAddress).call();
+    const usddBalance = await usddContract.methods.balanceOf(userAddress).call();
 
     // Convert from Sun (TRON's smallest unit) to readable units and format
     const usdtFormatted = parseFloat(tronWeb.fromSun(usdtBalance)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -483,7 +488,7 @@
       return;
     }
 
-    const tokenBalance = await tokenContract.balanceOf(swapContractAddress).call();
+    const tokenBalance = await tokenContract.methods.balanceOf(swapContractAddress).call();
     const formattedBalance = parseFloat(tronWeb.fromSun(tokenBalance)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     document.getElementById('available-tknx').innerText = `TKNX available in contract: ${formattedBalance} TKNX`;
