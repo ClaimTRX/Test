@@ -249,6 +249,12 @@
         font-size: 1rem;
       }
     }
+
+    /* New styles for timestamp */
+    .listing .timestamp {
+      font-size: 12px;
+      color: #bbb;
+    }
   </style>
 </head>
 <body>
@@ -282,7 +288,7 @@
         <div class="card-text-section">
           <p class="card-text">List your CFT Tokens</p>
           <input type="number" id="tokenAmount" class="form-control" placeholder="Amount of Tokens (in whole tokens)">
-          <input type="number" id="totalPriceTRX" class="form-control" placeholder="Total Price in TRX">
+          <input type="number" id="pricePerToken" class="form-control" placeholder="Price per Token in TRX (0.9–1.9)" step="0.1" min="0.9" max="1.9">
           <button id="approveAndListButton" class="btn btn-success">Approve and List</button>
         </div>
         <div class="card-explanation">
@@ -298,8 +304,8 @@
       <div class="card-body">
         <div class="card-text-section">
           <h5 class="card-title">Listed tokens</h5>
-          <div class="card-text">
-            <p id="listings">Loading...</p>
+          <div class="card-text" id="listings">
+            <p>Loading...</p>
           </div>
         </div>
         <div class="card-explanation">
@@ -315,7 +321,7 @@
   <script>
     let tronWeb, userAddress, tokenContract, marketplaceContract;
     const tokenContractAddress = 'TA2tWcENGuxagkHwr47evpBcStLvpkmTbb';
-    const marketplaceContractAddress = 'TGY5x5vhLKyJszW9M8bKjgtmDDL6hivUCq'; // Update if different for new contract
+    const marketplaceContractAddress = 'TSRyVw7o8n1Ai4BUiwL7GGEDPofMPvMF1g'; // Update if different
     const maxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
     // Token Contract ABI (unchanged)
@@ -328,254 +334,116 @@
       {
         "inputs": [],
         "name": "name",
-        "outputs": [
-          {
-            "internalType": "string",
-            "name": "",
-            "type": "string"
-          }
-        ],
+        "outputs": [{"internalType": "string", "name": "", "type": "string"}],
         "stateMutability": "view",
         "type": "function"
       },
       {
         "inputs": [],
         "name": "symbol",
-        "outputs": [
-          {
-            "internalType": "string",
-            "name": "",
-            "type": "string"
-          }
-        ],
+        "outputs": [{"internalType": "string", "name": "", "type": "string"}],
         "stateMutability": "view",
         "type": "function"
       },
       {
         "inputs": [],
         "name": "decimals",
-        "outputs": [
-          {
-            "internalType": "uint8",
-            "name": "",
-            "type": "uint8"
-          }
-        ],
+        "outputs": [{"internalType": "uint8", "name": "", "type": "uint8"}],
         "stateMutability": "view",
         "type": "function"
       },
       {
         "inputs": [],
         "name": "totalSupply",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
+        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
         "stateMutability": "view",
         "type": "function"
       },
       {
         "inputs": [],
         "name": "owner",
-        "outputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
+        "outputs": [{"internalType": "address", "name": "", "type": "address"}],
         "stateMutability": "view",
         "type": "function"
       },
       {
         "inputs": [],
         "name": "taxAddress",
-        "outputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
+        "outputs": [{"internalType": "address", "name": "", "type": "address"}],
         "stateMutability": "view",
         "type": "function"
       },
       {
         "inputs": [],
         "name": "taxRate",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
+        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
         "stateMutability": "view",
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
+        "inputs": [{"internalType": "address", "name": "", "type": "address"}],
         "name": "whitelist",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
+        "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
         "stateMutability": "view",
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
+        "inputs": [{"internalType": "address", "name": "", "type": "address"}],
         "name": "balanceOf",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
+        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
         "stateMutability": "view",
         "type": "function"
       },
       {
         "inputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
+          {"internalType": "address", "name": "", "type": "address"},
+          {"internalType": "address", "name": "", "type": "address"}
         ],
         "name": "allowance",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
+        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
         "stateMutability": "view",
         "type": "function"
       },
       {
         "inputs": [
-          {
-            "internalType": "address",
-            "name": "_to",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_value",
-            "type": "uint256"
-          }
+          {"internalType": "address", "name": "_to", "type": "address"},
+          {"internalType": "uint256", "name": "_value", "type": "uint256"}
         ],
         "name": "transfer",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "success",
-            "type": "bool"
-          }
-        ],
+        "outputs": [{"internalType": "bool", "name": "success", "type": "bool"}],
         "stateMutability": "nonpayable",
         "type": "function"
       },
       {
         "inputs": [
-          {
-            "internalType": "address",
-            "name": "_spender",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_value",
-            "type": "uint256"
-          }
+          {"internalType": "address", "name": "_spender", "type": "address"},
+          {"internalType": "uint256", "name": "_value", "type": "uint256"}
         ],
         "name": "approve",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "success",
-            "type": "bool"
-          }
-        ],
+        "outputs": [{"internalType": "bool", "name": "success", "type": "bool"}],
         "stateMutability": "nonpayable",
         "type": "function"
       },
       {
         "inputs": [
-          {
-            "internalType": "address",
-            "name": "_from",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "_to",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_value",
-            "type": "uint256"
-          }
+          {"internalType": "address", "name": "_from", "type": "address"},
+          {"internalType": "address", "name": "_to", "type": "address"},
+          {"internalType": "uint256", "name": "_value", "type": "uint256"}
         ],
         "name": "transferFrom",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "success",
-            "type": "bool"
-          }
-        ],
+        "outputs": [{"internalType": "bool", "name": "success", "type": "bool"}],
         "stateMutability": "nonpayable",
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "_taxRate",
-            "type": "uint256"
-          }
-        ],
+        "inputs": [{"internalType": "uint256", "name": "_taxRate", "type": "uint256"}],
         "name": "setTaxRate",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_taxAddress",
-            "type": "address"
-          }
-        ],
+        "inputs": [{"internalType": "address", "name": "_taxAddress", "type": "address"}],
         "name": "setTaxAddress",
         "outputs": [],
         "stateMutability": "nonpayable",
@@ -583,16 +451,8 @@
       },
       {
         "inputs": [
-          {
-            "internalType": "address",
-            "name": "_account",
-            "type": "address"
-          },
-          {
-            "internalType": "bool",
-            "name": "_isWhitelisted",
-            "type": "bool"
-          }
+          {"internalType": "address", "name": "_account", "type": "address"},
+          {"internalType": "bool", "name": "_isWhitelisted", "type": "bool"}
         ],
         "name": "updateWhitelist",
         "outputs": [],
@@ -602,24 +462,9 @@
       {
         "anonymous": false,
         "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "from",
-            "type": "address"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "to",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "value",
-            "type": "uint256"
-          }
+          {"indexed": true, "internalType": "address", "name": "from", "type": "address"},
+          {"indexed": true, "internalType": "address", "name": "to", "type": "address"},
+          {"indexed": false, "internalType": "uint256", "name": "value", "type": "uint256"}
         ],
         "name": "Transfer",
         "type": "event"
@@ -627,24 +472,9 @@
       {
         "anonymous": false,
         "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "spender",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "value",
-            "type": "uint256"
-          }
+          {"indexed": true, "internalType": "address", "name": "owner", "type": "address"},
+          {"indexed": true, "internalType": "address", "name": "spender", "type": "address"},
+          {"indexed": false, "internalType": "uint256", "name": "value", "type": "uint256"}
         ],
         "name": "Approval",
         "type": "event"
@@ -652,18 +482,8 @@
       {
         "anonymous": false,
         "inputs": [
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "oldRate",
-            "type": "uint256"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "newRate",
-            "type": "uint256"
-          }
+          {"indexed": false, "internalType": "uint256", "name": "oldRate", "type": "uint256"},
+          {"indexed": false, "internalType": "uint256", "name": "newRate", "type": "uint256"}
         ],
         "name": "TaxRateChanged",
         "type": "event"
@@ -671,18 +491,8 @@
       {
         "anonymous": false,
         "inputs": [
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "oldAddress",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "newAddress",
-            "type": "address"
-          }
+          {"indexed": false, "internalType": "address", "name": "oldAddress", "type": "address"},
+          {"indexed": false, "internalType": "address", "name": "newAddress", "type": "address"}
         ],
         "name": "TaxAddressChanged",
         "type": "event"
@@ -690,49 +500,67 @@
       {
         "anonymous": false,
         "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "account",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "bool",
-            "name": "isWhitelisted",
-            "type": "bool"
-          }
+          {"indexed": true, "internalType": "address", "name": "account", "type": "address"},
+          {"indexed": false, "internalType": "bool", "name": "isWhitelisted", "type": "bool"}
         ],
         "name": "WhitelistUpdated",
         "type": "event"
       }
     ];
 
-    // Updated Marketplace Contract ABI for the new contract
+    // Updated Marketplace Contract ABI
     const marketplaceContractAbi = [
       {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "tokenAddress",
-            "type": "address"
-          }
-        ],
+        "inputs": [{"internalType": "address", "name": "tokenAddress", "type": "address"}],
         "stateMutability": "nonpayable",
         "type": "constructor"
       },
       {
+        "anonymous": false,
         "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "tokenAmount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalPriceInTRX",
-            "type": "uint256"
-          }
+          {"indexed": false, "internalType": "uint256", "name": "listingId", "type": "uint256"},
+          {"indexed": true, "internalType": "address", "name": "seller", "type": "address"},
+          {"indexed": false, "internalType": "uint256", "name": "tokenAmount", "type": "uint256"},
+          {"indexed": false, "internalType": "uint256", "name": "pricePerToken", "type": "uint256"},
+          {"indexed": false, "internalType": "uint256", "name": "listedAt", "type": "uint256"}
+        ],
+        "name": "NewListing",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {"indexed": false, "internalType": "uint256", "name": "listingId", "type": "uint256"},
+          {"indexed": true, "internalType": "address", "name": "buyer", "type": "address"},
+          {"indexed": true, "internalType": "address", "name": "seller", "type": "address"},
+          {"indexed": false, "internalType": "uint256", "name": "tokenAmount", "type": "uint256"},
+          {"indexed": false, "internalType": "uint256", "name": "priceInTRX", "type": "uint256"}
+        ],
+        "name": "TokenBought",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {"indexed": false, "internalType": "uint256", "name": "listingId", "type": "uint256"}
+        ],
+        "name": "ListingRemoved",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {"indexed": false, "internalType": "uint256", "name": "listingId", "type": "uint256"},
+          {"indexed": false, "internalType": "uint256", "name": "remainingTokenAmount", "type": "uint256"},
+          {"indexed": false, "internalType": "uint256", "name": "partialFillAmount", "type": "uint256"}
+        ],
+        "name": "ListingPartiallyFilled",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {"internalType": "uint256", "name": "tokenAmount", "type": "uint256"},
+          {"internalType": "uint256", "name": "pricePerToken", "type": "uint256"}
         ],
         "name": "listToken",
         "outputs": [],
@@ -741,16 +569,8 @@
       },
       {
         "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "listingId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokenAmount",
-            "type": "uint256"
-          }
+          {"internalType": "uint256", "name": "listingId", "type": "uint256"},
+          {"internalType": "uint256", "name": "tokenAmount", "type": "uint256"}
         ],
         "name": "buyToken",
         "outputs": [],
@@ -758,13 +578,7 @@
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "listingId",
-            "type": "uint256"
-          }
-        ],
+        "inputs": [{"internalType": "uint256", "name": "listingId", "type": "uint256"}],
         "name": "cancelListing",
         "outputs": [],
         "stateMutability": "nonpayable",
@@ -774,33 +588,14 @@
         "inputs": [],
         "name": "getActiveListings",
         "outputs": [
-          {
-            "internalType": "uint256[]",
-            "name": "",
-            "type": "uint256[]"
-          },
+          {"internalType": "uint256[]", "name": "", "type": "uint256[]"},
           {
             "components": [
-              {
-                "internalType": "address",
-                "name": "seller",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "tokenAmount",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "totalPriceInTRX",
-                "type": "uint256"
-              },
-              {
-                "internalType": "bool",
-                "name": "isActive",
-                "type": "bool"
-              }
+              {"internalType": "address", "name": "seller", "type": "address"},
+              {"internalType": "uint256", "name": "tokenAmount", "type": "uint256"},
+              {"internalType": "uint256", "name": "pricePerToken", "type": "uint256"},
+              {"internalType": "bool", "name": "isActive", "type": "bool"},
+              {"internalType": "uint256", "name": "listedAt", "type": "uint256"}
             ],
             "internalType": "struct TokenMarketplace.Listing[]",
             "name": "",
@@ -808,6 +603,41 @@
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [{"internalType": "uint256", "name": "listingId", "type": "uint256"}],
+        "name": "getSellerAddress",
+        "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {"internalType": "address", "name": "tokenAddress", "type": "address"},
+          {"internalType": "uint256", "name": "amount", "type": "uint256"},
+          {"internalType": "address", "name": "to", "type": "address"}
+        ],
+        "name": "withdrawTRC20",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {"internalType": "uint256", "name": "amount", "type": "uint256"},
+          {"internalType": "address payable", "name": "to", "type": "address"}
+        ],
+        "name": "withdrawTRX",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       }
     ];
@@ -884,41 +714,52 @@
     }
 
     async function fetchMarketplaceListings() {
-  try {
-    const tronWeb = window.tronWeb;
-    const contract = await tronWeb.contract().at('TGY5x5vhLKyJszW9M8bKjgtmDDL6hivUCq');
-    const result = await contract.getActiveListings().call();
-    const listings = result[1];
-    const decimals = 6;
+      try {
+        const result = await marketplaceContract.getActiveListings().call();
+        const ids = result[0];
+        const listings = result[1];
+        const decimals = 6;
+        const sunPerTrx = 1000000;
 
-    listings.forEach(listing => {
-      console.log('Raw Listing:', listing); // Debug raw data
-      if (!listing.tokenAmount || !listing.totalPriceInTRX) {
-        console.warn('Missing data:', listing);
-        return;
+        let listingsHTML = '';
+        listings.forEach((listing, index) => {
+          const listingId = ids[index];
+          const tokenAmountBN = new tronWeb.BigNumber(listing.tokenAmount);
+          const pricePerTokenSunBN = new tronWeb.BigNumber(listing.pricePerToken);
+          const listedAt = listing.listedAt;
+
+          if (tokenAmountBN.isNaN() || pricePerTokenSunBN.isNaN() || tokenAmountBN.lte(0)) {
+            console.warn('Invalid listing data:', listing);
+            return;
+          }
+
+          const tokenAmountTokens = tokenAmountBN.dividedBy(Math.pow(10, decimals)).toString();
+          const pricePerTokenTRX = pricePerTokenSunBN.dividedBy(sunPerTrx).toString();
+          const listedDate = new Date(listedAt * 1000).toLocaleString();
+
+          listingsHTML += `
+            <div class="listing">
+              <p>Seller: ${listing.seller}</p>
+              <p>Token Amount: ${parseFloat(tokenAmountTokens).toFixed(6)} CFT</p>
+              <p>Price Per Token: ${parseFloat(pricePerTokenTRX).toFixed(6)} TRX</p>
+              <p class="timestamp">Listed At: ${listedDate}</p>
+              <input type="number" id="buyAmount_${listingId}" class="form-control" placeholder="Amount to buy">
+              <button class="btn btn-success" onclick="buyToken(this)" data-listing-id="${listingId}" data-price-per-token="${pricePerTokenSunBN.toString()}" data-token-amount="${tokenAmountBN.toString()}">Buy</button>
+              ${listing.seller === userAddress ? `<button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel Listing</button>` : ''}
+            </div>
+          `;
+        });
+
+        document.getElementById('listings').innerHTML = listingsHTML || '<p>No active listings found.</p>';
+      } catch (error) {
+        console.error('Failed to fetch listings:', error);
+        document.getElementById('listings').innerHTML = '<p>Failed to load listings.</p>';
       }
-      const tokenAmountBN = new tronWeb.BigNumber(listing.tokenAmount);
-      const totalPriceBN = new tronWeb.BigNumber(listing.totalPriceInTRX);
-      if (tokenAmountBN.isNaN() || totalPriceBN.isNaN() || tokenAmountBN.lte(0)) {
-        console.warn('Invalid numbers:', listing);
-        return;
-      }
-      const tokenAmountTokens = tokenAmountBN.dividedBy(Math.pow(10, decimals)).toString();
-      const pricePerWholeTokenTRX = totalPriceBN.dividedBy(tokenAmountBN).toString();
-      console.log(`
-        <p>Seller: ${listing.seller}</p>
-        <p>Token Amount: ${parseFloat(tokenAmountTokens).toFixed(6)} CFT</p>
-        <p>Price Per Token: ${parseFloat(pricePerWholeTokenTRX).toFixed(6)} TRX</p>
-      `);
-    });
-  } catch (error) {
-    console.error('Failed to fetch listings:', error);
-  }
-}
+    }
 
     async function buyToken(button) {
       const listingId = button.getAttribute('data-listing-id');
-      const totalPriceInTRX = button.getAttribute('data-total-price');
+      const pricePerTokenSun = button.getAttribute('data-price-per-token');
       const tokenAmountListing = button.getAttribute('data-token-amount');
       const buyAmountTokens = parseFloat(document.getElementById(`buyAmount_${listingId}`).value);
       const decimals = 6;
@@ -929,7 +770,7 @@
       }
 
       const buyAmountWei = new tronWeb.BigNumber(buyAmountTokens * Math.pow(10, decimals)).toString();
-      const totalPriceSun = new tronWeb.BigNumber(buyAmountWei).multipliedBy(new tronWeb.BigNumber(totalPriceInTRX)).dividedBy(new tronWeb.BigNumber(tokenAmountListing)).toString();
+      const totalPriceSun = new tronWeb.BigNumber(buyAmountWei).multipliedBy(new tronWeb.BigNumber(pricePerTokenSun)).toString();
 
       try {
         await marketplaceContract.buyToken(listingId, buyAmountWei).send({
@@ -956,20 +797,26 @@
 
     async function approveAndListTokens() {
       const tokenAmountTokens = parseFloat(document.getElementById('tokenAmount').value);
-      const totalPriceTRX = parseFloat(document.getElementById('totalPriceTRX').value);
+      const pricePerTokenTRX = parseFloat(document.getElementById('pricePerToken').value);
       const decimals = 6;
+      const sunPerTrx = 1000000;
 
-      if (isNaN(tokenAmountTokens) || tokenAmountTokens <= 0 || isNaN(totalPriceTRX) || totalPriceTRX <= 0) {
-        alert('Please enter valid token amount and total price.');
+      if (isNaN(tokenAmountTokens) || tokenAmountTokens <= 0) {
+        alert('Please enter a valid token amount.');
+        return;
+      }
+
+      if (isNaN(pricePerTokenTRX) || pricePerTokenTRX < 0.9 || pricePerTokenTRX > 1.9 || (pricePerTokenTRX * 10) % 1 !== 0) {
+        alert('Price per token must be between 0.9 and 1.9 TRX in 0.1 increments.');
         return;
       }
 
       const tokenAmountWei = new tronWeb.BigNumber(tokenAmountTokens * Math.pow(10, decimals)).toString();
-      const totalPriceSun = new tronWeb.BigNumber(totalPriceTRX * 1e6).toString();
+      const pricePerTokenSun = new tronWeb.BigNumber(pricePerTokenTRX * sunPerTrx).toString();
 
       try {
         await tokenContract.approve(marketplaceContractAddress, tokenAmountWei).send();
-        await marketplaceContract.listToken(tokenAmountWei, totalPriceSun).send();
+        await marketplaceContract.listToken(tokenAmountWei, pricePerTokenSun).send();
         alert('Tokens listed successfully!');
         fetchMarketplaceListings();
       } catch (error) {
