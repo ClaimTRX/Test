@@ -736,24 +736,16 @@
     let listingsHTML = '';
     listings.forEach((listing, index) => {
       const listingId = ids[index];
-
+      
       // Validate listing data
       if (!listing || !listing.tokenAmount || !listing.pricePerToken || !listing.listedAt) {
         console.warn(`Invalid listing data at index ${index}:`, listing);
         return; // Skip invalid listings
       }
 
-      // Check if tokenAmount and pricePerToken are valid numbers
-      const tokenAmountBN = new tronWeb.BigNumber(listing.tokenAmount);
-      const pricePerTokenBN = new tronWeb.BigNumber(listing.pricePerToken);
-      if (tokenAmountBN.isNaN() || pricePerTokenBN.isNaN()) {
-        console.warn(`Invalid numeric data in listing at index ${index}:`, listing);
-        return; // Skip listings with invalid numbers
-      }
-
-      // Perform calculations with validated numbers
-      const tokenAmountTokens = tokenAmountBN.dividedBy(Math.pow(10, decimals)).toFixed(6);
-      const pricePerTokenTRX = pricePerTokenBN.dividedBy(sunPerTrx).toFixed(6);
+      // Ensure numeric values are properly formatted
+      const tokenAmountTokens = new tronWeb.BigNumber(listing.tokenAmount).dividedBy(10 ** decimals).toFixed(0);
+      const pricePerTokenTRX = new tronWeb.BigNumber(listing.pricePerToken).dividedBy(sunPerTrx).toFixed(6);
       const listedDate = new Date(listing.listedAt * 1000).toLocaleString();
 
       listingsHTML += `
@@ -766,6 +758,14 @@
         </div>
       `;
     });
+
+    document.getElementById('listings').innerHTML = listingsHTML || '<p>No active listings found.</p>';
+  } catch (error) {
+    console.error('Failed to fetch listings:', error);
+    document.getElementById('listings').innerHTML = '<p>Failed to load listings.</p>';
+  }
+}
+
 
     document.getElementById('listings').innerHTML = listingsHTML || '<p>No active listings found.</p>';
   } catch (error) {
