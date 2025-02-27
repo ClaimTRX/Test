@@ -736,16 +736,24 @@
     let listingsHTML = '';
     listings.forEach((listing, index) => {
       const listingId = ids[index];
-      
+
       // Validate listing data
       if (!listing || !listing.tokenAmount || !listing.pricePerToken || !listing.listedAt) {
         console.warn(`Invalid listing data at index ${index}:`, listing);
         return; // Skip invalid listings
       }
 
-      // Ensure numeric values are properly formatted
-      const tokenAmountTokens = new tronWeb.BigNumber(listing.tokenAmount).dividedBy(Math.pow(10, decimals)).toFixed(6);
-      const pricePerTokenTRX = new tronWeb.BigNumber(listing.pricePerToken).dividedBy(sunPerTrx).toFixed(6);
+      // Check if tokenAmount and pricePerToken are valid numbers
+      const tokenAmountBN = new tronWeb.BigNumber(listing.tokenAmount);
+      const pricePerTokenBN = new tronWeb.BigNumber(listing.pricePerToken);
+      if (tokenAmountBN.isNaN() || pricePerTokenBN.isNaN()) {
+        console.warn(`Invalid numeric data in listing at index ${index}:`, listing);
+        return; // Skip listings with invalid numbers
+      }
+
+      // Perform calculations with validated numbers
+      const tokenAmountTokens = tokenAmountBN.dividedBy(Math.pow(10, decimals)).toFixed(6);
+      const pricePerTokenTRX = pricePerTokenBN.dividedBy(sunPerTrx).toFixed(6);
       const listedDate = new Date(listing.listedAt * 1000).toLocaleString();
 
       listingsHTML += `
@@ -770,31 +778,34 @@
 
 
     async function buyToken(button) {
-      const listingId = button.getAttribute('data-listing-id');
-      const pricePerTokenSun = button.getAttribute('data-price-per-token');
-      const tokenAmountListing = button.getAttribute('data-token-amount');
-      const buyAmountTokens = parseFloat(document.getElementById(`buyAmount_${listingId}`).value);
-      const decimals = 6;
+  const listingId = button.getAttribute('data-listing-id');
+  const pricePerTokenSun = button.getAttribute('data-price-per-token');
+  const tokenAmountListing = button.getAttribute('data-token-amount');
+  const buyAmountTokens = parseFloat(document.getElementById(`buyAmount_${listingId}`).value);
+  const decimals = 6;
 
-      if (isNaN(buyAmountTokens) || buyAmountTokens <= 0) {
-        alert('Please enter a valid token amount.');
-        return;
-      }
+  if (isNaN(buyAmountTokens) || buyAmountTokens <= 0) {
+    alert('Please enter a valid token amount.');
+    return;
+  }
 
-      const buyAmountWei = new tronWeb.BigNumber(buyAmountTokens * Math.pow(10, decimals)).toString();
-      const totalPriceSun = new tronWeb.BigNumber(buyAmountWei).multipliedBy(new tronWeb.BigNumber(pricePerTokenSun)).toString();
+  const buyAmountWei = new tronWeb.BigNumber(buyAmountTokens * Math.pow(10, decimals)).toString();
+  const totalPriceSun = new tronWeb.BigNumber(buyAmountWei)
+    .dividedBy(Math.pow(10, decimals))
+    .multipliedBy(new tronWeb.BigNumber(pricePerTokenSun))
+    .toString();
 
-      try {
-        await marketplaceContract.buyToken(listingId, buyAmountWei).send({
-          callValue: totalPriceSun
-        });
-        alert('Token purchased successfully!');
-        fetchMarketplaceListings();
-      } catch (error) {
-        console.error('Error buying token:', error);
-        alert('Failed to buy tokens.');
-      }
-    }
+  try {
+    await marketplaceContract.buyToken(listingId, buyAmountWei).send({
+      callValue: totalPriceSun
+    });
+    alert('Token purchased successfully!');
+    fetchMarketplaceListings();
+  } catch (error) {
+    console.error('Error buying token:', error);
+    alert('Failed to buy tokens.');
+  }
+}
 
     async function cancelListing(listingId) {
       try {
