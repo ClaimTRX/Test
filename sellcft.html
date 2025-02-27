@@ -937,32 +937,35 @@
       }
     }
 
-    // Buy tokens from the marketplace
     async function buyToken(button) {
-      const listingId = button.getAttribute('data-listing-id');
-      const pricePerTokenSun = button.getAttribute('data-price-per-token');
-      const buyAmountTokens = parseFloat(document.getElementById(`buyAmount_${listingId}`).value);
-      const decimals = 6; // Assuming 6 decimals for CFT token
+    const listingId = button.getAttribute('data-listing-id');
+    const pricePerTokenSun = button.getAttribute('data-price-per-token'); // Already in SUN (1e6 precision)
+    const buyAmountTokens = parseFloat(document.getElementById(`buyAmount_${listingId}`).value);
+    const decimals = 6; // Assuming 6 decimals for CFT token
 
-      if (isNaN(buyAmountTokens) || buyAmountTokens <= 0) {
+    if (isNaN(buyAmountTokens) || buyAmountTokens <= 0) {
         alert('Please enter a valid token amount.');
         return;
-      }
+    }
 
-      const tokenAmountWei = tronWeb.toBigNumber(buyAmountTokens * Math.pow(10, decimals)).toString();
-      const totalPriceSun = tronWeb.toBigNumber(tokenAmountWei).multipliedBy(pricePerTokenSun).toString();
+    // Convert token amount to its smallest unit (SUN for CFT)
+    const tokenAmountWei = tronWeb.toBigNumber(buyAmountTokens).multipliedBy(Math.pow(10, decimals)).toString();
 
-      try {
+    // Calculate total price correctly (avoid double multiplication by 1e6)
+    const totalPriceSun = tronWeb.toBigNumber(buyAmountTokens).multipliedBy(pricePerTokenSun).toString();
+
+    try {
         await marketplaceContract.buyToken(listingId, tokenAmountWei).send({
-          callValue: totalPriceSun
+            callValue: totalPriceSun // Corrected total price
         });
         alert('Token purchased successfully!');
         fetchMarketplaceListings();
-      } catch (error) {
+    } catch (error) {
         console.error('Error buying token:', error);
         alert('Failed to buy tokens.');
-      }
     }
+}
+
 
     // Cancel a listing from the marketplace
     async function cancelListing(listingId) {
