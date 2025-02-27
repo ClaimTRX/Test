@@ -736,40 +736,43 @@
     let listingsHTML = '';
     listings.forEach((listing, index) => {
       const listingId = ids[index];
-      const tokenAmountBN = new tronWeb.BigNumber(listing.tokenAmount);
-      const pricePerTokenSunBN = new tronWeb.BigNumber(listing.pricePerToken);
-      const listedAt = listing.listedAt;
-
+      
       // Validate listing data
-      if (!listing || !listing.seller || !tokenAmountBN.isFinite() || !pricePerTokenSunBN.isFinite() || !listedAt) {
+      if (!listing || !listing.seller || !listing.tokenAmount || !listing.pricePerToken || !listing.listedAt) {
         console.warn(`Invalid listing data at index ${index}:`, listing);
-        return;
+        return; // Skip invalid listings
       }
 
-      // Convert seller address to base58 if necessary
       let sellerAddress = listing.seller;
       try {
-        if (sellerAddress.startsWith('41')) {
+        if (sellerAddress.length === 42 && sellerAddress.startsWith('0x')) {
           sellerAddress = tronWeb.address.fromHex(sellerAddress);
-        } else if (sellerAddress.startsWith('0x')) {
-          sellerAddress = tronWeb.address.fromHex(sellerAddress);
+        } else if (sellerAddress.length === 34 && sellerAddress.startsWith('T')) {
+          // Address already in Base58, no conversion needed
+        } else if (sellerAddress.length === 40) {
+          sellerAddress = tronWeb.address.fromHex('41' + sellerAddress);
+        } else {
+          console.warn('Unrecognized address format:', sellerAddress);
+          return;
         }
       } catch (e) {
         console.error('Error converting seller address:', e);
+        return; // Skip invalid listings
       }
 
-      const tokenAmountTokens = tokenAmountBN.dividedBy(Math.pow(10, decimals)).toString();
-      const pricePerTokenTRX = pricePerTokenSunBN.dividedBy(sunPerTrx).toString();
-      const listedDate = new Date(listedAt * 1000).toLocaleString();
+      // Ensure numeric values are properly formatted
+      const tokenAmountTokens = new tronWeb.BigNumber(listing.tokenAmount).dividedBy(Math.pow(10, decimals)).toFixed(6);
+      const pricePerTokenTRX = new tronWeb.BigNumber(listing.pricePerToken).dividedBy(sunPerTrx).toFixed(6);
+      const listedDate = new Date(listing.listedAt * 1000).toLocaleString();
 
       listingsHTML += `
         <div class="listing">
           <p>Seller: ${sellerAddress}</p>
-          <p>Token Amount: ${parseFloat(tokenAmountTokens).toFixed(6)} CFT</p>
-          <p>Price Per Token: ${parseFloat(pricePerTokenTRX).toFixed(6)} TRX</p>
+          <p>Token Amount: ${tokenAmountTokens} CFT</p>
+          <p>Price Per Token: ${pricePerTokenTRX} TRX</p>
           <p class="timestamp">Listed At: ${listedDate}</p>
           <input type="number" id="buyAmount_${listingId}" class="form-control" placeholder="Amount to buy">
-          <button class="btn btn-success" onclick="buyToken(this)" data-listing-id="${listingId}" data-price-per-token="${pricePerTokenSunBN.toString()}" data-token-amount="${tokenAmountBN.toString()}">Buy</button>
+          <button class="btn btn-success" onclick="buyToken(this)" data-listing-id="${listingId}" data-price-per-token="${listing.pricePerToken}" data-token-amount="${listing.tokenAmount}">Buy</button>
           ${sellerAddress === userAddress ? `<button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel Listing</button>` : ''}
         </div>
       `;
@@ -781,6 +784,7 @@
     document.getElementById('listings').innerHTML = '<p>Failed to load listings.</p>';
   }
 }
+
 
 
     async function buyToken(button) {
