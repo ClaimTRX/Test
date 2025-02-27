@@ -767,12 +767,8 @@
 }
 
 
-    document.getElementById('listings').innerHTML = listingsHTML || '<p>No active listings found.</p>';
-  } catch (error) {
-    console.error('Failed to fetch listings:', error);
-    document.getElementById('listings').innerHTML = '<p>Failed to load listings.</p>';
-  }
-}
+    document.getElementById('listings').innerHTML = listingsHTML.trim() !== '' ? listingsHTML : '<p>No active listings found.</p>';
+
 
 
 
