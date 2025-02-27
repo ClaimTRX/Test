@@ -86,6 +86,7 @@
       margin-right: auto;
     }
 
+    /* Ensure card and content fit properly */
     .card {
       background-color: #2c3e50;
       color: white;
@@ -142,18 +143,21 @@
       background-color: #ff4c4c;
     }
 
+    /* Ensure long text breaks properly */
     .card p, .listing p {
       word-wrap: break-word;
-      word-break: break-all;
-      font-size: 14px;
-      line-height: 1.4;
+      word-break: break-all; /* Force breaks for long strings */
+      font-size: 14px; /* Adjust text size for better fit */
+      line-height: 1.4; /* Adjust line height to give more space between lines */
     }
 
+    /* Ensure button stays within the card */
     .card button, .listing button {
-      width: 100%;
-      font-size: 14px;
+      width: 100%; /* Make the button take full width of the card on mobile */
+      font-size: 14px; /* Adjust font size for the button */
     }
 
+    /* Mobile responsiveness */
     @media (max-width: 767.98px) {
       .sidebar {
         height: auto;
@@ -212,18 +216,18 @@
       .listing {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
+        align-items: flex-start; /* Align items vertically */
         padding: 10px 0;
       }
 
       .listing p {
-        margin-bottom: 5px;
-        font-size: 14px;
+        margin-bottom: 5px; /* Ensure spacing between text */
+        font-size: 14px; /* Small font for better fit */
       }
 
       .listing button {
-        margin-bottom: 10px;
-        width: 100%;
+        margin-bottom: 10px; /* Add space between buttons and content */
+        width: 100%; /* Ensure buttons take full width */
       }
     }
 
@@ -278,20 +282,7 @@
         <div class="card-text-section">
           <p class="card-text">List your CFT Tokens</p>
           <input type="number" id="tokenAmount" class="form-control" placeholder="Amount of Tokens (in whole tokens)">
-          <select id="pricePerTokenSun" class="form-control">
-            <option value="" disabled selected>Select price per smallest unit in sun</option>
-            <option value="900000">900000 sun (0.9 TRX per smallest unit)</option>
-            <option value="1000000">1000000 sun (1 TRX per smallest unit)</option>
-            <option value="1100000">1100000 sun (1.1 TRX per smallest unit)</option>
-            <option value="1200000">1200000 sun (1.2 TRX per smallest unit)</option>
-            <option value="1300000">1300000 sun (1.3 TRX per smallest unit)</option>
-            <option value="1400000">1400000 sun (1.4 TRX per smallest unit)</option>
-            <option value="1500000">1500000 sun (1.5 TRX per smallest unit)</option>
-            <option value="1600000">1600000 sun (1.6 TRX per smallest unit)</option>
-            <option value="1700000">1700000 sun (1.7 TRX per smallest unit)</option>
-            <option value="1800000">1800000 sun (1.8 TRX per smallest unit)</option>
-            <option value="1900000">1900000 sun (1.9 TRX per smallest unit)</option>
-          </select>
+          <input type="number" id="pricePerTokenSun" class="form-control" placeholder="Price per smallest unit in sun">
           <button id="approveAndListButton" class="btn btn-success">Approve and List</button>
         </div>
         <div class="card-explanation">
@@ -324,10 +315,10 @@
   <script>
     let tronWeb, userAddress, tokenContract, marketplaceContract;
     const tokenContractAddress = 'TA2tWcENGuxagkHwr47evpBcStLvpkmTbb';
-    const marketplaceContractAddress = 'TQiY2zdFZFGmrtf6v9teWRSA5HAJnSqVE6';
+    const marketplaceContractAddress = 'TS4oQ2ao5xRWo5KRHyVhytzuDiSEUNyBzC';
     const maxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
-    // Token Contract ABI
+    // Token Contract ABI (unchanged)
     const tokenContractAbi = [
       {
         "inputs": [],
@@ -717,7 +708,7 @@
       }
     ];
 
-    // Marketplace Contract ABI
+    // Updated Marketplace Contract ABI for the new contract
     const marketplaceContractAbi = [
       {
         "inputs": [
@@ -857,28 +848,37 @@
 
     // Initialize TronWeb and the contracts
     async function initializeTronWeb() {
-      try {
-        tronWeb = window.tronWeb;
-        userAddress = tronWeb.defaultAddress.base58;
+  try {
+    tronWeb = window.tronWeb;
+    userAddress = tronWeb.defaultAddress.base58;
 
-        if (!userAddress) throw new Error('User address not available');
+    if (!userAddress) throw new Error('User address not available');
 
-        tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
-        marketplaceContract = await tronWeb.contract(marketplaceContractAbi, marketplaceContractAddress);
+    // Initialize contracts using ABI and contract addresses
+    tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
+    marketplaceContract = await tronWeb.contract(marketplaceContractAbi, marketplaceContractAddress);
 
-        console.log('Connected to TronLink.');
-        console.log('User Address:', userAddress);
-        console.log('Contracts initialized successfully');
+    // Fetch token decimals
+    const decimals = await tokenContract.decimals().call();
+    window.decimals = parseInt(decimals); // Store globally as an integer
 
-        document.getElementById('connect-button').style.display = 'none';
+    console.log('Connected to TronLink.');
+    console.log('User Address:', userAddress);
+    console.log('Token Decimals:', window.decimals);
+    console.log('Contracts initialized successfully');
 
-        await updateUI();
+    // Hide connect wallet button once connected
+    document.getElementById('connect-button').style.display = 'none';
 
-        setupEventListeners();
-      } catch (error) {
-        console.error('Error initializing TronWeb or Contracts:', error);
-      }
-    }
+    // Update the UI after initializing contracts
+    await updateUI();
+
+    // Setup event listeners
+    setupEventListeners();
+  } catch (error) {
+    console.error('Error initializing TronWeb or Contracts:', error);
+  }
+}
 
     // UI update function
     async function updateUI() {
@@ -898,74 +898,80 @@
       });
     }
 
+    // Function to refresh the UI
+    async function refreshUI() {
+      const balance = await tronWeb.trx.getBalance(userAddress);
+      console.log('Balance refreshed:', tronWeb.fromSun(balance), 'TRX');
+      await fetchMarketplaceListings();
+    }
+
     // Fetch and display active marketplace listings
-    async function fetchMarketplaceListings() {
-      try {
-        const result = await marketplaceContract.getActiveListings().call();
-        const listingIds = result[0];
-        const listings = result[1];
+   async function fetchMarketplaceListings() {
+  try {
+    const result = await marketplaceContract.getActiveListings().call();
+    const listingIds = result[0];
+    const listings = result[1];
 
-        const listingsContainer = document.getElementById('listings');
-        listingsContainer.innerHTML = '';
+    const listingsContainer = document.getElementById('listings');
+    listingsContainer.innerHTML = '';
 
-        for (let i = 0; i < listingIds.length; i++) {
-          const listingId = listingIds[i];
-          const listing = listings[i];
+    for (let i = 0; i < listingIds.length; i++) {
+      const listingId = listingIds[i];
+      const listing = listings[i];
 
-          if (listing.isActive) {
-            const decimals = 6; // Assuming 6 decimals for CFT token
-            const tokenAmountTokens = tronWeb.fromSun(listing.tokenAmount);
-            const pricePerTokenSun = listing.pricePerToken.toString();
-            const pricePerWholeTokenTRX = pricePerTokenSun; // For decimals = 6, price per whole token in TRX equals pricePerTokenSun numerically
+      if (listing.isActive) {
+        const decimals = window.decimals;
+        const tokenAmountTokens = (listing.tokenAmount / Math.pow(10, decimals)).toString();
+        const pricePerTokenSun = listing.pricePerToken;
+        // Price per whole token in sun = pricePerTokenSun * 10^decimals
+        const pricePerWholeTokenSun = pricePerTokenSun * Math.pow(10, decimals);
+        const pricePerWholeTokenTRX = tronWeb.fromSun(pricePerWholeTokenSun.toString());
 
-            const listingElement = document.createElement('div');
-            listingElement.className = 'listing';
-            listingElement.innerHTML = `
-              <p>Seller: ${tronWeb.address.fromHex(listing.seller)}</p>
-              <p>Token Amount: ${tokenAmountTokens} CFT</p>
-              <p>Price per whole token: ${pricePerWholeTokenTRX} TRX</p>
-              <input type="number" id="buyAmount_${listingId}" value="${tokenAmountTokens}" min="0.000001" max="${tokenAmountTokens}" step="0.000001">
-              <button class="btn btn-success mb-2" data-listing-id="${listingId}" data-price-per-token="${pricePerTokenSun}" onclick="buyToken(this)">Buy</button>
-              ${tronWeb.address.fromHex(listing.seller) === userAddress ? `<button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel</button>` : ''}
-            `;
-            listingsContainer.appendChild(listingElement);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching listings:', error);
-        alert('Failed to fetch listings.');
+        const listingElement = document.createElement('div');
+        listingElement.className = 'listing';
+        listingElement.innerHTML = `
+          <p>Seller: ${tronWeb.address.fromHex(listing.seller)}</p>
+          <p>Token Amount: ${tokenAmountTokens} CFT</p>
+          <p>Price Per Token: ${pricePerWholeTokenTRX} TRX</p>
+          <input type="number" id="buyAmount_${listingId}" value="${tokenAmountTokens}" min="0.000001" max="${tokenAmountTokens}" step="0.000001">
+          <button class="btn btn-success mb-2" data-listing-id="${listingId}" data-price-per-token="${pricePerTokenSun}" onclick="buyToken(this)">Buy</button>
+          ${tronWeb.address.fromHex(listing.seller) === userAddress ? `<button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel</button>` : ''}
+        `;
+        listingsContainer.appendChild(listingElement);
       }
     }
+  } catch (error) {
+    console.error('Error fetching listings:', error);
+    alert('Failed to fetch listings.');
+  }
+}
 
+    // Buy tokens from the marketplace
     async function buyToken(button) {
-    const listingId = button.getAttribute('data-listing-id');
-    const pricePerTokenSun = button.getAttribute('data-price-per-token'); // Already in SUN (1e6 precision)
-    const buyAmountTokens = parseFloat(document.getElementById(`buyAmount_${listingId}`).value);
-    const decimals = 6; // Assuming 6 decimals for CFT token
+      const listingId = button.getAttribute('data-listing-id');
+      const pricePerTokenSun = button.getAttribute('data-price-per-token');
+      const buyAmountTokens = parseFloat(document.getElementById(`buyAmount_${listingId}`).value);
+      const decimals = 6; // Assuming 6 decimals for CFT token
 
-    if (isNaN(buyAmountTokens) || buyAmountTokens <= 0) {
+      if (isNaN(buyAmountTokens) || buyAmountTokens <= 0) {
         alert('Please enter a valid token amount.');
         return;
-    }
+      }
 
-    // Convert token amount to its smallest unit (SUN for CFT)
-    const tokenAmountWei = tronWeb.toBigNumber(buyAmountTokens).multipliedBy(Math.pow(10, decimals)).toString();
+      const tokenAmountWei = tronWeb.toBigNumber(buyAmountTokens * Math.pow(10, decimals)).toString();
+      const totalPriceSun = tronWeb.toBigNumber(tokenAmountWei).multipliedBy(pricePerTokenSun).toString();
 
-    // Calculate total price correctly (avoid double multiplication by 1e6)
-    const totalPriceSun = tronWeb.toBigNumber(buyAmountTokens).multipliedBy(pricePerTokenSun).toString();
-
-    try {
+      try {
         await marketplaceContract.buyToken(listingId, tokenAmountWei).send({
-            callValue: totalPriceSun // Corrected total price
+          callValue: totalPriceSun
         });
         alert('Token purchased successfully!');
         fetchMarketplaceListings();
-    } catch (error) {
+      } catch (error) {
         console.error('Error buying token:', error);
         alert('Failed to buy tokens.');
+      }
     }
-}
-
 
     // Cancel a listing from the marketplace
     async function cancelListing(listingId) {
@@ -981,30 +987,42 @@
 
     // Approve and list tokens for sale
     async function approveAndListTokens() {
-      const tokenAmountTokens = parseFloat(document.getElementById('tokenAmount').value);
-      const pricePerTokenSun = document.getElementById('pricePerTokenSun').value;
-      const decimals = 6; // Assuming 6 decimals for CFT token
+  const tokenAmountTokens = parseFloat(document.getElementById('tokenAmount').value);
+  const selectedPriceTRX = parseFloat(document.getElementById('pricePerTokenTRX').value);
+  const decimals = window.decimals;
 
-      if (isNaN(tokenAmountTokens) || tokenAmountTokens <= 0) {
-        alert('Please enter a valid token amount.');
-        return;
-      }
-      if (!pricePerTokenSun) {
-        alert('Please select a price per token.');
-        return;
-      }
+  // Convert price from TRX per whole token to sun per smallest unit
+  // Price per whole token in sun = selectedPriceTRX * 10^6
+  // Price per smallest unit in sun = (selectedPriceTRX * 10^6) / 10^decimals
+  // Round to integer since contract expects uint256
+  const pricePerTokenSun = Math.round((selectedPriceTRX * 1000000) / Math.pow(10, decimals));
 
-      const tokenAmountWei = tronWeb.toBigNumber(tokenAmountTokens * Math.pow(10, decimals)).toString();
+  if (isNaN(tokenAmountTokens) || tokenAmountTokens <= 0 || isNaN(selectedPriceTRX) || selectedPriceTRX <= 0) {
+    alert('Please enter valid token amount and select a price.');
+    return;
+  }
 
-      try {
-        await tokenContract.approve(marketplaceContractAddress, tokenAmountWei).send();
-        await marketplaceContract.listToken(tokenAmountWei, pricePerTokenSun).send();
-        alert('Tokens listed successfully!');
-        fetchMarketplaceListings();
-      } catch (error) {
-        console.error('Error listing tokens:', error);
-        alert('Failed to list tokens.');
-      }
+  const tokenAmountWei = tronWeb.toBigNumber(tokenAmountTokens * Math.pow(10, decimals)).toString();
+
+  try {
+    await tokenContract.approve(marketplaceContractAddress, tokenAmountWei).send();
+    await marketplaceContract.listToken(tokenAmountWei, pricePerTokenSun).send();
+    alert('Tokens listed successfully!');
+    fetchMarketplaceListings();
+  } catch (error) {
+    console.error('Error listing tokens:', error);
+    alert('Failed to list tokens.');
+  }
+}
+
+    // Utility function to format numbers (optional, retained from original)
+    function formatNumber(num) {
+      return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Utility function to format whole numbers (optional, retained from original)
+    function formatWholeNumber(num) {
+      return Math.floor(parseFloat(num)).toLocaleString('en-US');
     }
   </script>
 </body>
