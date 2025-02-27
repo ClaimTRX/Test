@@ -282,7 +282,7 @@
         <div class="card-text-section">
           <p class="card-text">List your CFT Tokens</p>
           <input type="number" id="tokenAmount" class="form-control" placeholder="Amount of Tokens (in whole tokens)">
-          <input type="number" id="pricePerTokenSun" class="form-control" placeholder="Price per smallest unit in sun">
+          <input type="number" id="totalPriceTRX" class="form-control" placeholder="Total Price in TRX">
           <button id="approveAndListButton" class="btn btn-success">Approve and List</button>
         </div>
         <div class="card-explanation">
@@ -315,7 +315,7 @@
   <script>
     let tronWeb, userAddress, tokenContract, marketplaceContract;
     const tokenContractAddress = 'TA2tWcENGuxagkHwr47evpBcStLvpkmTbb';
-    const marketplaceContractAddress = 'TS4oQ2ao5xRWo5KRHyVhytzuDiSEUNyBzC';
+    const marketplaceContractAddress = 'TGY5x5vhLKyJszW9M8bKjgtmDDL6hivUCq'; // Update if different for new contract
     const maxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
     // Token Contract ABI (unchanged)
@@ -730,7 +730,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "pricePerToken",
+            "name": "totalPriceInTRX",
             "type": "uint256"
           }
         ],
@@ -793,7 +793,7 @@
               },
               {
                 "internalType": "uint256",
-                "name": "pricePerToken",
+                "name": "totalPriceInTRX",
                 "type": "uint256"
               },
               {
@@ -818,13 +818,12 @@
 
       if (await checkTronLinkInstalled()) {
         await initializeTronWeb();
-        setInterval(updateUI, 60000); // Update UI every minute
+        setInterval(updateUI, 60000);
       } else {
         console.error('TronLink is not installed.');
       }
     });
 
-    // Check if TronLink is installed
     async function checkTronLinkInstalled() {
       return new Promise((resolve) => {
         const interval = setInterval(() => {
@@ -836,7 +835,6 @@
       });
     }
 
-    // Connect the wallet using TronLink
     async function connectWallet() {
       try {
         await tronLink.request({ method: 'tron_requestAccounts' });
@@ -846,7 +844,6 @@
       }
     }
 
-    // Initialize TronWeb and the contracts
     async function initializeTronWeb() {
       try {
         tronWeb = window.tronWeb;
@@ -854,7 +851,6 @@
 
         if (!userAddress) throw new Error('User address not available');
 
-        // Initialize contracts using ABI and contract addresses
         tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
         marketplaceContract = await tronWeb.contract(marketplaceContractAbi, marketplaceContractAddress);
 
@@ -862,20 +858,15 @@
         console.log('User Address:', userAddress);
         console.log('Contracts initialized successfully');
 
-        // Hide connect wallet button once connected
         document.getElementById('connect-button').style.display = 'none';
 
-        // Update the UI after initializing contracts
         await updateUI();
-
-        // Setup event listeners
         setupEventListeners();
       } catch (error) {
         console.error('Error initializing TronWeb or Contracts:', error);
       }
     }
 
-    // UI update function
     async function updateUI() {
       try {
         const balance = await tronWeb.trx.getBalance(userAddress);
@@ -886,48 +877,37 @@
       }
     }
 
-    // Setup event listeners for buttons
     function setupEventListeners() {
       document.getElementById('approveAndListButton').addEventListener('click', async () => {
         await approveAndListTokens();
       });
     }
 
-    // Function to refresh the UI
-    async function refreshUI() {
-      const balance = await tronWeb.trx.getBalance(userAddress);
-      console.log('Balance refreshed:', tronWeb.fromSun(balance), 'TRX');
-      await fetchMarketplaceListings();
-    }
-
-    // Fetch and display active marketplace listings
     async function fetchMarketplaceListings() {
       try {
         const result = await marketplaceContract.getActiveListings().call();
         const listingIds = result[0];
         const listings = result[1];
-
         const listingsContainer = document.getElementById('listings');
         listingsContainer.innerHTML = '';
 
+        const decimals = 6; // Assuming 6 decimals for CFT token
         for (let i = 0; i < listingIds.length; i++) {
           const listingId = listingIds[i];
           const listing = listings[i];
 
           if (listing.isActive) {
-            const decimals = 6; // Assuming 6 decimals for CFT token
-            const tokenAmountTokens = tronWeb.fromSun(listing.tokenAmount); // Convert smallest units to tokens
-            const pricePerTokenSun = listing.pricePerToken;
-            const pricePerTokenTRX = tronWeb.fromSun(pricePerTokenSun); // Convert sun to TRX for display
+            const tokenAmountTokens = new tronWeb.BigNumber(listing.tokenAmount).dividedBy(Math.pow(10, decimals)).toString();
+            const pricePerWholeTokenTRX = new tronWeb.BigNumber(listing.totalPriceInTRX).dividedBy(new tronWeb.BigNumber(listing.tokenAmount)).toString();
 
             const listingElement = document.createElement('div');
             listingElement.className = 'listing';
             listingElement.innerHTML = `
               <p>Seller: ${tronWeb.address.fromHex(listing.seller)}</p>
-              <p>Token Amount: ${tokenAmountTokens} CFT</p>
-              <p>Price Per Token: ${pricePerTokenTRX} TRX</p>
+              <p>Token Amount: ${parseFloat(tokenAmountTokens).toFixed(6)} CFT</p>
+              <p>Price Per Token: ${parseFloat(pricePerWholeTokenTRX).toFixed(6)} TRX</p>
               <input type="number" id="buyAmount_${listingId}" value="${tokenAmountTokens}" min="0.000001" max="${tokenAmountTokens}" step="0.000001">
-              <button class="btn btn-success mb-2" data-listing-id="${listingId}" data-price-per-token="${pricePerTokenSun}" onclick="buyToken(this)">Buy</button>
+              <button class="btn btn-success mb-2" data-listing-id="${listingId}" data-total-price="${listing.totalPriceInTRX}" data-token-amount="${listing.tokenAmount}" onclick="buyToken(this)">Buy</button>
               ${tronWeb.address.fromHex(listing.seller) === userAddress ? `<button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel</button>` : ''}
             `;
             listingsContainer.appendChild(listingElement);
@@ -939,23 +919,23 @@
       }
     }
 
-    // Buy tokens from the marketplace
     async function buyToken(button) {
       const listingId = button.getAttribute('data-listing-id');
-      const pricePerTokenSun = button.getAttribute('data-price-per-token');
+      const totalPriceInTRX = button.getAttribute('data-total-price');
+      const tokenAmountListing = button.getAttribute('data-token-amount');
       const buyAmountTokens = parseFloat(document.getElementById(`buyAmount_${listingId}`).value);
-      const decimals = 6; // Assuming 6 decimals for CFT token
+      const decimals = 6;
 
       if (isNaN(buyAmountTokens) || buyAmountTokens <= 0) {
         alert('Please enter a valid token amount.');
         return;
       }
 
-      const tokenAmountWei = tronWeb.toBigNumber(buyAmountTokens * Math.pow(10, decimals)).toString();
-      const totalPriceSun = tronWeb.toBigNumber(tokenAmountWei).multipliedBy(pricePerTokenSun).toString();
+      const buyAmountWei = new tronWeb.BigNumber(buyAmountTokens * Math.pow(10, decimals)).toString();
+      const totalPriceSun = new tronWeb.BigNumber(buyAmountWei).multipliedBy(new tronWeb.BigNumber(totalPriceInTRX)).dividedBy(new tronWeb.BigNumber(tokenAmountListing)).toString();
 
       try {
-        await marketplaceContract.buyToken(listingId, tokenAmountWei).send({
+        await marketplaceContract.buyToken(listingId, buyAmountWei).send({
           callValue: totalPriceSun
         });
         alert('Token purchased successfully!');
@@ -966,7 +946,6 @@
       }
     }
 
-    // Cancel a listing from the marketplace
     async function cancelListing(listingId) {
       try {
         await marketplaceContract.cancelListing(listingId).send();
@@ -978,22 +957,22 @@
       }
     }
 
-    // Approve and list tokens for sale
     async function approveAndListTokens() {
       const tokenAmountTokens = parseFloat(document.getElementById('tokenAmount').value);
-      const pricePerTokenSun = document.getElementById('pricePerTokenSun').value;
-      const decimals = 6; // Assuming 6 decimals for CFT token
+      const totalPriceTRX = parseFloat(document.getElementById('totalPriceTRX').value);
+      const decimals = 6;
 
-      if (isNaN(tokenAmountTokens) || tokenAmountTokens <= 0 || !pricePerTokenSun || pricePerTokenSun <= 0) {
-        alert('Please enter valid token amount and price.');
+      if (isNaN(tokenAmountTokens) || tokenAmountTokens <= 0 || isNaN(totalPriceTRX) || totalPriceTRX <= 0) {
+        alert('Please enter valid token amount and total price.');
         return;
       }
 
-      const tokenAmountWei = tronWeb.toBigNumber(tokenAmountTokens * Math.pow(10, decimals)).toString();
+      const tokenAmountWei = new tronWeb.BigNumber(tokenAmountTokens * Math.pow(10, decimals)).toString();
+      const totalPriceSun = new tronWeb.BigNumber(totalPriceTRX * 1e6).toString();
 
       try {
         await tokenContract.approve(marketplaceContractAddress, tokenAmountWei).send();
-        await marketplaceContract.listToken(tokenAmountWei, pricePerTokenSun).send();
+        await marketplaceContract.listToken(tokenAmountWei, totalPriceSun).send();
         alert('Tokens listed successfully!');
         fetchMarketplaceListings();
       } catch (error) {
@@ -1002,12 +981,10 @@
       }
     }
 
-    // Utility function to format numbers (optional, retained from original)
     function formatNumber(num) {
       return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
-    // Utility function to format whole numbers (optional, retained from original)
     function formatWholeNumber(num) {
       return Math.floor(parseFloat(num)).toLocaleString('en-US');
     }
