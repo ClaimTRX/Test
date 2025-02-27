@@ -884,40 +884,58 @@
     }
 
     async function fetchMarketplaceListings() {
-      try {
-        const result = await marketplaceContract.getActiveListings().call();
-        const listingIds = result[0];
-        const listings = result[1];
-        const listingsContainer = document.getElementById('listings');
-        listingsContainer.innerHTML = '';
+  try {
+    const result = await marketplaceContract.getActiveListings().call();
+    const listingIds = result[0];
+    const listings = result[1];
+    const listingsContainer = document.getElementById('listings');
+    listingsContainer.innerHTML = '';
 
-        const decimals = 6; // Assuming 6 decimals for CFT token
-        for (let i = 0; i < listingIds.length; i++) {
-          const listingId = listingIds[i];
-          const listing = listings[i];
+    const decimals = 6; // Assuming 6 decimals for CFT token
 
-          if (listing.isActive) {
-            const tokenAmountTokens = new tronWeb.BigNumber(listing.tokenAmount).dividedBy(Math.pow(10, decimals)).toString();
-            const pricePerWholeTokenTRX = new tronWeb.BigNumber(listing.totalPriceInTRX).dividedBy(new tronWeb.BigNumber(listing.tokenAmount)).toString();
+    console.log('Fetched listings:', listings); // Debugging: Log raw data
 
-            const listingElement = document.createElement('div');
-            listingElement.className = 'listing';
-            listingElement.innerHTML = `
-              <p>Seller: ${tronWeb.address.fromHex(listing.seller)}</p>
-              <p>Token Amount: ${parseFloat(tokenAmountTokens).toFixed(6)} CFT</p>
-              <p>Price Per Token: ${parseFloat(pricePerWholeTokenTRX).toFixed(6)} TRX</p>
-              <input type="number" id="buyAmount_${listingId}" value="${tokenAmountTokens}" min="0.000001" max="${tokenAmountTokens}" step="0.000001">
-              <button class="btn btn-success mb-2" data-listing-id="${listingId}" data-total-price="${listing.totalPriceInTRX}" data-token-amount="${listing.tokenAmount}" onclick="buyToken(this)">Buy</button>
-              ${tronWeb.address.fromHex(listing.seller) === userAddress ? `<button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel</button>` : ''}
-            `;
-            listingsContainer.appendChild(listingElement);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching listings:', error);
-        alert('Failed to fetch listings.');
+    for (let i = 0; i < listingIds.length; i++) {
+      const listingId = listingIds[i];
+      const listing = listings[i];
+
+      // Check if listing is active and tokenAmount is valid
+      if (listing.isActive && new tronWeb.BigNumber(listing.tokenAmount).gt(0)) {
+        // Convert tokenAmount and totalPriceInTRX to BigNumber for safe arithmetic
+        const tokenAmountBN = new tronWeb.BigNumber(listing.tokenAmount);
+        const totalPriceBN = new tronWeb.BigNumber(listing.totalPriceInTRX);
+
+        // Calculate token amount in whole tokens
+        const tokenAmountTokens = tokenAmountBN.dividedBy(Math.pow(10, decimals)).toString();
+
+        // Calculate price per whole token safely
+        const pricePerWholeTokenTRX = totalPriceBN.dividedBy(tokenAmountBN).toString();
+
+        // Create listing element
+        const listingElement = document.createElement('div');
+        listingElement.className = 'listing';
+        listingElement.innerHTML = `
+          <p>Seller: ${tronWeb.address.fromHex(listing.seller)}</p>
+          <p>Token Amount: ${parseFloat(tokenAmountTokens).toFixed(6)} CFT</p>
+          <p>Price Per Token: ${parseFloat(pricePerWholeTokenTRX).toFixed(6)} TRX</p>
+          <input type="number" id="buyAmount_${listingId}" value="${tokenAmountTokens}" min="0.000001" max="${tokenAmountTokens}" step="0.000001">
+          <button class="btn btn-success mb-2" data-listing-id="${listingId}" data-total-price="${listing.totalPriceInTRX}" data-token-amount="${listing.tokenAmount}" onclick="buyToken(this)">Buy</button>
+          ${tronWeb.address.fromHex(listing.seller) === userAddress ? `<button class="btn btn-danger" onclick="cancelListing(${listingId})">Cancel</button>` : ''}
+        `;
+        listingsContainer.appendChild(listingElement);
+      } else {
+        console.warn(`Skipping invalid listing ${listingId}: tokenAmount = ${listing.tokenAmount}, isActive = ${listing.isActive}`);
       }
     }
+
+    if (listingIds.length === 0) {
+      listingsContainer.innerHTML = '<p>No active listings available.</p>';
+    }
+  } catch (error) {
+    console.error('Error fetching listings:', error);
+    document.getElementById('listings').innerHTML = '<p>Failed to load listings.</p>';
+  }
+}
 
     async function buyToken(button) {
       const listingId = button.getAttribute('data-listing-id');
