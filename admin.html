@@ -96,8 +96,29 @@
     const tokenSwapAddress = 'TTLzt72vBaGwBCUU4s1SDQreNk5tH7xg91'; // Token Swap Contract
     const stakingAddress = 'TRVn2h65VrbGb7zkASz3escJiHJWMSy7pV'; // Staking Contract
 
-    // Token Swap Contract ABI (simplified, adjust as per your contract)
+    // Token Swap Contract ABI (expanded to include token address getters)
     const tokenSwapAbi = [
+      {
+        "name": "token",
+        "inputs": [],
+        "outputs": [{"internalType": "contract ITRC20", "name": "", "type": "address"}],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "usdt",
+        "inputs": [],
+        "outputs": [{"internalType": "contract ITRC20", "name": "", "type": "address"}],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "name": "usdd",
+        "inputs": [],
+        "outputs": [{"internalType": "contract ITRC20", "name": "", "type": "address"}],
+        "stateMutability": "view",
+        "type": "function"
+      },
       {
         "name": "withdrawAllTokenForSale",
         "inputs": [],
@@ -121,7 +142,7 @@
       }
     ];
 
-    // Staking Contract ABI (derived from provided Solidity code)
+    // Staking Contract ABI (unchanged from your code)
     const stakingAbi = [
       {
         "inputs": [],
@@ -160,13 +181,21 @@
       }
     ];
 
-    // TRC20 ABI for token balance checks
+    // TRC20 ABI for token balance and decimals checks
     const trc20Abi = [
       {
         "constant": true,
         "inputs": [{"name": "account", "type": "address"}],
         "name": "balanceOf",
         "outputs": [{"name": "", "type": "uint256"}],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [{"name": "", "type": "uint8"}],
         "stateMutability": "view",
         "type": "function"
       }
@@ -200,7 +229,7 @@
         tokenSwapContract = await tronWeb.contract(tokenSwapAbi, tokenSwapAddress);
         stakingContract = await tronWeb.contract(stakingAbi, stakingAddress);
 
-        // Enable.buttons
+        // Enable buttons
         document.getElementById('withdraw-stblx').disabled = false;
         document.getElementById('withdraw-usdt').disabled = false;
         document.getElementById('withdraw-usdd').disabled = false;
@@ -214,16 +243,45 @@
       }
     }
 
-    // Fetch Token Swap Balances (placeholder, adjust as needed)
+    // Fetch Token Swap Balances (corrected)
     async function fetchTokenSwapBalances() {
-      // Note: This assumes balanceOf-like functions exist in your token swap contract
-      // Replace with actual logic to fetch STBLX, USDT, USDD balances
-      document.getElementById('stblx-balance').innerText = '0'; // Placeholder
-      document.getElementById('usdt-balance').innerText = '0';   // Placeholder
-      document.getElementById('usdd-balance').innerText = '0';   // Placeholder
+      try {
+        // Get token addresses from the token swap contract
+        const stblxAddr = await tokenSwapContract.token().call();
+        const usdtAddr = await tokenSwapContract.usdt().call();
+        const usddAddr = await tokenSwapContract.usdd().call();
+
+        // Create token contract instances
+        const stblxToken = await tronWeb.contract(trc20Abi, stblxAddr);
+        const usdtToken = await tronWeb.contract(trc20Abi, usdtAddr);
+        const usddToken = await tronWeb.contract(trc20Abi, usddAddr);
+
+        // Get decimals for each token
+        const stblxDecimals = await stblxToken.decimals().call();
+        const usdtDecimals = await usdtToken.decimals().call();
+        const usddDecimals = await usddToken.decimals().call();
+
+        // Get balances of tokens in the contract
+        const stblxBalance = await stblxToken.balanceOf(tokenSwapAddress).call();
+        const usdtBalance = await usdtToken.balanceOf(tokenSwapAddress).call();
+        const usddBalance = await usddToken.balanceOf(tokenSwapAddress).call();
+
+        // Convert balances to human-readable format
+        const stblxBalanceHuman = parseFloat(stblxBalance) / Math.pow(10, stblxDecimals);
+        const usdtBalanceHuman = parseFloat(usdtBalance) / Math.pow(10, usdtDecimals);
+        const usddBalanceHuman = parseFloat(usddBalance) / Math.pow(10, usddDecimals);
+
+        // Display balances
+        document.getElementById('stblx-balance').innerText = stblxBalanceHuman.toFixed(2);
+        document.getElementById('usdt-balance').innerText = usdtBalanceHuman.toFixed(2);
+        document.getElementById('usdd-balance').innerText = usddBalanceHuman.toFixed(2);
+      } catch (error) {
+        console.error('Error fetching token swap balances:', error);
+        alert('Error fetching balances: ' + error.message);
+      }
     }
 
-    // Fetch Staking Contract Information
+    // Fetch Staking Contract Information (unchanged from your code)
     async function fetchStakingInfo() {
       try {
         const dailyRewards = await stakingContract.dailyReward().call();
@@ -253,7 +311,7 @@
         return;
       }
       try {
-        const amountInSun = tronWeb.toSun(amount); // Convert to SUN (1 TRX = 10^6 SUN)
+        const amountInSun = tronWeb.toSun(amount); // Convert to SUN
         await stakingContract.depositReward(amountInSun).send({
           from: userAddress,
           callValue: 0,
