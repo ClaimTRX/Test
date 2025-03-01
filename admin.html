@@ -96,7 +96,7 @@
     const tokenSwapAddress = 'TUGprGUNtszQgc3pGwMcC9R3z3sDT31G9W'; // Token Swap Contract
     const stakingAddress = 'TRVn2h65VrbGb7zkASz3escJiHJWMSy7pV'; // Staking Contract
 
-    // Token Swap Contract ABI (expanded to include token address getters)
+    // Token Swap Contract ABI
     const tokenSwapAbi = [
       {
         "name": "token",
@@ -142,7 +142,7 @@
       }
     ];
 
-    // Staking Contract ABI (unchanged from your code)
+    // Staking Contract ABI
     const stakingAbi = [
       {
         "inputs": [],
@@ -203,6 +203,27 @@
 
     let tronWeb, userAddress, tokenSwapContract, stakingContract;
 
+    // Delay helper function
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Retry logic for failed requests
+    async function retryRequest(fn, retries = 3, delayMs = 1000) {
+      for (let i = 0; i < retries; i++) {
+        try {
+          return await fn();
+        } catch (error) {
+          if (i < retries - 1) {
+            console.warn(`Request failed, retrying in ${delayMs}ms... (${i + 1}/${retries})`);
+            await delay(delayMs);
+          } else {
+            throw error;
+          }
+        }
+      }
+    }
+
     // Connect Wallet
     document.getElementById('connect-button').addEventListener('click', connectWallet);
 
@@ -235,7 +256,9 @@
         document.getElementById('withdraw-usdd').disabled = false;
         document.getElementById('add-rewards').disabled = false;
 
+        // Fetch data with delays between sections
         await fetchTokenSwapBalances();
+        await delay(2000); // 2-second delay between token swap and staking info
         await fetchStakingInfo();
       } catch (error) {
         console.error('Initialization error:', error);
@@ -243,35 +266,37 @@
       }
     }
 
-    // Fetch Token Swap Balances (corrected)
+    // Fetch Token Swap Balances with retry logic and delays
     async function fetchTokenSwapBalances() {
       try {
-        // Get token addresses from the token swap contract
-        const stblxAddr = await tokenSwapContract.token().call();
-        const usdtAddr = await tokenSwapContract.usdt().call();
-        const usddAddr = await tokenSwapContract.usdd().call();
+        const stblxAddr = await retryRequest(() => tokenSwapContract.token().call());
+        await delay(1000);
+        const usdtAddr = await retryRequest(() => tokenSwapContract.usdt().call());
+        await delay(1000);
+        const usddAddr = await retryRequest(() => tokenSwapContract.usdd().call());
+        await delay(1000);
 
-        // Create token contract instances
         const stblxToken = await tronWeb.contract(trc20Abi, stblxAddr);
         const usdtToken = await tronWeb.contract(trc20Abi, usdtAddr);
         const usddToken = await tronWeb.contract(trc20Abi, usddAddr);
 
-        // Get decimals for each token
-        const stblxDecimals = await stblxToken.decimals().call();
-        const usdtDecimals = await usdtToken.decimals().call();
-        const usddDecimals = await usddToken.decimals().call();
+        const stblxDecimals = await retryRequest(() => stblxToken.decimals().call());
+        await delay(1000);
+        const usdtDecimals = await retryRequest(() => usdtToken.decimals().call());
+        await delay(1000);
+        const usddDecimals = await retryRequest(() => usddToken.decimals().call());
+        await delay(1000);
 
-        // Get balances of tokens in the contract
-        const stblxBalance = await stblxToken.balanceOf(tokenSwapAddress).call();
-        const usdtBalance = await usdtToken.balanceOf(tokenSwapAddress).call();
-        const usddBalance = await usddToken.balanceOf(tokenSwapAddress).call();
+        const stblxBalance = await retryRequest(() => stblxToken.balanceOf(tokenSwapAddress).call());
+        await delay(1000);
+        const usdtBalance = await retryRequest(() => usdtToken.balanceOf(tokenSwapAddress).call());
+        await delay(1000);
+        const usddBalance = await retryRequest(() => usddToken.balanceOf(tokenSwapAddress).call());
 
-        // Convert balances to human-readable format
         const stblxBalanceHuman = parseFloat(stblxBalance) / Math.pow(10, stblxDecimals);
         const usdtBalanceHuman = parseFloat(usdtBalance) / Math.pow(10, usdtDecimals);
         const usddBalanceHuman = parseFloat(usddBalance) / Math.pow(10, usddDecimals);
 
-        // Display balances
         document.getElementById('stblx-balance').innerText = stblxBalanceHuman.toFixed(2);
         document.getElementById('usdt-balance').innerText = usdtBalanceHuman.toFixed(2);
         document.getElementById('usdd-balance').innerText = usddBalanceHuman.toFixed(2);
@@ -281,21 +306,26 @@
       }
     }
 
-    // Fetch Staking Contract Information (unchanged from your code)
+    // Fetch Staking Contract Information with retry logic and delays
     async function fetchStakingInfo() {
       try {
-        const dailyRewards = await stakingContract.dailyReward().call();
+        const dailyRewards = await retryRequest(() => stakingContract.dailyReward().call());
         document.getElementById('daily-rewards').innerText = tronWeb.fromSun(dailyRewards);
+        await delay(1000);
 
-        const totalStaked = await stakingContract.totalStaked().call();
+        const totalStaked = await retryRequest(() => stakingContract.totalStaked().call());
         document.getElementById('total-staked').innerText = tronWeb.fromSun(totalStaked);
+        await delay(1000);
 
-        const stakingTokenAddr = await stakingContract.stakingToken().call();
+        const stakingTokenAddr = await retryRequest(() => stakingContract.stakingToken().call());
         const stakingToken = await tronWeb.contract(trc20Abi, stakingTokenAddr);
-        const totalTokens = await stakingToken.balanceOf(stakingAddress).call();
-        document.getElementById('total-tokens').innerText = tronWeb.fromSun(totalTokens);
+        await delay(1000);
 
-        const unclaimedRewards = await stakingContract.viewTotalUnclaimedRewards().call();
+        const totalTokens = await retryRequest(() => stakingToken.balanceOf(stakingAddress).call());
+        document.getElementById('total-tokens').innerText = tronWeb.fromSun(totalTokens);
+        await delay(1000);
+
+        const unclaimedRewards = await retryRequest(() => stakingContract.viewTotalUnclaimedRewards().call());
         document.getElementById('unclaimed-rewards').innerText = tronWeb.fromSun(unclaimedRewards);
       } catch (error) {
         console.error('Error fetching staking info:', error);
@@ -311,7 +341,7 @@
         return;
       }
       try {
-        const amountInSun = tronWeb.toSun(amount); // Convert to SUN
+        const amountInSun = tronWeb.toSun(amount);
         await stakingContract.depositReward(amountInSun).send({
           from: userAddress,
           callValue: 0,
