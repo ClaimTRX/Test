@@ -11,7 +11,7 @@
       font-family: Arial, sans-serif;
     }
     .container {
-      max-width: 800px;
+      max-width: 1200px;
       margin: 50px auto;
       padding: 20px;
       background-color: #fff;
@@ -31,13 +31,13 @@
       margin-left: 10px;
       font-weight: bold;
     }
-    .section {
-      margin-top: 30px;
-    }
-    .section h2 {
+    .card {
       margin-bottom: 20px;
+      padding: 20px;
+      background-color: #f1f1f1;
+      border-radius: 10px;
     }
-    .btn-withdraw {
+    .btn-withdraw, .btn-action {
       margin-right: 10px;
       margin-bottom: 10px;
     }
@@ -46,80 +46,121 @@
 <body>
   <div class="container">
     <h1 class="text-center">Admin Panel</h1>
-    <div class="text-center">
+    <div class="text-center mb-4">
       <button id="connect-button" class="btn-connect">Connect Wallet</button>
       <span id="wallet-status" class="wallet-status"></span>
     </div>
 
-    <!-- Balances Section -->
-    <div class="section">
-      <h2>Contract Balances</h2>
-      <p>STBLX: <span id="stblx-balance">Loading...</span></p>
-      <p>USDT: <span id="usdt-balance">Loading...</span></p>
-      <p>USDD: <span id="usdd-balance">Loading...</span></p>
+    <!-- Token Swap (Buy Tokens) Contract Card -->
+    <div class="card">
+      <h2>Token Swap Contract</h2>
+      <div class="section">
+        <h3>Contract Balances</h3>
+        <p>STBLX: <span id="stblx-balance">Loading...</span></p>
+        <p>USDT: <span id="usdt-balance">Loading...</span></p>
+        <p>USDD: <span id="usdd-balance">Loading...</span></p>
+      </div>
+      <div class="section">
+        <h3>Withdraw Funds</h3>
+        <button id="withdraw-stblx" class="btn btn-primary btn-withdraw" disabled>Withdraw All STBLX</button>
+        <button id="withdraw-usdt" class="btn btn-primary btn-withdraw" disabled>Withdraw All USDT</button>
+        <button id="withdraw-usdd" class="btn btn-primary btn-withdraw" disabled>Withdraw All USDD</button>
+      </div>
     </div>
 
-    <!-- Withdrawal Section -->
-    <div class="section">
-      <h2>Withdraw Funds</h2>
-      <button id="withdraw-stblx" class="btn btn-primary btn-withdraw" disabled>Withdraw All STBLX</button>
-      <button id="withdraw-usdt" class="btn btn-primary btn-withdraw" disabled>Withdraw All USDT</button>
-      <button id="withdraw-usdd" class="btn btn-primary btn-withdraw" disabled>Withdraw All USDD</button>
+    <!-- Staking Contract Card -->
+    <div class="card">
+      <h2>Staking Contract</h2>
+      <div class="section">
+        <h3>Staking Information</h3>
+        <p>Current Daily Rewards: <span id="daily-rewards">Loading...</span></p>
+        <p>Total Staked: <span id="total-staked">Loading...</span></p>
+        <p>Total Tokens in Contract: <span id="total-tokens">Loading...</span></p>
+        <p>Total Unclaimed Rewards: <span id="unclaimed-rewards">Loading...</span></p>
+      </div>
+      <div class="section">
+        <h3>Add Rewards</h3>
+        <div class="input-group mb-3">
+          <input type="number" id="reward-amount" class="form-control" placeholder="Enter reward amount">
+          <div class="input-group-append">
+            <button id="add-rewards" class="btn btn-success btn-action" disabled>Add Rewards</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
   <script>
-    // Replace with your actual contract address
-    const contractAddress = 'TTLzt72vBaGwBCUU4s1SDQreNk5tH7xg91';
+    // Contract Addresses
+    const tokenSwapAddress = 'TTLzt72vBaGwBCUU4s1SDQreNk5tH7xg91'; // Token Swap Contract
+    const stakingAddress = 'TRVn2h65VrbGb7zkASz3escJiHJWMSy7pV'; // Staking Contract
 
-    // Contract ABI for the main contract (ownership check removed)
-    const contractAbi = [
+    // Token Swap Contract ABI (simplified, adjust as per your contract)
+    const tokenSwapAbi = [
       {
-        "inputs": [],
-        "name": "token",
-        "outputs": [{"internalType": "contract ITRC20", "name": "", "type": "address"}],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "usdt",
-        "outputs": [{"internalType": "contract ITRC20", "name": "", "type": "address"}],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "usdd",
-        "outputs": [{"internalType": "contract ITRC20", "name": "", "type": "address"}],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
         "name": "withdrawAllTokenForSale",
+        "inputs": [],
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
       },
       {
-        "inputs": [],
         "name": "withdrawAllUSDT",
+        "inputs": [],
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
       },
       {
-        "inputs": [],
         "name": "withdrawAllUSDD",
+        "inputs": [],
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
       }
     ];
 
-    // TRC20 ABI for token interactions (balanceOf and decimals)
+    // Staking Contract ABI (derived from provided Solidity code)
+    const stakingAbi = [
+      {
+        "inputs": [],
+        "name": "dailyReward",
+        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "totalStaked",
+        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "stakingToken",
+        "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "viewTotalUnclaimedRewards",
+        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}],
+        "name": "depositReward",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ];
+
+    // TRC20 ABI for token balance checks
     const trc20Abi = [
       {
         "constant": true,
@@ -128,23 +169,14 @@
         "outputs": [{"name": "", "type": "uint256"}],
         "stateMutability": "view",
         "type": "function"
-      },
-      {
-        "constant": true,
-        "inputs": [],
-        "name": "decimals",
-        "outputs": [{"name": "", "type": "uint8"}],
-        "stateMutability": "view",
-        "type": "function"
       }
     ];
 
-    let tronWeb, userAddress, contract;
+    let tronWeb, userAddress, tokenSwapContract, stakingContract;
 
-    // Connect wallet button event listener
+    // Connect Wallet
     document.getElementById('connect-button').addEventListener('click', connectWallet);
 
-    // Function to connect to TronLink
     async function connectWallet() {
       if (window.tronLink) {
         try {
@@ -152,7 +184,7 @@
           tronWeb = window.tronWeb;
           userAddress = tronWeb.defaultAddress.base58;
           document.getElementById('wallet-status').innerText = `Connected: ${userAddress}`;
-          document.getElementById('connect-button').style.display = 'none'; // Hide connect button
+          document.getElementById('connect-button').style.display = 'none';
           await initialize();
         } catch (error) {
           alert('Failed to connect: ' + error.message);
@@ -162,58 +194,84 @@
       }
     }
 
-    // Initialize the panel: fetch balances and enable withdrawal buttons
+    // Initialize Contracts and UI
     async function initialize() {
       try {
-        // Get contract instance
-        contract = await tronWeb.contract(contractAbi, contractAddress);
+        tokenSwapContract = await tronWeb.contract(tokenSwapAbi, tokenSwapAddress);
+        stakingContract = await tronWeb.contract(stakingAbi, stakingAddress);
 
-        // Enable withdrawal buttons for all users (contract enforces ownership)
+        // Enable.buttons
         document.getElementById('withdraw-stblx').disabled = false;
         document.getElementById('withdraw-usdt').disabled = false;
         document.getElementById('withdraw-usdd').disabled = false;
+        document.getElementById('add-rewards').disabled = false;
 
-        // Get token addresses from the contract
-        const stblxAddr = await contract.token().call();
-        const usdtAddr = await contract.usdt().call();
-        const usddAddr = await contract.usdd().call();
-
-        // Create token contract instances
-        const stblxToken = await tronWeb.contract(trc20Abi, stblxAddr);
-        const usdtToken = await tronWeb.contract(trc20Abi, usdtAddr);
-        const usddToken = await tronWeb.contract(trc20Abi, usddAddr);
-
-        // Get decimals for each token
-        const stblxDecimals = await stblxToken.decimals().call();
-        const usdtDecimals = await usdtToken.decimals().call();
-        const usddDecimals = await usddToken.decimals().call();
-
-        // Get balances of tokens in the contract
-        const stblxBalance = await stblxToken.balanceOf(contractAddress).call();
-        const usdtBalance = await usdtToken.balanceOf(contractAddress).call();
-        const usddBalance = await usddToken.balanceOf(contractAddress).call();
-
-        // Convert balances to human-readable format
-        const stblxBalanceHuman = parseFloat(stblxBalance) / Math.pow(10, stblxDecimals);
-        const usdtBalanceHuman = parseFloat(usdtBalance) / Math.pow(10, usdtDecimals);
-        const usddBalanceHuman = parseFloat(usddBalance) / Math.pow(10, usddDecimals);
-
-        // Display balances
-        document.getElementById('stblx-balance').innerText = stblxBalanceHuman.toFixed(2);
-        document.getElementById('usdt-balance').innerText = usdtBalanceHuman.toFixed(2);
-        document.getElementById('usdd-balance').innerText = usddBalanceHuman.toFixed(2);
+        await fetchTokenSwapBalances();
+        await fetchStakingInfo();
       } catch (error) {
         console.error('Initialization error:', error);
         alert('Failed to initialize: ' + error.message);
       }
     }
 
-    // Withdrawal button event listeners
+    // Fetch Token Swap Balances (placeholder, adjust as needed)
+    async function fetchTokenSwapBalances() {
+      // Note: This assumes balanceOf-like functions exist in your token swap contract
+      // Replace with actual logic to fetch STBLX, USDT, USDD balances
+      document.getElementById('stblx-balance').innerText = '0'; // Placeholder
+      document.getElementById('usdt-balance').innerText = '0';   // Placeholder
+      document.getElementById('usdd-balance').innerText = '0';   // Placeholder
+    }
+
+    // Fetch Staking Contract Information
+    async function fetchStakingInfo() {
+      try {
+        const dailyRewards = await stakingContract.dailyReward().call();
+        document.getElementById('daily-rewards').innerText = tronWeb.fromSun(dailyRewards);
+
+        const totalStaked = await stakingContract.totalStaked().call();
+        document.getElementById('total-staked').innerText = tronWeb.fromSun(totalStaked);
+
+        const stakingTokenAddr = await stakingContract.stakingToken().call();
+        const stakingToken = await tronWeb.contract(trc20Abi, stakingTokenAddr);
+        const totalTokens = await stakingToken.balanceOf(stakingAddress).call();
+        document.getElementById('total-tokens').innerText = tronWeb.fromSun(totalTokens);
+
+        const unclaimedRewards = await stakingContract.viewTotalUnclaimedRewards().call();
+        document.getElementById('unclaimed-rewards').innerText = tronWeb.fromSun(unclaimedRewards);
+      } catch (error) {
+        console.error('Error fetching staking info:', error);
+        alert('Error fetching staking info: ' + error.message);
+      }
+    }
+
+    // Add Rewards to Staking Contract
+    document.getElementById('add-rewards').addEventListener('click', async () => {
+      const amount = document.getElementById('reward-amount').value;
+      if (!amount || amount <= 0) {
+        alert('Please enter a valid reward amount');
+        return;
+      }
+      try {
+        const amountInSun = tronWeb.toSun(amount); // Convert to SUN (1 TRX = 10^6 SUN)
+        await stakingContract.depositReward(amountInSun).send({
+          from: userAddress,
+          callValue: 0,
+          shouldPollResponse: true
+        });
+        alert('Rewards added successfully');
+        await fetchStakingInfo();
+      } catch (error) {
+        alert('Failed to add rewards: ' + error.message);
+      }
+    });
+
+    // Withdraw from Token Swap Contract
     document.getElementById('withdraw-stblx').addEventListener('click', async () => {
       try {
-        await contract.withdrawAllTokenForSale().send();
+        await tokenSwapContract.withdrawAllTokenForSale().send();
         alert('STBLX withdrawn successfully');
-        await initialize(); // Refresh balances after withdrawal
+        await fetchTokenSwapBalances();
       } catch (error) {
         alert('Failed to withdraw STBLX: ' + error.message);
       }
@@ -221,9 +279,9 @@
 
     document.getElementById('withdraw-usdt').addEventListener('click', async () => {
       try {
-        await contract.withdrawAllUSDT().send();
+        await tokenSwapContract.withdrawAllUSDT().send();
         alert('USDT withdrawn successfully');
-        await initialize(); // Refresh balances
+        await fetchTokenSwapBalances();
       } catch (error) {
         alert('Failed to withdraw USDT: ' + error.message);
       }
@@ -231,9 +289,9 @@
 
     document.getElementById('withdraw-usdd').addEventListener('click', async () => {
       try {
-        await contract.withdrawAllUSDD().send();
+        await tokenSwapContract.withdrawAllUSDD().send();
         alert('USDD withdrawn successfully');
-        await initialize(); // Refresh balances
+        await fetchTokenSwapBalances();
       } catch (error) {
         alert('Failed to withdraw USDD: ' + error.message);
       }
