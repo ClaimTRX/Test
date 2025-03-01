@@ -159,6 +159,7 @@
           tronWeb = window.tronWeb;
           userAddress = tronWeb.defaultAddress.base58;
           document.getElementById('wallet-status').innerText = `Connected: ${userAddress}`;
+          document.getElementById('connect-button').style.display = 'none'; // Hide connect button
           await initialize();
         } catch (error) {
           alert('Failed to connect: ' + error.message);
