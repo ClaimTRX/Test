@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Swap Admin Panel</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Token Swap Admin Panel</h1>
+
+        <!-- Contract Information -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Contract Information</h5>
+                <p><strong>Contract Address:</strong> <span id="contractAddress">Loading...</span></p>
+                <p><strong>Owner Address:</strong> <span id="ownerAddress">Loading...</span></p>
+                <p><strong>Connected Account:</strong> <span id="connectedAccount">Loading...</span></p>
+                <p><strong>Status:</strong> <span id="ownerStatus">Checking...</span></p>
+            </div>
+        </div>
+
+        <!-- Balances -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Contract Balances</h5>
+                <p><strong>USDT:</strong> <span id="usdtBalance">0</span> USDT</p>
+                <p><strong>USDD:</strong> <span id="usddBalance">0</span> USDD</p>
+                <p><strong>STBLX (Tokens for Sale):</strong> <span id="stblxBalance">0</span> STBLX</p>
+            </div>
+        </div>
+
+        <!-- Owner Actions -->
+        <div class="card" id="actionsCard" style="display: none;">
+            <div class="card-body">
+                <h5 class="card-title">Owner Actions</h5>
+                
+                <!-- Withdrawals -->
+                <div class="mb-3">
+                    <h6>Withdraw Funds</h6>
+                    <button class="btn btn-primary" id="withdrawUSDT">Withdraw All USDT</button>
+                    <button class="btn btn-primary" id="withdrawUSDD">Withdraw All USDD</button>
+                    <button class="btn btn-primary" id="withdrawSTBLX">Withdraw All STBLX</button>
+                </div>
+
+                <!-- Transfer STBLX -->
+                <div>
+                    <h6>Transfer STBLX to Contract</h6>
+                    <div class="input-group mb-3" style="max-width: 300px;">
+                        <input type="number" id="transferAmount" class="form-control" placeholder="Amount" min="0" step="0.01">
+                        <div class="input-group-append">
+                            <span class="input-group-text">STBLX</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-success" id="transferSTBLX">Transfer STBLX</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Note -->
+        <div class="alert alert-info mt-3">
+            <strong>Note:</strong> This admin panel manages token swaps and balances. Additional features like daily rewards require a separate contract implementation.
+        </div>
+    </div>
+
+    <!-- TronWeb Script -->
+    <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
+    <script>
+        // Contract ABI
+        const contractABI = [
+            {
+                "inputs": [
+                    {"internalType": "contract ITRC20", "name": "_token", "type": "address"},
+                    {"internalType": "contract ITRC20", "name": "_usdt", "type": "address"},
+                    {"internalType": "contract ITRC20", "name": "_usdd", "type": "address"}
+                ],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {"indexed": true, "internalType": "address", "name": "buyer", "type": "address"},
+                    {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"},
+                    {"indexed": false, "internalType": "string", "name": "paymentToken", "type": "string"}
+                ],
+                "name": "TokensPurchased",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"},
+                    {"indexed": false, "internalType": "address", "name": "tokenAddress", "type": "address"}
+                ],
+                "name": "WithdrawnTokens",
+                "type": "event"
+            },
+            {
+                "inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}],
+                "name": "buyWithUSDD",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}],
+                "name": "buyWithUSDT",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "token",
+                "outputs": [{"internalType": "contract ITRC20", "name": "", "type": "address"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "usdd",
+                "outputs": [{"internalType": "contract ITRC20", "name": "", "type": "address"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "usdt",
+                "outputs": [{"internalType": "contract ITRC20", "name": "", "type": "address"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "withdrawAllTokenForSale",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "withdrawAllUSDD",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "withdrawAllUSDT",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ];
+
+        // Token ABI
+        const tokenABI = [
+            {
+                "constant": true,
+                "inputs": [{"name": "account", "type": "address"}],
+                "name": "balanceOf",
+                "outputs": [{"name": "", "type": "uint256"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {"name": "recipient", "type": "address"},
+                    {"name": "amount", "type": "uint256"}
+                ],
+                "name": "transfer",
+                "outputs": [{"name": "", "type": "bool"}],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "decimals",
+                "outputs": [{"name": "", "type": "uint8"}],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        // Smart Contract Address
+        const contractAddress = "TTLzt72vBaGwBCUU4s1SDQreNk5tH7xg91";
+
+        // Token Addresses (for reference)
+        const stblxAddress = "TGd1irpHHU8cFC4ArY9KBoBiocQr1vVpWS";
+        const usdtAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
+        const usddAddress = "TXDk8mbtRbXeYuMNS83CfKPaYYT8XWv9Hz";
+
+        async function init() {
+            if (window.tronWeb && window.tronWeb.ready) {
+                const tronWeb = window.tronWeb;
+                
+                try {
+                    // Get contract instance
+                    const contract = await tronWeb.contract(contractABI, contractAddress);
+                    
+                    // Get owner and connected account
+                    const owner = await contract.owner().call();
+                    const connectedAccount = tronWeb.defaultAddress.base58 || "Not connected";
+
+                    // Update UI with contract info
+                    document.getElementById("contractAddress").innerText = contractAddress;
+                    document.getElementById("ownerAddress").innerText = owner;
+                    document.getElementById("connectedAccount").innerText = connectedAccount;
+
+                    // Check if connected account is owner
+                    const isOwner = connectedAccount === owner;
+                    document.getElementById("ownerStatus").innerText = isOwner 
+                        ? "You are the owner."
+                        : "You are not the owner. Actions are disabled.";
+                    document.getElementById("actionsCard").style.display = isOwner ? "block" : "none";
+
+                    // Get token addresses from contract
+                    const tokenAddress = await contract.token().call();
+                    const usdtAddressFromContract = await contract.usdt().call();
+                    const usddAddressFromContract = await contract.usdd().call();
+
+                    // Create token contract instances
+                    const tokenContract = await tronWeb.contract(tokenABI, tokenAddress);
+                    const usdtContract = await tronWeb.contract(tokenABI, usdtAddressFromContract);
+                    const usddContract = await tronWeb.contract(tokenABI, usddAddressFromContract);
+
+                    // Get decimals for each token
+                    const stblxDecimals = await tokenContract.decimals().call();
+                    const usdtDecimals = await usdtContract.decimals().call();
+                    const usddDecimals = await usddContract.decimals().call();
+
+                    // Get balances and convert to human-readable format
+                    const stblxBalance = (await tokenContract.balanceOf(contractAddress).call()) / (10 ** stblxDecimals);
+                    const usdtBalance = (await usdtContract.balanceOf(contractAddress).call()) / (10 ** usdtDecimals);
+                    const usddBalance = (await usddContract.balanceOf(contractAddress).call()) / (10 ** usddDecimals);
+
+                    // Update UI with balances
+                    document.getElementById("stblxBalance").innerText = stblxBalance.toFixed(2);
+                    document.getElementById("usdtBalance").innerText = usdtBalance.toFixed(2);
+                    document.getElementById("usddBalance").innerText = usddBalance.toFixed(2);
+
+                    // Event listeners for owner actions (only if owner)
+                    if (isOwner) {
+                        document.getElementById("withdrawUSDT").addEventListener("click", async () => {
+                            try {
+                                await contract.withdrawAllUSDT().send();
+                                alert("USDT withdrawal successful!");
+                                location.reload();
+                            } catch (error) {
+                                alert("Error withdrawing USDT: " + error.message);
+                            }
+                        });
+
+                        document.getElementById("withdrawUSDD").addEventListener("click", async () => {
+                            try {
+                                await contract.withdrawAllUSDD().send();
+                                alert("USDD withdrawal successful!");
+                                location.reload();
+                            } catch (error) {
+                                alert("Error withdrawing USDD: " + error.message);
+                            }
+                        });
+
+                        document.getElementById("withdrawSTBLX").addEventListener("click", async () => {
+                            try {
+                                await contract.withdrawAllTokenForSale().send();
+                                alert("STBLX withdrawal successful!");
+                                location.reload();
+                            } catch (error) {
+                                alert("Error withdrawing STBLX: " + error.message);
+                            }
+                        });
+
+                        document.getElementById("transferSTBLX").addEventListener("click", async () => {
+                            const amount = parseFloat(document.getElementById("transferAmount").value);
+                            if (amount > 0) {
+                                try {
+                                    const amountToTransfer = BigInt(Math.floor(amount * (10 ** stblxDecimals)));
+                                    await tokenContract.transfer(contractAddress, amountToTransfer.toString()).send();
+                                    alert("STBLX transfer successful!");
+                                    location.reload();
+                                } catch (error) {
+                                    alert("Error transferring STBLX: " + error.message);
+                                }
+                            } else {
+                                alert("Please enter a valid amount greater than 0.");
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error("Initialization error:", error);
+                    alert("An error occurred while loading the page: " + error.message);
+                }
+            } else {
+                alert("Please install TronLink and log in to your wallet.");
+                document.getElementById("ownerStatus").innerText = "Wallet not connected.";
+            }
+        }
+
+        // Initialize the page when loaded
+        window.addEventListener("load", init);
+    </script>
+</body>
+</html>
