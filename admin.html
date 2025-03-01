@@ -37,28 +37,9 @@
     .section h2 {
       margin-bottom: 20px;
     }
-    .form-control {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 5px;
+    .btn-withdraw {
+      margin-right: 10px;
       margin-bottom: 10px;
-    }
-    .btn {
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .btn-success {
-      background-color: #28a745;
-      color: white;
-      border: none;
-    }
-    .btn-primary {
-      background-color: #007bff;
-      color: white;
-      border: none;
     }
   </style>
 </head>
@@ -70,38 +51,61 @@
       <span id="wallet-status" class="wallet-status"></span>
     </div>
 
-    <!-- Daily Rewards Section -->
+    <!-- Balances Section -->
     <div class="section">
-      <h2>Daily Rewards</h2>
-      <p>Current Daily Rewards: <span id="current-rewards">Loading...</span></p>
-      <input type="number" id="new-rewards" class="form-control" placeholder="Enter new daily rewards">
-      <button id="set-rewards" class="btn btn-success">Set Daily Rewards</button>
+      <h2>Contract Balances</h2>
+      <p>STBLX: <span id="stblx-balance">Loading...</span></p>
+      <p>USDT: <span id="usdt-balance">Loading...</span></p>
+      <p>USDD: <span id="usdd-balance">Loading...</span></p>
     </div>
 
     <!-- Withdrawal Section -->
     <div class="section">
       <h2>Withdraw Funds</h2>
-      <button id="withdraw-usdt" class="btn btn-primary">Withdraw USDT</button>
-      <button id="withdraw-usdd" class="btn btn-primary">Withdraw USDD</button>
+      <button id="withdraw-stblx" class="btn btn-primary btn-withdraw" disabled>Withdraw All STBLX</button>
+      <button id="withdraw-usdt" class="btn btn-primary btn-withdraw" disabled>Withdraw All USDT</button>
+      <button id="withdraw-usdd" class="btn btn-primary btn-withdraw" disabled>Withdraw All USDD</button>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
   <script>
-    let tronWeb, userAddress;
-    const contractAddress = 'TTLzt72vBaGwBCUU4s1SDQreNk5tH7xg91'; // Replace with your contract address
+    // Replace with your actual contract address
+    const contractAddress = 'TTLzt72vBaGwBCUU4s1SDQreNk5tH7xg91';
+
+    // Contract ABI for the main contract
     const contractAbi = [
-      // Replace with your actual contract ABI
       {
         "inputs": [],
-        "name": "getDailyRewards",
-        "outputs": [{"name": "", "type": "uint256"}],
+        "name": "owner",
+        "outputs": [{"internalType": "address", "name": "", "type": "address"}],
         "stateMutability": "view",
         "type": "function"
       },
       {
-        "inputs": [{"name": "_amount", "type": "uint256"}],
-        "name": "setDailyRewards",
+        "inputs": [],
+        "name": "token",
+        "outputs": [{"internalType": "contract ITRC20", "name": "", "type": "address"}],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "usdt",
+        "outputs": [{"internalType": "contract ITRC20", "name": "", "type": "address"}],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "usdd",
+        "outputs": [{"internalType": "contract ITRC20", "name": "", "type": "address"}],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "withdrawAllTokenForSale",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -122,100 +126,132 @@
       }
     ];
 
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', async () => {
-      document.getElementById('connect-button').addEventListener('click', connectWallet);
-      if (await checkTronLink()) {
-        await initializeTronWeb();
-      } else {
-        document.getElementById('wallet-status').innerText = 'Please install TronLink.';
+    // TRC20 ABI for token interactions (balanceOf and decimals)
+    const trc20Abi = [
+      {
+        "constant": true,
+        "inputs": [{"name": "account", "type": "address"}],
+        "name": "balanceOf",
+        "outputs": [{"name": "", "type": "uint256"}],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [{"name": "", "type": "uint8"}],
+        "stateMutability": "view",
+        "type": "function"
       }
-    });
+    ];
 
-    // Check if TronLink is available
-    async function checkTronLink() {
-      return new Promise((resolve) => {
-        const interval = setInterval(() => {
-          if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-            clearInterval(interval);
-            resolve(true);
-          }
-        }, 1000);
-      });
-    }
+    let tronWeb, userAddress, contract, isOwner;
 
-    // Connect to TronLink wallet
+    // Connect wallet button event listener
+    document.getElementById('connect-button').addEventListener('click', connectWallet);
+
+    // Function to connect to TronLink
     async function connectWallet() {
-      try {
-        await window.tronLink.request({ method: 'tron_requestAccounts' });
-        await initializeTronWeb();
-      } catch (error) {
-        console.error('Connection failed:', error);
-        document.getElementById('wallet-status').innerText = 'Connection failed.';
+      if (window.tronLink) {
+        try {
+          await window.tronLink.request({ method: 'tron_requestAccounts' });
+          tronWeb = window.tronWeb;
+          userAddress = tronWeb.defaultAddress.base58;
+          document.getElementById('wallet-status').innerText = `Connected: ${userAddress}`;
+          await initialize();
+        } catch (error) {
+          alert('Failed to connect: ' + error.message);
+        }
+      } else {
+        alert('Please install TronLink');
       }
     }
 
-    // Initialize TronWeb and update UI
-    async function initializeTronWeb() {
-      tronWeb = window.tronWeb;
-      userAddress = tronWeb.defaultAddress.base58;
-      document.getElementById('wallet-status').innerText = `Connected: ${userAddress}`;
-      document.getElementById('connect-button').style.display = 'none';
-      await updateCurrentRewards();
-    }
-
-    // Fetch and display current daily rewards
-    async function updateCurrentRewards() {
+    // Initialize the panel: fetch balances and set up withdrawal buttons
+    async function initialize() {
       try {
-        const contract = await tronWeb.contract(contractAbi, contractAddress);
-        const rewards = await contract.getDailyRewards().call();
-        document.getElementById('current-rewards').innerText = tronWeb.fromSun(rewards); // Convert from SUN to TRX/USDT
+        // Get contract instance
+        contract = await tronWeb.contract(contractAbi, contractAddress);
+
+        // Check if user is the owner
+        const owner = await contract.owner().call();
+        isOwner = owner === userAddress;
+
+        if (isOwner) {
+          document.getElementById('withdraw-stblx').disabled = false;
+          document.getElementById('withdraw-usdt').disabled = false;
+          document.getElementById('withdraw-usdd').disabled = false;
+        } else {
+          document.getElementById('wallet-status').innerText += ' (Not the owner)';
+        }
+
+        // Get token addresses from the contract
+        const stblxAddr = await contract.token().call();
+        const usdtAddr = await contract.usdt().call();
+        const usddAddr = await contract.usdd().call();
+
+        // Create token contract instances
+        const stblxToken = await tronWeb.contract(trc20Abi, stblxAddr);
+        const usdtToken = await tronWeb.contract(trc20Abi, usdtAddr);
+        const usddToken = await tronWeb.contract(trc20Abi, usddAddr);
+
+        // Get decimals for each token
+        const stblxDecimals = await stblxToken.decimals().call();
+        const usdtDecimals = await usdtToken.decimals().call();
+        const usddDecimals = await usddToken.decimals().call();
+
+        // Get balances of tokens in the contract
+        const stblxBalance = await stblxToken.balanceOf(contractAddress).call();
+        const usdtBalance = await usdtToken.balanceOf(contractAddress).call();
+        const usddBalance = await usddToken.balanceOf(contractAddress).call();
+
+        // Convert balances to human-readable format
+        const stblxBalanceHuman = parseFloat(stblxBalance) / Math.pow(10, stblxDecimals);
+        const usdtBalanceHuman = parseFloat(usdtBalance) / Math.pow(10, usdtDecimals);
+        const usddBalanceHuman = parseFloat(usddBalance) / Math.pow(10, usddDecimals);
+
+        // Display balances
+        document.getElementById('stblx-balance').innerText = stblxBalanceHuman.toFixed(2);
+        document.getElementById('usdt-balance').innerText = usdtBalanceHuman.toFixed(2);
+        document.getElementById('usdd-balance').innerText = usddBalanceHuman.toFixed(2);
       } catch (error) {
-        console.error('Error fetching rewards:', error);
-        document.getElementById('current-rewards').innerText = 'Error';
+        console.error('Initialization error:', error);
+        alert('Failed to initialize: ' + error.message);
       }
     }
 
-    // Set new daily rewards
-    document.getElementById('set-rewards').addEventListener('click', async () => {
-      const newRewards = document.getElementById('new-rewards').value;
-      if (!newRewards) {
-        alert('Please enter a valid amount.');
-        return;
-      }
+    // Withdrawal button event listeners
+    document.getElementById('withdraw-stblx').addEventListener('click', async () => {
+      if (!isOwner) return;
       try {
-        const contract = await tronWeb.contract(contractAbi, contractAddress);
-        const amountInSun = tronWeb.toSun(newRewards); // Convert to SUN
-        await contract.setDailyRewards(amountInSun).send();
-        alert('Daily rewards updated successfully!');
-        await updateCurrentRewards();
+        await contract.withdrawAllTokenForSale().send();
+        alert('STBLX withdrawn successfully');
+        await initialize(); // Refresh balances after withdrawal
       } catch (error) {
-        console.error('Error setting rewards:', error);
-        alert('Failed to update rewards.');
+        alert('Failed to withdraw STBLX: ' + error.message);
       }
     });
 
-    // Withdraw USDT
     document.getElementById('withdraw-usdt').addEventListener('click', async () => {
+      if (!isOwner) return;
       try {
-        const contract = await tronWeb.contract(contractAbi, contractAddress);
         await contract.withdrawAllUSDT().send();
-        alert('USDT withdrawn successfully!');
+        alert('USDT withdrawn successfully');
+        await initialize(); // Refresh balances
       } catch (error) {
-        console.error('Error withdrawing USDT:', error);
-        alert('Failed to withdraw USDT.');
+        alert('Failed to withdraw USDT: ' + error.message);
       }
     });
 
-    // Withdraw USDD
     document.getElementById('withdraw-usdd').addEventListener('click', async () => {
+      if (!isOwner) return;
       try {
-        const contract = await tronWeb.contract(contractAbi, contractAddress);
         await contract.withdrawAllUSDD().send();
-        alert('USDD withdrawn successfully!');
+        alert('USDD withdrawn successfully');
+        await initialize(); // Refresh balances
       } catch (error) {
-        console.error('Error withdrawing USDD:', error);
-        alert('Failed to withdraw USDD.');
+        alert('Failed to withdraw USDD: ' + error.message);
       }
     });
   </script>
