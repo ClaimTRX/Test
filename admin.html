@@ -73,15 +73,8 @@
     // Replace with your actual contract address
     const contractAddress = 'TTLzt72vBaGwBCUU4s1SDQreNk5tH7xg91';
 
-    // Contract ABI for the main contract
+    // Contract ABI for the main contract (ownership check removed)
     const contractAbi = [
-      {
-        "inputs": [],
-        "name": "owner",
-        "outputs": [{"internalType": "address", "name": "", "type": "address"}],
-        "stateMutability": "view",
-        "type": "function"
-      },
       {
         "inputs": [],
         "name": "token",
@@ -146,7 +139,7 @@
       }
     ];
 
-    let tronWeb, userAddress, contract, isOwner;
+    let tronWeb, userAddress, contract;
 
     // Connect wallet button event listener
     document.getElementById('connect-button').addEventListener('click', connectWallet);
@@ -169,23 +162,16 @@
       }
     }
 
-    // Initialize the panel: fetch balances and set up withdrawal buttons
+    // Initialize the panel: fetch balances and enable withdrawal buttons
     async function initialize() {
       try {
         // Get contract instance
         contract = await tronWeb.contract(contractAbi, contractAddress);
 
-        // Check if user is the owner
-        const owner = await contract.owner().call();
-        isOwner = owner === userAddress;
-
-        if (isOwner) {
-          document.getElementById('withdraw-stblx').disabled = false;
-          document.getElementById('withdraw-usdt').disabled = false;
-          document.getElementById('withdraw-usdd').disabled = false;
-        } else {
-          document.getElementById('wallet-status').innerText += ' (Not the owner)';
-        }
+        // Enable withdrawal buttons for all users (contract enforces ownership)
+        document.getElementById('withdraw-stblx').disabled = false;
+        document.getElementById('withdraw-usdt').disabled = false;
+        document.getElementById('withdraw-usdd').disabled = false;
 
         // Get token addresses from the contract
         const stblxAddr = await contract.token().call();
@@ -224,7 +210,6 @@
 
     // Withdrawal button event listeners
     document.getElementById('withdraw-stblx').addEventListener('click', async () => {
-      if (!isOwner) return;
       try {
         await contract.withdrawAllTokenForSale().send();
         alert('STBLX withdrawn successfully');
@@ -235,7 +220,6 @@
     });
 
     document.getElementById('withdraw-usdt').addEventListener('click', async () => {
-      if (!isOwner) return;
       try {
         await contract.withdrawAllUSDT().send();
         alert('USDT withdrawn successfully');
@@ -246,7 +230,6 @@
     });
 
     document.getElementById('withdraw-usdd').addEventListener('click', async () => {
-      if (!isOwner) return;
       try {
         await contract.withdrawAllUSDD().send();
         alert('USDD withdrawn successfully');
