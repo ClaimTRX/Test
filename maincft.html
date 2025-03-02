@@ -295,11 +295,19 @@
 
             <p>StableX is more than just a stablecoin—it’s a hybrid asset designed for security and growth. Whether you’re anchoring your portfolio or chasing DeFi rewards, StableX offers a compelling solution.</p>
             <div class="button-group">
-              <a href="cft.html" class="btn btn-success btn-lg">Stakeing CFT Rewards</a>
-              <a href="newtrx.html" class="btn btn-success btn-lg">Staking TRX Rewards</a>
-              <a href="newusdt.html" class="btn btn-success btn-lg">Staking USDT Rewards</a>
-              
-            </div>
+  <div>
+    <a href="cft.html" class="btn btn-success btn-lg">Stakeing CFT Rewards</a>
+    <p id="apr-cft">APR: Loading...</p>
+  </div>
+  <div>
+    <a href="newtrx.html" class="btn btn-success btn-lg">Staking TRX Rewards</a>
+    <p id="apr-trx">APR: Loading...</p>
+  </div>
+  <div>
+    <a href="newusdt.html" class="btn btn-success btn-lg">Staking USDT Rewards</a>
+    <p id="apr-usdt">APR: Loading...</p>
+  </div>
+</div>
           </div>
           <div class="card-image-container">
             <img src="https://raw.githubusercontent.com/ClaimTRX/Test/refs/heads/main/67c1c6ad9ea73_download.jpg" class="card-image" alt="Token Image">
@@ -312,6 +320,116 @@
         </div>
       </div>
     </div>
+  <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
+<script>
+  let tronWeb;
+
+  // Contract addresses and ABIs (from cft.html)
+  const stakingContractAddresses = {
+    cft: 'TMsZX72oWscpd3QmmT6NRq6JWiY5QzFju2'
+    // Add TRX and USDT contract addresses here if available, e.g.,
+    // trx: 'TRX_STAKING_CONTRACT_ADDRESS',
+    // usdt: 'USDT_STAKING_CONTRACT_ADDRESS'
+  };
+
+  const tokenContracts = {
+    cft: 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA'
+    // Add TRX and USDT token addresses here if available
+  };
+
+  // Staking contract ABI (abbreviated; use the full ABI from cft.html)
+  const stakingContractAbi = [
+    {
+      "inputs": [],
+      "name": "viewDailyReward",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "viewTotalStaked",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    }
+    // Include other methods as needed
+  ];
+
+  // Token contract ABI (abbreviated; use the full ABI from cft.html)
+  const tokenContractAbi = [
+    {
+      "inputs": [],
+      "name": "decimals",
+      "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+      "stateMutability": "view",
+      "type": "function"
+    }
+    // Include other methods as needed
+  ];
+
+  // Initialize TronWeb and update APR on page load
+  document.addEventListener('DOMContentLoaded', async () => {
+    if (await checkTronLinkInstalled()) {
+      await initializeTronWeb();
+      await updateAPR('cft');
+      // Call updateAPR('trx') and updateAPR('usdt') here if you have their contract addresses
+    } else {
+      document.getElementById('apr-cft').innerText = 'APR: TronLink not installed';
+      // Update other placeholders similarly if needed
+    }
+  });
+
+  // Check if TronLink is installed
+  async function checkTronLinkInstalled() {
+    return new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+          clearInterval(interval);
+          resolve(true);
+        }
+      }, 1000);
+    });
+  }
+
+  // Initialize TronWeb
+  async function initializeTronWeb() {
+    try {
+      tronWeb = window.tronWeb;
+      console.log('Connected to TronLink.');
+    } catch (error) {
+      console.error('Error initializing TronWeb:', error);
+    }
+  }
+
+  // Calculate and update APR for a given token
+  async function updateAPR(token) {
+    try {
+      const stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddresses[token]);
+      const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
+      
+      const decimals = await tokenContract.methods.decimals().call();
+      const dailyRewardRaw = await stakingContract.methods.viewDailyReward().call();
+      const totalStakedRaw = await stakingContract.methods.viewTotalStaked().call();
+
+      const dailyReward = parseFloat(dailyRewardRaw) / Math.pow(10, decimals);
+      const totalStaked = parseFloat(totalStakedRaw) / Math.pow(10, decimals);
+
+      let apr;
+      if (totalStaked > 0) {
+        apr = (dailyReward / totalStaked) * 365 * 100; // Annualized percentage
+        apr = apr.toFixed(2) + '%';
+      } else {
+        apr = 'N/A';
+      }
+
+      document.getElementById(`apr-${token}`).innerText = `APR: ${apr}`;
+    } catch (error) {
+      console.error(`Error fetching APR for ${token}:`, error);
+      document.getElementById(`apr-${token}`).innerText = 'APR: Error';
+    }
+  }
+</script>
 </body>
 </html>
 
