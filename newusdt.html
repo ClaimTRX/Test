@@ -1106,31 +1106,37 @@
         }
       }
 
-      // Manually set CFT price in USD
-  const priceCFT = 0.27; // Example: $0.50 per CFT
+      const priceCFT = 0.23;
 
-  // APR Calculation Function
-  async function updateEstimatedAPR() {
+// Function to update the CFT price display
+function updateCFTPrice() {
+    document.getElementById('cft-price').innerText = `$${priceCFT.toFixed(2)}`;
+}
+
+ async function updateYourEstimatedAPR() {
     try {
-      const priceUSDT = 1; // USDT is $1
-      const decimalsCFT = await tokenContract.methods.decimals().call();
-      const dailyRewardRaw = await newStakingContract.methods.viewDailyReward().call();
-      const totalStakedRaw = await newStakingContract.methods.viewTotalStaked().call();
-      const dailyReward = parseFloat(tronWeb.fromSun(dailyRewardRaw));
-      const totalStaked = parseFloat(totalStakedRaw) / Math.pow(10, decimalsCFT);
-      let apr;
-      if (totalStaked > 0 && priceCFT > 0) {
-        const dailyReturnRate = dailyReward / (totalStaked * priceCFT);
-        apr = (dailyReturnRate * 365 * 100).toFixed(2) + '%';
-      } else {
-        apr = 'N/A';
-      }
-      document.getElementById('estimated-apr').innerText = apr;
+        // Fetch projected yearly rewards in USDT
+        const projectedRewardsRaw = await newStakingContract.methods.viewProjectedRewardsForYear(userAddress).call();
+        const projectedRewards = parseFloat(tronWeb.fromSun(projectedRewardsRaw)); // Convert from SUN (1e6) to USDT
+
+        // Fetch staked CFT amount
+        const stakedAmountRaw = await newStakingContract.methods.viewStakedAmount(userAddress).call();
+        const decimalsCFT = await tokenContract.methods.decimals().call();
+        const stakedAmount = parseFloat(stakedAmountRaw) / Math.pow(10, decimalsCFT); // Adjust for CFT decimals
+
+        // Calculate APR
+        if (stakedAmount > 0 && priceCFT > 0) {
+            const stakedValueUSD = stakedAmount * priceCFT; // Staked CFT in USD
+            const apr = (projectedRewards / stakedValueUSD) * 100; // Your formula
+            document.getElementById('your-estimated-apr').innerText = `${apr.toFixed(2)}%`;
+        } else {
+            document.getElementById('your-estimated-apr').innerText = 'N/A'; // Handle zero stake or price
+        }
     } catch (error) {
-      console.error('Error fetching estimated APR:', error);
-      document.getElementById('estimated-apr').innerText = 'Error';
+        console.error('Error fetching your estimated APR:', error);
+        document.getElementById('your-estimated-apr').innerText = 'Error';
     }
-  }
+}
 
       async function updateAvailableTokens() {
         const balanceRaw = await tokenContract.methods.balanceOf(userAddress).call();
