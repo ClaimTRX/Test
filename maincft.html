@@ -9,429 +9,238 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <style>
     body {
-        background-color: #1a1a2e;
-        color: #fff;
-        font-family: Arial, sans-serif;
+      background-color: #1a1a2e;
+      color: #fff;
+      font-family: Arial, sans-serif;
     }
-
     .sidebar {
-        height: 100vh;
-        background-color: #162447;
-        padding: 15px;
-        position: fixed;
-        width: 200px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+      height: 100vh;
+      background-color: #162447;
+      padding: 15px;
+      position: fixed;
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-
     .sidebar a {
-        color: #fff;
-        text-decoration: none;
-        display: block;
-        padding: 10px 0;
-        width: 100%;
-        text-align: center;
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 0;
+      width: 100%;
+      text-align: center;
     }
-
     .sidebar a:hover {
-        background-color: #1f4068;
+      background-color: #1f4068;
     }
-
-    .sidebar .social-links {
-        display: flex;
-        margin-top: 20px;
-    }
-
-    .sidebar .social-icon {
-        color: white;
-        font-size: 20px;
-        margin-right: 10px;
-        text-decoration: none;
-    }
-
-    .sidebar .social-icon:last-child {
-        margin-right: 0;
-    }
-
     .topbar {
-        background-color: #162447;
-        padding: 10px;
-        margin-left: 200px;
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
+      background-color: #162447;
+      padding: 10px;
+      margin-left: 200px;
+      display: flex;
+      justify-content: flex-end;
     }
-
-    .topbar a.social-icon {
-        color: white;
-        margin-left: 15px;
-        font-size: 20px;
-        text-decoration: none;
-    }
-
     .topbar button {
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
-        padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 8px 16px;
     }
-
     .main-content {
-        margin-left: 220px;
-        padding: 20px;
+      margin-left: 220px;
+      padding: 20px;
     }
-
     .card {
-        background-color: #2c3e50;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        max-width: 1000px;
-        margin: 20px auto;
+      background-color: #2c3e50;
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 1000px;
+      margin: 20px auto;
+      text-align: center;
     }
-
-    .card-body {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        gap: 30px;
-        width: 100%;
-    }
-
-    .card-text-section {
-        text-align: left;
-        padding: 15px;
-        width: 100%;
-    }
-
-    .card-text-section h5 {
-        text-align: center;
-        font-size: 20px;
-    }
-
-    .card-text-section p, .card-text-section li {
-        font-size: 16px;
-    }
-
-    .card-text-section ul {
-        padding-left: 20px;
-    }
-
-    .card-text-section li {
-        margin-bottom: 10px;
-    }
-
-    .main-content h1 {
-        text-align: center;
-        font-size: 28px;
-        margin: 0 auto;
-    }
-
-    .card-image-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    }
-
-    .card-image {
-        width: 100%;
-        max-width: 400px;
-        height: auto;
-        border-radius: 10px;
-        margin: 0 auto;
-        display: block;
-        margin-bottom: 10px;
-    }
-
-    .telegram-link {
-        margin-top: 10px;
-        font-size: 14px;
-        text-align: center;
-    }
-
-    .btn {
-        width: auto;
-        padding: 10px 20px;
-        font-size: 16px;
-        border-radius: 5px;
-        margin-top: 10px;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 10px;
-        font-size: 16px;
-        border-radius: 5px;
-        margin-bottom: 10px;
-    }
-
     .button-group {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
     }
-
-    /* Mobile responsiveness */
+    .button-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+    }
+    .apr-text {
+      margin-top: 5px;
+      font-size: 14px;
+      color: #fff;
+    }
     @media (max-width: 767.98px) {
-        .sidebar {
-            height: auto;
-            padding: 10px;
-            width: 100%;
-            position: relative;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .topbar {
-            margin-left: 0;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .main-content {
-            margin-left: 0;
-        }
-
-        .card-body {
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .card-text-section {
-            width: 100%;
-            padding: 10px;
-        }
-
-        .card-text-section p, .card-text-section li {
-            font-size: 14px;
-        }
-
-        .card-image-container {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .card-image {
-            width: 90%;
-            max-width: 300px;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            width: auto;
-            padding: 12px;
-            font-size: 14px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            font-size: 14px;
-        }
-
-        .telegram-link {
-            margin-top: 20px;
-        }
-
-        .button-group {
-            flex-direction: column;
-            align-items: center;
-        }
+      .sidebar {
+        height: auto;
+        width: 100%;
+        position: relative;
+      }
+      .topbar, .main-content {
+        margin-left: 0;
+      }
+      .button-group {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
-    <div class="sidebar">
-      <h2>CFT</h2>
-      <a href="index.html">Welcome</a>
-      <a href="buy.html">Buy Tokens</a>
-      <a href="staking.html">CFT Staking</a>
-      <a href="games.html">Games</a>
-      <a href="news.html">News</a>
-      <a href="meme.html">Meme Staking</a>
-      <a href="energy.html">Energy</a>
-      <a href="stablex.html">StableX</a>
-      <div class="social-links">
-        <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
-          <i class="fab fa-twitter"></i>
-        </a>
-        <a href="https://t.me/cftecosystem" target="_blank" class="social-icon">
-          <i class="fab fa-telegram-plane"></i>
-        </a>
-      </div>
-    </div>
-    <div class="topbar">
-      <!-- Topbar content can be added here if needed -->
-    </div>
-    <div class="main-content">
-      <h1>StableX</h1>
-
-      <div class="card mt-4">
-        <div class="card-body">
-          <div class="card-text-section">
-            <p><strong>CFT Staking: Earn While Strengthening the Ecosystem</strong></p>
-<p>CFT staking allows you to earn passive income while supporting a sustainable, community-driven ecosystem. By staking your CFT, you receive TRX rewards directly from the treasury—powered by real yield from energy sales and staking income.</p>
-
-<ul>
-  <li><strong>Reliable TRX Rewards:</strong> Earn a share of the treasury’s income, generated through staking returns and energy sales.</li>
-  <li><strong>Scarcity-Driven Model:</strong> With a fixed supply of 10 million CFT, staking reduces circulating supply, contributing to long-term value.</li>
-  <li><strong>Full Control:</strong> Stake and unstake anytime through the CFT platform, giving you flexibility while earning passive income.</li>
-</ul>
-
-<p>Select your preferred reward option below and start earning with CFT staking today!</p>
-
-            <p>StableX is more than just a stablecoin—it’s a hybrid asset designed for security and growth. Whether you’re anchoring your portfolio or chasing DeFi rewards, StableX offers a compelling solution.</p>
-            <div class="button-group">
-  <div>
-    <a href="cft.html" class="btn btn-success btn-lg">Stakeing CFT Rewards</a>
-    <p id="apr-cft">APR: Loading...</p>
+  <div class="sidebar">
+    <h2>CFT</h2>
+    <a href="index.html">Welcome</a>
+    <a href="buy.html">Buy Tokens</a>
+    <a href="staking.html">CFT Staking</a>
+    <a href="games.html">Games</a>
+    <a href="news.html">News</a>
+    <a href="meme.html">Meme Staking</a>
+    <a href="energy.html">Energy</a>
+    <a href="stablex.html">StableX</a>
   </div>
-  <div>
-    <a href="newtrx.html" class="btn btn-success btn-lg">Staking TRX Rewards</a>
-    <p id="apr-trx">APR: Loading...</p>
+  <div class="topbar">
+    <button id="connect-button">Connect Wallet</button>
   </div>
-  <div>
-    <a href="newusdt.html" class="btn btn-success btn-lg">Staking USDT Rewards</a>
-    <p id="apr-usdt">APR: Loading...</p>
-  </div>
-</div>
-          </div>
-          <div class="card-image-container">
-            <img src="https://raw.githubusercontent.com/ClaimTRX/Test/refs/heads/main/67c1c6ad9ea73_download.jpg" class="card-image" alt="Token Image">
-            <div class="telegram-link mt-3">
-              <a href="https://t.me/cftecosystem" target="_blank">
-                <i class="fab fa-telegram-plane"></i> Join our Telegram
-              </a>
-            </div>
-          </div>
+  <div class="main-content">
+    <h1>StableX</h1>
+    <div class="card mt-4">
+      <p><strong>CFT Staking: Earn While Strengthening the Ecosystem</strong></p>
+      <p>Select your preferred reward option below and start earning with CFT staking today!</p>
+      <div class="button-group">
+        <div class="button-wrapper">
+          <a href="cft.html" class="btn btn-success">Stake for CFT Rewards</a>
+          <p id="apr-cft" class="apr-text">APR: Loading...</p>
+        </div>
+        <div class="button-wrapper">
+          <a href="newtrx.html" class="btn btn-success">Stake for TRX Rewards</a>
+          <p id="apr-trx" class="apr-text">APR: Loading...</p>
+        </div>
+        <div class="button-wrapper">
+          <a href="newusdt.html" class="btn btn-success">Stake for USDT Rewards</a>
+          <p id="apr-usdt" class="apr-text">APR: Loading...</p>
         </div>
       </div>
     </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
-<script>
-  let tronWeb;
+  <script>
+    let tronWeb;
+    const stakingContractAddresses = {
+      cft: 'TMsZX72oWscpd3QmmT6NRq6JWiY5QzFju2',  // CFT staking contract
+      trx: 'TPLECu1WkQnQS5Hnm97TwxsWJYpr6ZeGcA',  // TRX staking contract
+      usdt: 'TP5y4Ga9DsihuWzWcWaWJqMk6WWTzeYyMg' // USDT staking contract
+    };
+    const tokenContracts = {
+      cft: 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA'   // CFT token contract
+    };
+    const priceCFT = 0.24; // Example price for CFT in USD
+    const priceTRX = 0.13; // Example price for TRX in USD
 
-  // Contract addresses and ABIs (from cft.html)
-  const stakingContractAddresses = {
-    cft: 'TMsZX72oWscpd3QmmT6NRq6JWiY5QzFju2'
-    trx: 'TPLECu1WkQnQS5Hnm97TwxsWJYpr6ZeGcA'
-    usdt: 'TP5y4Ga9DsihuWzWcWaWJqMk6WWTzeYyMg'
-    // Add TRX and USDT contract addresses here if available, e.g.,
-    // trx: 'TRX_STAKING_CONTRACT_ADDRESS',
-    // usdt: 'USDT_STAKING_CONTRACT_ADDRESS'
-  };
+    // Simplified ABI with only the methods we need
+    const stakingContractAbi = [
+      {"inputs":[],"name":"viewDailyReward","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+      {"inputs":[],"name":"viewTotalStaked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+      {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"viewProjectedRewardsForYear","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+    ];
+    const tokenContractAbi = [
+      {"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"}
+    ];
 
-  const tokenContracts = {
-    cft: 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA'
-    // Add TRX and USDT token addresses here if available
-  };
-
-  // Staking contract ABI (abbreviated; use the full ABI from cft.html)
-  const stakingContractAbi = [
-    {
-      "inputs": [],
-      "name": "viewDailyReward",
-      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "viewTotalStaked",
-      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-      "stateMutability": "view",
-      "type": "function"
-    }
-    // Include other methods as needed
-  ];
-
-  // Token contract ABI (abbreviated; use the full ABI from cft.html)
-  const tokenContractAbi = [
-    {
-      "inputs": [],
-      "name": "decimals",
-      "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
-      "stateMutability": "view",
-      "type": "function"
-    }
-    // Include other methods as needed
-  ];
-
-  // Initialize TronWeb and update APR on page load
-  document.addEventListener('DOMContentLoaded', async () => {
-    if (await checkTronLinkInstalled()) {
-      await initializeTronWeb();
-      await updateAPR('cft');
-      // Call updateAPR('trx') and updateAPR('usdt') here if you have their contract addresses
-    } else {
-      document.getElementById('apr-cft').innerText = 'APR: TronLink not installed';
-      // Update other placeholders similarly if needed
-    }
-  });
-
-  // Check if TronLink is installed
-  async function checkTronLinkInstalled() {
-    return new Promise((resolve) => {
-      const interval = setInterval(() => {
-        if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-          clearInterval(interval);
-          resolve(true);
-        }
-      }, 1000);
-    });
-  }
-
-  // Initialize TronWeb
-  async function initializeTronWeb() {
-    try {
-      tronWeb = window.tronWeb;
-      console.log('Connected to TronLink.');
-    } catch (error) {
-      console.error('Error initializing TronWeb:', error);
-    }
-  }
-
-  // Calculate and update APR for a given token
-  async function updateAPR(token) {
-    try {
-      const stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddresses[token]);
-      const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
-      
-      const decimals = await tokenContract.methods.decimals().call();
-      const dailyRewardRaw = await stakingContract.methods.viewDailyReward().call();
-      const totalStakedRaw = await stakingContract.methods.viewTotalStaked().call();
-
-      const dailyReward = parseFloat(dailyRewardRaw) / Math.pow(10, decimals);
-      const totalStaked = parseFloat(totalStakedRaw) / Math.pow(10, decimals);
-
-      let apr;
-      if (totalStaked > 0) {
-        apr = (dailyReward / totalStaked) * 365 * 100; // Annualized percentage
-        apr = apr.toFixed(2) + '%';
+    document.addEventListener('DOMContentLoaded', async () => {
+      document.getElementById('connect-button').addEventListener('click', connectWallet);
+      if (await checkTronLinkInstalled()) {
+        await initializeTronWeb();
+        updateAllAPR();
       } else {
-        apr = 'N/A';
+        console.error('TronLink is not installed.');
       }
+    });
 
-      document.getElementById(`apr-${token}`).innerText = `APR: ${apr}`;
-    } catch (error) {
-      console.error(`Error fetching APR for ${token}:`, error);
-      document.getElementById(`apr-${token}`).innerText = 'APR: Error';
+    async function checkTronLinkInstalled() {
+      return new Promise((resolve) => {
+        const interval = setInterval(() => {
+          if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+            clearInterval(interval);
+            resolve(true);
+          }
+        }, 1000);
+      });
     }
-  }
-</script>
+
+    async function connectWallet() {
+      try {
+        await tronLink.request({ method: 'tron_requestAccounts' });
+        await initializeTronWeb();
+        updateAllAPR();
+      } catch (e) {
+        console.error('Failed to connect to TronLink:', e);
+      }
+    }
+
+    async function initializeTronWeb() {
+      tronWeb = window.tronWeb;
+      document.getElementById('connect-button').style.display = 'none';
+    }
+
+    async function updateAllAPR() {
+      await updateAPR('cft');
+      await updateAPR('trx');
+      await updateAPR('usdt');
+    }
+
+    async function updateAPR(token) {
+      try {
+        const stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddresses[token]);
+        let apr;
+
+        if (token === 'cft') {
+          const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts.cft);
+          const decimals = await tokenContract.methods.decimals().call();
+          const dailyRewardRaw = await stakingContract.methods.viewDailyReward().call();
+          const totalStakedRaw = await stakingContract.methods.viewTotalStaked().call();
+          const dailyReward = parseFloat(dailyRewardRaw) / Math.pow(10, decimals);
+          const totalStaked = parseFloat(totalStakedRaw) / Math.pow(10, decimals);
+          apr = totalStaked > 0 ? (dailyReward / totalStaked) * 365 * 100 : 0;
+        } else if (token === 'trx') {
+          const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts.cft);
+          const decimals = await tokenContract.methods.decimals().call();
+          const projectedRewardsRaw = await stakingContract.methods.viewProjectedRewardsForYear('0x0000000000000000000000000000000000000000').call(); // Use zero address for global estimate
+          const totalStakedRaw = await stakingContract.methods.viewTotalStaked().call();
+          const projectedRewardsTRX = parseFloat(tronWeb.fromSun(projectedRewardsRaw));
+          const totalStakedCFT = parseFloat(totalStakedRaw) / Math.pow(10, decimals);
+          const yearlyRewardsUSD = projectedRewardsTRX * priceTRX;
+          const stakedValueUSD = totalStakedCFT * priceCFT;
+          apr = stakedValueUSD > 0 ? (yearlyRewardsUSD / stakedValueUSD) * 100 : 0;
+        } else if (token === 'usdt') {
+          const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts.cft);
+          const decimals = await tokenContract.methods.decimals().call();
+          const projectedRewardsRaw = await stakingContract.methods.viewProjectedRewardsForYear('0x0000000000000000000000000000000000000000').call(); // Use zero address for global estimate
+          const totalStakedRaw = await stakingContract.methods.viewTotalStaked().call();
+          const projectedRewards = parseFloat(tronWeb.fromSun(projectedRewardsRaw));
+          const totalStakedCFT = parseFloat(totalStakedRaw) / Math.pow(10, decimals);
+          const stakedValueUSD = totalStakedCFT * priceCFT;
+          apr = stakedValueUSD > 0 ? (projectedRewards / stakedValueUSD) * 100 : 0;
+        }
+
+        document.getElementById(`apr-${token}`).innerText = `APR: ${apr.toFixed(2)}%`;
+      } catch (error) {
+        console.error(`Error fetching APR for ${token}:`, error);
+        document.getElementById(`apr-${token}`).innerText = 'APR: Error';
+      }
+    }
+  </script>
 </body>
 </html>
 
