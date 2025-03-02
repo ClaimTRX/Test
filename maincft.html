@@ -374,7 +374,7 @@
         } else if (token === 'trx') {
           const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts.cft);
           const decimals = await tokenContract.methods.decimals().call();
-          const projectedRewardsRaw = await stakingContract.methods.viewProjectedRewardsForYear().call(); // Use zero address for global estimate
+          const projectedRewardsRaw = await stakingContract.methods.viewProjectedRewardsForYear('TPLECu1WkQnQS5Hnm97TwxsWJYpr6ZeGcA').call(); // Use zero address for global estimate
           const totalStakedRaw = await stakingContract.methods.viewTotalStaked().call();
           const projectedRewardsTRX = parseFloat(tronWeb.fromSun(projectedRewardsRaw));
           const totalStakedCFT = parseFloat(totalStakedRaw) / Math.pow(10, decimals);
