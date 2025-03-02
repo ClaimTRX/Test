@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel</title>
+  <title>Tron Admin Panel</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
     body {
@@ -37,55 +37,70 @@
       background-color: #f1f1f1;
       border-radius: 10px;
     }
-    .btn-withdraw, .btn-action {
+    .btn-action {
       margin-right: 10px;
       margin-bottom: 10px;
+    }
+    .section {
+      margin-top: 15px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1 class="text-center">Admin Panel</h1>
+    <h1 class="text-center">Tron Admin Panel</h1>
     <div class="text-center mb-4">
       <button id="connect-button" class="btn-connect">Connect Wallet</button>
       <span id="wallet-status" class="wallet-status"></span>
     </div>
 
-    <!-- Token Swap (Buy Tokens) Contract Card -->
+    <!-- Token Swap Contract Card -->
     <div class="card">
-      <h2>Token Swap Contract</h2>
+      <h2>Token Swap Contract (TUGp...31G9W)</h2>
       <div class="section">
-        <h3>Contract Balances</h3>
-        <p>STBLX: <span id="stblx-balance">Loading...</span></p>
-        <p>USDT: <span id="usdt-balance">Loading...</span></p>
-        <p>USDD: <span id="usdd-balance">Loading...</span></p>
-      </div>
-      <div class="section">
-        <h3>Withdraw Funds</h3>
-        <button id="withdraw-stblx" class="btn btn-primary btn-withdraw" disabled>Withdraw All STBLX</button>
-        <button id="withdraw-usdt" class="btn btn-primary btn-withdraw" disabled>Withdraw All USDT</button>
-        <button id="withdraw-usdd" class="btn btn-primary btn-withdraw" disabled>Withdraw All USDD</button>
+        <h3>Energy Management</h3>
+        <p>Current Origin Energy Limit: <span id="token-swap-energy-limit">Loading...</span></p>
+        <button id="set-token-swap-energy-zero" class="btn btn-warning btn-action" disabled>Set to 100% User</button>
       </div>
     </div>
 
     <!-- Staking Contract Card -->
     <div class="card">
-      <h2>Staking Contract</h2>
+      <h2>Staking Contract (TRVn...Sy7pV)</h2>
       <div class="section">
-        <h3>Staking Information</h3>
-        <p>Current Daily Rewards: <span id="daily-rewards">Loading...</span></p>
-        <p>Total Staked: <span id="total-staked">Loading...</span></p>
-        <p>Total Tokens in Contract: <span id="total-tokens">Loading...</span></p>
-        <p>Total Unclaimed Rewards: <span id="unclaimed-rewards">Loading...</span></p>
+        <h3>Energy Management</h3>
+        <p>Current Origin Energy Limit: <span id="staking-energy-limit">Loading...</span></p>
+        <button id="set-staking-energy-zero" class="btn btn-warning btn-action" disabled>Set to 100% User</button>
       </div>
+    </div>
+
+    <!-- Contract 3 Card -->
+    <div class="card">
+      <h2>Contract 3 (TGd1...VpWS)</h2>
       <div class="section">
-        <h3>Add Rewards</h3>
-        <div class="input-group mb-3">
-          <input type="number" id="reward-amount" class="form-control" placeholder="Enter reward amount">
-          <div class="input-group-append">
-            <button id="add-rewards" class="btn btn-success btn-action" disabled>Add Rewards</button>
-          </div>
-        </div>
+        <h3>Energy Management</h3>
+        <p>Current Origin Energy Limit: <span id="contract3-energy-limit">Loading...</span></p>
+        <button id="set-contract3-energy-zero" class="btn btn-warning btn-action" disabled>Set to 100% User</button>
+      </div>
+    </div>
+
+    <!-- Contract 4 Card -->
+    <div class="card">
+      <h2>Contract 4 (TDxS...gp3vw)</h2>
+      <div class="section">
+        <h3>Energy Management</h3>
+        <p>Current Origin Energy Limit: <span id="contract4-energy-limit">Loading...</span></p>
+        <button id="set-contract4-energy-zero" class="btn btn-warning btn-action" disabled>Set to 100% User</button>
+      </div>
+    </div>
+
+    <!-- Contract 5 Card -->
+    <div class="card">
+      <h2>Contract 5 (TUvH...LGSE6)</h2>
+      <div class="section">
+        <h3>Energy Management</h3>
+        <p>Current Origin Energy Limit: <span id="contract5-energy-limit">Loading...</span></p>
+        <button id="set-contract5-energy-zero" class="btn btn-warning btn-action" disabled>Set to 100% User</button>
       </div>
     </div>
   </div>
@@ -93,115 +108,69 @@
   <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
   <script>
     // Contract Addresses
-    const tokenSwapAddress = 'TUGprGUNtszQgc3pGwMcC9R3z3sDT31G9W'; // Token Swap Contract
-    const stakingAddress = 'TRVn2h65VrbGb7zkASz3escJiHJWMSy7pV'; // Staking Contract
+    const tokenSwapAddress = 'TUGprGUNtszQgc3pGwMcC9R3z3sDT31G9W';
+    const stakingAddress = 'TRVn2h65VrbGb7zkASz3escJiHJWMSy7pV';
+    const contract3Address = 'TGd1irpHHU8cFC4ArY9KBoBiocQr1vVpWS';
+    const contract4Address = 'TDxSTFQvsxeSfsSgokKxMU2e8uXKAgp3vw';
+    const contract5Address = 'TUvHH8QtyXvMubLJRgKBdwfG7Y2TRLGSE6';
 
-    // Token Swap Contract ABI
-    const tokenSwapAbi = [
-      {
-        "name": "token",
-        "inputs": [],
-        "outputs": [{"internalType": "contract ITRC20", "name": "", "type": "address"}],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "name": "usdt",
-        "inputs": [],
-        "outputs": [{"internalType": "contract ITRC20", "name": "", "type": "address"}],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "name": "usdd",
-        "inputs": [],
-        "outputs": [{"internalType": "contract ITRC20", "name": "", "type": "address"}],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "name": "withdrawAllTokenForSale",
-        "inputs": [],
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "name": "withdrawAllUSDT",
-        "inputs": [],
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "name": "withdrawAllUSDD",
-        "inputs": [],
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }
-    ];
-
-    // Staking Contract ABI
-    const stakingAbi = [
-      {
-        "inputs": [],
-        "name": "dailyReward",
-        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "totalStaked",
-        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "stakingToken",
-        "outputs": [{"internalType": "address", "name": "", "type": "address"}],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "viewTotalUnclaimedRewards",
-        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}],
-        "name": "depositReward",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }
-    ];
-
-    // TRC20 ABI for token balance and decimals checks
-    const trc20Abi = [
+    // ABIs for Token Swap and Staking Contracts
+    const tokenSwapABI = [
       {
         "constant": true,
-        "inputs": [{"name": "account", "type": "address"}],
-        "name": "balanceOf",
+        "inputs": [],
+        "name": "swapFee",
         "outputs": [{"name": "", "type": "uint256"}],
+        "payable": false,
         "stateMutability": "view",
         "type": "function"
       },
       {
-        "constant": true,
-        "inputs": [],
-        "name": "decimals",
-        "outputs": [{"name": "", "type": "uint8"}],
-        "stateMutability": "view",
+        "constant": false,
+        "inputs": [
+          {"name": "_tokenA", "type": "address"},
+          {"name": "_tokenB", "type": "address"},
+          {"name": "_amountA", "type": "uint256"}
+        ],
+        "name": "swap",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
         "type": "function"
       }
     ];
 
-    let tronWeb, userAddress, tokenSwapContract, stakingContract;
+    const stakingABI = [
+      {
+        "constant": true,
+        "inputs": [{"name": "_user", "type": "address"}],
+        "name": "getStake",
+        "outputs": [{"name": "", "type": "uint256"}],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [{"name": "_amount", "type": "uint256"}],
+        "name": "stake",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [],
+        "name": "unstake",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ];
+
+    let tronWeb, userAddress;
 
     // Delay helper function
     function delay(ms) {
@@ -244,146 +213,89 @@
       }
     }
 
-    // Initialize Contracts and UI
+    // Initialize UI
     async function initialize() {
       try {
-        tokenSwapContract = await tronWeb.contract(tokenSwapAbi, tokenSwapAddress);
-        stakingContract = await tronWeb.contract(stakingAbi, stakingAddress);
+        // Enable energy management buttons
+        document.getElementById('set-token-swap-energy-zero').disabled = false;
+        document.getElementById('set-staking-energy-zero').disabled = false;
+        document.getElementById('set-contract3-energy-zero').disabled = false;
+        document.getElementById('set-contract4-energy-zero').disabled = false;
+        document.getElementById('set-contract5-energy-zero').disabled = false;
 
-        // Enable buttons
-        document.getElementById('withdraw-stblx').disabled = false;
-        document.getElementById('withdraw-usdt').disabled = false;
-        document.getElementById('withdraw-usdd').disabled = false;
-        document.getElementById('add-rewards').disabled = false;
-
-        // Fetch data with delays between sections
-        await fetchTokenSwapBalances();
-        await delay(200); // 2-second delay between token swap and staking info
-        await fetchStakingInfo();
+        // Fetch initial energy limits
+        await fetchEnergyLimits();
       } catch (error) {
         console.error('Initialization error:', error);
         alert('Failed to initialize: ' + error.message);
       }
     }
 
-    // Fetch Token Swap Balances with retry logic and delays
-    async function fetchTokenSwapBalances() {
+    // Fetch Energy Limits for all contracts
+    async function fetchEnergyLimits() {
       try {
-        const stblxAddr = await retryRequest(() => tokenSwapContract.token().call());
+        const tokenSwapInfo = await retryRequest(() => tronWeb.trx.getContract(tokenSwapAddress));
         await delay(200);
-        const usdtAddr = await retryRequest(() => tokenSwapContract.usdt().call());
+        const stakingInfo = await retryRequest(() => tronWeb.trx.getContract(stakingAddress));
         await delay(200);
-        const usddAddr = await retryRequest(() => tokenSwapContract.usdd().call());
+        const contract3Info = await retryRequest(() => tronWeb.trx.getContract(contract3Address));
         await delay(200);
+        const contract4Info = await retryRequest(() => tronWeb.trx.getContract(contract4Address));
+        await delay(200);
+        const contract5Info = await retryRequest(() => tronWeb.trx.getContract(contract5Address));
 
-        const stblxToken = await tronWeb.contract(trc20Abi, stblxAddr);
-        const usdtToken = await tronWeb.contract(trc20Abi, usdtAddr);
-        const usddToken = await tronWeb.contract(trc20Abi, usddAddr);
-
-        const stblxDecimals = await retryRequest(() => stblxToken.decimals().call());
-        await delay(200);
-        const usdtDecimals = await retryRequest(() => usdtToken.decimals().call());
-        await delay(200);
-        const usddDecimals = await retryRequest(() => usddToken.decimals().call());
-        await delay(200);
-
-        const stblxBalance = await retryRequest(() => stblxToken.balanceOf(tokenSwapAddress).call());
-        await delay(200);
-        const usdtBalance = await retryRequest(() => usdtToken.balanceOf(tokenSwapAddress).call());
-        await delay(200);
-        const usddBalance = await retryRequest(() => usddToken.balanceOf(tokenSwapAddress).call());
-
-        const stblxBalanceHuman = parseFloat(stblxBalance) / Math.pow(10, stblxDecimals);
-        const usdtBalanceHuman = parseFloat(usdtBalance) / Math.pow(10, usdtDecimals);
-        const usddBalanceHuman = parseFloat(usddBalance) / Math.pow(10, usddDecimals);
-
-        document.getElementById('stblx-balance').innerText = stblxBalanceHuman.toFixed(2);
-        document.getElementById('usdt-balance').innerText = usdtBalanceHuman.toFixed(2);
-        document.getElementById('usdd-balance').innerText = usddBalanceHuman.toFixed(2);
+        document.getElementById('token-swap-energy-limit').innerText = tokenSwapInfo.origin_energy_limit || 'N/A';
+        document.getElementById('staking-energy-limit').innerText = stakingInfo.origin_energy_limit || 'N/A';
+        document.getElementById('contract3-energy-limit').innerText = contract3Info.origin_energy_limit || 'N/A';
+        document.getElementById('contract4-energy-limit').innerText = contract4Info.origin_energy_limit || 'N/A';
+        document.getElementById('contract5-energy-limit').innerText = contract5Info.origin_energy_limit || 'N/A';
       } catch (error) {
-        console.error('Error fetching token swap balances:', error);
-        alert('Error fetching balances: ' + error.message);
+        console.error('Error fetching energy limits:', error);
+        document.getElementById('token-swap-energy-limit').innerText = 'Error';
+        document.getElementById('staking-energy-limit').innerText = 'Error';
+        document.getElementById('contract3-energy-limit').innerText = 'Error';
+        document.getElementById('contract4-energy-limit').innerText = 'Error';
+        document.getElementById('contract5-energy-limit').innerText = 'Error';
       }
     }
 
-    // Fetch Staking Contract Information with retry logic and delays
-    async function fetchStakingInfo() {
-      try {
-        const dailyRewards = await retryRequest(() => stakingContract.dailyReward().call());
-        document.getElementById('daily-rewards').innerText = tronWeb.fromSun(dailyRewards);
-        await delay(1000);
-
-        const totalStaked = await retryRequest(() => stakingContract.totalStaked().call());
-        document.getElementById('total-staked').innerText = tronWeb.fromSun(totalStaked);
-        await delay(1000);
-
-        const stakingTokenAddr = await retryRequest(() => stakingContract.stakingToken().call());
-        const stakingToken = await tronWeb.contract(trc20Abi, stakingTokenAddr);
-        await delay(1000);
-
-        const totalTokens = await retryRequest(() => stakingToken.balanceOf(stakingAddress).call());
-        document.getElementById('total-tokens').innerText = tronWeb.fromSun(totalTokens);
-        await delay(1000);
-
-        const unclaimedRewards = await retryRequest(() => stakingContract.viewTotalUnclaimedRewards().call());
-        document.getElementById('unclaimed-rewards').innerText = tronWeb.fromSun(unclaimedRewards);
-      } catch (error) {
-        console.error('Error fetching staking info:', error);
-        alert('Error fetching staking info: ' + error.message);
+    // Set Energy to 100% User Function
+    async function setEnergyToZero(contractAddress, elementId, contractName) {
+      if (confirm(`Set ${contractName} energy to 100% user-paid? This sets Origin Energy Limit to 0.`)) {
+        try {
+          const transaction = await tronWeb.transactionBuilder.updateEnergyLimit(userAddress, contractAddress, 0);
+          const signedTransaction = await tronWeb.trx.sign(transaction);
+          const result = await tronWeb.trx.sendRawTransaction(signedTransaction);
+          if (result) {
+            alert(`${contractName} set to 100% user energy successfully`);
+            await fetchEnergyLimits();
+          }
+        } catch (error) {
+          alert('Failed to update energy settings: ' + error.message);
+        }
       }
     }
 
-    // Add Rewards to Staking Contract
-    document.getElementById('add-rewards').addEventListener('click', async () => {
-      const amount = document.getElementById('reward-amount').value;
-      if (!amount || amount <= 0) {
-        alert('Please enter a valid reward amount');
-        return;
-      }
-      try {
-        const amountInSun = tronWeb.toSun(amount);
-        await stakingContract.depositReward(amountInSun).send({
-          from: userAddress,
-          callValue: 0,
-          shouldPollResponse: true
-        });
-        alert('Rewards added successfully');
-        await fetchStakingInfo();
-      } catch (error) {
-        alert('Failed to add rewards: ' + error.message);
-      }
-    });
+    // Event Listeners for Energy Buttons
+    document.getElementById('set-token-swap-energy-zero').addEventListener('click', () => 
+      setEnergyToZero(tokenSwapAddress, 'token-swap-energy-limit', 'Token Swap Contract')
+    );
 
-    // Withdraw from Token Swap Contract
-    document.getElementById('withdraw-stblx').addEventListener('click', async () => {
-      try {
-        await tokenSwapContract.withdrawAllTokenForSale().send();
-        alert('STBLX withdrawn successfully');
-        await fetchTokenSwapBalances();
-      } catch (error) {
-        alert('Failed to withdraw STBLX: ' + error.message);
-      }
-    });
+    document.getElementById('set-staking-energy-zero').addEventListener('click', () => 
+      setEnergyToZero(stakingAddress, 'staking-energy-limit', 'Staking Contract')
+    );
 
-    document.getElementById('withdraw-usdt').addEventListener('click', async () => {
-      try {
-        await tokenSwapContract.withdrawAllUSDT().send();
-        alert('USDT withdrawn successfully');
-        await fetchTokenSwapBalances();
-      } catch (error) {
-        alert('Failed to withdraw USDT: ' + error.message);
-      }
-    });
+    document.getElementById('set-contract3-energy-zero').addEventListener('click', () => 
+      setEnergyToZero(contract3Address, 'contract3-energy-limit', 'Contract 3')
+    );
 
-    document.getElementById('withdraw-usdd').addEventListener('click', async () => {
-      try {
-        await tokenSwapContract.withdrawAllUSDD().send();
-        alert('USDD withdrawn successfully');
-        await fetchTokenSwapBalances();
-      } catch (error) {
-        alert('Failed to withdraw USDD: ' + error.message);
-      }
-    });
+    document.getElementById('set-contract4-energy-zero').addEventListener('click', () => 
+      setEnergyToZero(contract4Address, 'contract4-energy-limit', 'Contract 4')
+    );
+
+    document.getElementById('set-contract5-energy-zero').addEventListener('click', () => 
+      setEnergyToZero(contract5Address, 'contract5-energy-limit', 'Contract 5')
+    );
   </script>
 </body>
 </html>
