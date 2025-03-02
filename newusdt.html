@@ -216,15 +216,15 @@
     <a href="index.html">Welcome</a>
     <a href="buy.html">Buy Tokens</a>
     <a href="staking.html">CFT Staking</a>
-    <a href="games.html">Games</a>
-    <a href="Swap.html">Swap</a>
+      <a href="games.html">Games</a>
+    <a href="news.html">News</a>
     <a href="meme.html">Meme Staking</a>
-    <a href="energy.html">Energy</a>
+      <a href="energy.html">Energy</a>
     <div class="social-links">
       <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
         <i class="fab fa-twitter"></i>
       </a>
-      <a href="https://t.me/claimfreetrxnow" target="_blank" class="social-icon">
+      <a href="https://t.me/cftecosystem" target="_blank" class="social-icon">
         <i class="fab fa-telegram-plane"></i>
       </a>
     </div>
@@ -261,13 +261,16 @@
           <h5 class="card-title mt-3">Claimable USDT Rewards</h5>
           <p id="new-claimable-rewards">Loading...</p>
 
+          <h5 class="card-title mt-3">Estimated APR</h5>
+  <p id="estimated-apr">Loading...</p>
+
           <button id="new-claim-rewards-button" class="btn btn-success">Claim Rewards</button>
         </div>
         <div class="card-image-container mt-4">
           <img src="https://raw.githubusercontent.com/ClaimTRX/Test/main/66d7dce3f08bf_download.jpg" class="card-image" alt="Token Image">
           <!-- Telegram Link -->
           <div class="telegram-link mt-3">
-            <a href="https://t.me/claimfreetrxnow" target="_blank">
+            <a href="https://t.me/cftecosystem" target="_blank">
               <i class="fab fa-telegram-plane"></i> Join our Telegram
             </a>
           </div>
@@ -1095,11 +1098,39 @@
           await updateNewClaimableRewards();
            await delay(500);
           await updateTotalClaimedRewards();
+          await updateEstimatedAPR();
+          await delay(500);
 
         } catch (error) {
           console.error('Error updating UI:', error);
         }
       }
+
+      // Manually set CFT price in USD
+  const priceCFT = 0.27; // Example: $0.50 per CFT
+
+  // APR Calculation Function
+  async function updateEstimatedAPR() {
+    try {
+      const priceUSDT = 1; // USDT is $1
+      const decimalsCFT = await tokenContract.methods.decimals().call();
+      const dailyRewardRaw = await newStakingContract.methods.viewDailyReward().call();
+      const totalStakedRaw = await newStakingContract.methods.viewTotalStaked().call();
+      const dailyReward = parseFloat(tronWeb.fromSun(dailyRewardRaw));
+      const totalStaked = parseFloat(totalStakedRaw) / Math.pow(10, decimalsCFT);
+      let apr;
+      if (totalStaked > 0 && priceCFT > 0) {
+        const dailyReturnRate = dailyReward / (totalStaked * priceCFT);
+        apr = (dailyReturnRate * 365 * 100).toFixed(2) + '%';
+      } else {
+        apr = 'N/A';
+      }
+      document.getElementById('estimated-apr').innerText = apr;
+    } catch (error) {
+      console.error('Error fetching estimated APR:', error);
+      document.getElementById('estimated-apr').innerText = 'Error';
+    }
+  }
 
       async function updateAvailableTokens() {
         const balanceRaw = await tokenContract.methods.balanceOf(userAddress).call();
