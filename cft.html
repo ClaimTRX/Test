@@ -232,7 +232,7 @@
       <a href="https://x.com/cfttrc20?s=21" target="_blank" class="social-icon">
         <i class="fab fa-twitter"></i>
       </a>
-      <a href="https://t.me/claimfreetrxnow" target="_blank" class="social-icon">
+      <a href="https://t.me/cftecosystem" target="_blank" class="social-icon">
         <i class="fab fa-telegram-plane"></i>
       </a>
     </div>
@@ -241,44 +241,45 @@
         <button id="connect-button">Connect Wallet</button>
   </div>
   <div class="main-content">
-    <h1>Stake CFT for CFT rewards (OLD)</h1>
+    <h1>Stake CFT for CFT rewards</h1>
 
     <!-- Card for Token 1 -->
     <div class="card mt-4">
       <div class="card-body">
         <div class="card-text-section">
-          <h5 class="card-title">Stake your $CFT for $CFT rewards</h5>
+          <h5 class="card-title">Stake your CFT for CFT rewards</h5>
+
+          <h5 class="card-title mt-3">Available CFT in Wallet</h5>
+          <p class="card-text" id="available-tokens-token1">Loading...</p>
 
           <input type="number" id="stake-amount-token1" class="form-control" placeholder="Enter amount to stake">
           <button id="stake-button-token1" class="btn btn-success">Stake</button><br>
           <button id="unstake-button-token1" class="btn btn-danger">Unstake</button>
 
-          <h5 class="card-title mt-3">Available $CFT in Wallet</h5>
-          <p class="card-text" id="available-tokens-token1">Loading...</p>
-
-          <h5 class="card-title mt-3">Total Staked $CFT</h5>
-          <p class="card-text" id="total-staked-token1">Loading...</p>
-
-          <h5 class="card-title mt-3">Your Staked $CFT</h5>
+          <h5 class="card-title mt-3">Your Staked CFT</h5>
           <p class="card-text" id="staked-amount-token1">Loading...</p>
 
-          <h5 class="card-title mt-3">Your Staked Percentage</h5>
-          <p class="card-text" id="staked-percentage-token1">Loading...</p>
+          <h5 class="card-title mt-3">Estimated Yearly Earnings (You)</h5>
+          <p class="card-text" id="projected-yearly-earnings-token1">Loading...</p>
+
+          <h5 class="card-title mt-3">Estimated APR</h5>
+          <p class="card-text" id="estimated-apr-token1">Loading...</p>
 
           <h5 class="card-title mt-3">Claimable CFT Rewards</h5>
           <p class="card-text" id="claimable-rewards-token1">Loading...</p>
-          <button id="claim-rewards-button-token1" class="btn btn-success">Claim Rewards</button>
+          
+          <button id="claim-rewards-button-token1" class="btn btn-success">Claim Rewards</button>   
 
-          <h5 class="card-title mt-3">Projected Yearly Earnings (You)</h5>
-          <p class="card-text" id="projected-yearly-earnings-token1">Loading...</p>
+          <h5 class="card-title mt-3">Total Claimed CFT Rewards</h5>
+          <p id="total-claimed-rewards">Loading...</p>
 
         </div> <!-- Close .card-text-section -->
 
         <div class="card-image-container">
-          <img src="https://raw.githubusercontent.com/ClaimTRX/ClaimTRX/main/66d80aecb2a23_download.jpg" class="card-image" alt="Token Image">
+          <img src="https://raw.githubusercontent.com/ClaimTRX/Test/refs/heads/main/67bc2be19828a_download.jpg" class="card-image" alt="Token Image">
           <!-- Telegram Link -->
           <div class="telegram-link">
-            <a href="https://t.me/claimfreetrxnow" target="_blank">
+            <a href="https://t.me/cftecosystem" target="_blank">
               <i class="fab fa-telegram-plane"></i> Join our Telegram
             </a>
           </div>
@@ -301,7 +302,7 @@
     };
 
     const stakingContractAddresses = {
-      token1: 'THFc41G1P1VKVaYmV6x46ozAQSXbeSaYNn',
+      token1: 'TMsZX72oWscpd3QmmT6NRq6JWiY5QzFju2',
     };
 
     const stakingContractAbi = [
@@ -477,6 +478,25 @@
     {
         "inputs": [],
         "name": "viewTotalStaked",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+      {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "viewTotalClaimedRewards",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -1112,7 +1132,7 @@ function delay(ms) {
 async function updateAllUI() {
     try {
         for (let token in stakingContracts) {
-            await delay(500); // Add a 1-second delay between updates
+            await delay(400); // Add a 1-second delay between updates
             await updateTokenUI(token);
         }
     } catch (error) {
@@ -1123,18 +1143,18 @@ async function updateAllUI() {
 // Update UI for a specific token
 async function updateTokenUI(token) {
     try {
-        await updateClaimableRewards(token);
-        await delay(500);
-        await updateStakedAmount(token);
-        await delay(500);
-        await updateStakedPercentage(token);
-        await delay(500);
-        await updateTotalStaked(token);
-        await delay(500);
-        await updateProjectedYearlyEarnings(token);
-        await delay(500);
         await updateAvailableTokens('token1');
-        await delay(500);
+        await delay(400);
+        await updateStakedAmount(token);
+        await delay(400);
+        await updateProjectedYearlyEarnings(token);
+        await delay(400);
+        await updateEstimatedAPR(token); // Add this line
+        await delay(400);
+        await updateClaimableRewards(token);
+        await delay(400);
+        await updateTotalClaimedRewards();
+        await delay(400);
     } catch (error) {
         console.error(`Error updating UI for ${token}:`, error);
     }
@@ -1154,6 +1174,39 @@ async function updateTotalStaked(token) {
     }
 }
 
+    async function updateEstimatedAPR(token) {
+    try {
+        // Get token decimals
+        const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContracts[token]);
+        const decimals = await tokenContract.methods.decimals().call();
+
+        // Fetch raw daily reward and total staked from the staking contract
+        const dailyRewardRaw = await stakingContracts[token].methods.viewDailyReward().call();
+        const totalStakedRaw = await stakingContracts[token].methods.viewTotalStaked().call();
+
+        // Convert to human-readable numbers (adjusting for decimals)
+        const dailyReward = parseFloat(dailyRewardRaw) / Math.pow(10, decimals);
+        const totalStaked = parseFloat(totalStakedRaw) / Math.pow(10, decimals);
+
+        // Calculate APR
+        let apr;
+        if (totalStaked > 0) {
+            apr = (dailyReward / totalStaked) * 365 * 100; // Annualized percentage
+            apr = apr.toFixed(2) + '%'; // Format to 2 decimal places with % sign
+        } else {
+            apr = 'N/A'; // Avoid division by zero when no tokens are staked
+        }
+
+        // Update the UI
+        document.getElementById(`estimated-apr-${token}`).innerText = apr;
+    } catch (error) {
+        console.error(`Error fetching estimated APR for ${token}:`, error);
+        document.getElementById(`estimated-apr-${token}`).innerText = 'Error';
+    }
+}
+    
+
+
 // Function to update claimable rewards
 async function updateClaimableRewards(token) {
     try {
@@ -1167,6 +1220,16 @@ async function updateClaimableRewards(token) {
         console.error(`Error fetching claimable rewards for ${token}:`, error);
     }
 }
+
+    async function updateTotalClaimedRewards() {
+  try {
+    const totalClaimedRewards = await stakingContracts['token1'].methods.viewTotalClaimedRewards(userAddress).call();
+    document.getElementById('total-claimed-rewards').innerText = formatNumber(tronWeb.fromSun(totalClaimedRewards)) + ' CFT';
+  } catch (error) {
+    console.error('Error fetching total claimed rewards:', error);
+  }
+}
+
 
 // Function to update the staked amount
 async function updateStakedAmount(token) {
