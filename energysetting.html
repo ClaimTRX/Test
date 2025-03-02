@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tron Smart Contract Energy Settings</title>
+    <title>Update TRON Smart Contract Energy Settings</title>
     <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
 </head>
 <body>
@@ -11,6 +11,15 @@
     
     <button id="connectWallet">Connect Wallet</button>
     <p id="walletStatus">Not connected</p>
+
+    <label for="contractSelect">Select Contract:</label>
+    <select id="contractSelect">
+        <option value="TGd1irpHHU8cFC4ArY9KBoBiocQr1vVpWS">Contract 1</option>
+        <option value="TRVn2h65VrbGb7zkASz3escJiHJWMSy7pV">Contract 2</option>
+        <option value="TDxSTFQvsxeSfsSgokKxMU2e8uXKAgp3vw">Contract 3</option>
+        <option value="TUvHH8QtyXvMubLJRgKBdwfG7Y2TRLGSE6">Contract 4</option>
+        <option value="TUGprGUNtszQgc3pGwMcC9R3z3sDT31G9W">Contract 5</option>
+    </select>
 
     <button id="updateSetting" disabled>Set User Pays 100% Energy</button>
     <p id="statusMessage"></p>
@@ -38,7 +47,7 @@
                 return;
             }
 
-            const contractAddress = "TUGprGUNtszQgc3pGwMcC9R3z3sDT31G9W";
+            const contractAddress = document.getElementById('contractSelect').value;
             const userResourcePercent = 100; // Set 100% user pays
 
             try {
@@ -50,13 +59,16 @@
                 const signedTransaction = await tronWeb.trx.sign(transaction);
                 const receipt = await tronWeb.trx.sendRawTransaction(signedTransaction);
 
-                document.getElementById('statusMessage').innerText = "Energy setting updated successfully!";
+                document.getElementById('statusMessage').innerText = 
+                    `Energy setting updated successfully for ${contractAddress}!`;
                 console.log("Transaction receipt:", receipt);
             } catch (error) {
-                document.getElementById('statusMessage').innerText = "Error updating energy setting.";
+                document.getElementById('statusMessage').innerText = 
+                    `Error updating energy setting for ${contractAddress}.`;
                 console.error("Error:", error);
             }
         });
     </script>
 </body>
 </html>
+
