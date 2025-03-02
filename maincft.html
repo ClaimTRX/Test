@@ -184,6 +184,18 @@
         margin-top: 20px;
     }
 
+    .staking-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .apr-text {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
     /* Mobile responsiveness */
     @media (max-width: 767.98px) {
         .sidebar {
@@ -283,22 +295,24 @@
         <div class="card-body">
           <div class="card-text-section">
             <p><strong>CFT Staking: Earn While Strengthening the Ecosystem</strong></p>
-<p>CFT staking allows you to earn passive income while supporting a sustainable, community-driven ecosystem. By staking your CFT, you receive TRX rewards directly from the treasury—powered by real yield from energy sales and staking income.</p>
+            <p>CFT staking allows you to earn passive income while supporting a sustainable, community-driven ecosystem. By staking your CFT, you receive TRX rewards directly from the treasury—powered by real yield from energy sales and staking income.</p>
 
-<ul>
-  <li><strong>Reliable TRX Rewards:</strong> Earn a share of the treasury’s income, generated through staking returns and energy sales.</li>
-  <li><strong>Scarcity-Driven Model:</strong> With a fixed supply of 10 million CFT, staking reduces circulating supply, contributing to long-term value.</li>
-  <li><strong>Full Control:</strong> Stake and unstake anytime through the CFT platform, giving you flexibility while earning passive income.</li>
-</ul>
+            <ul>
+              <li><strong>Reliable TRX Rewards:</strong> Earn a share of the treasury’s income, generated through staking returns and energy sales.</li>
+              <li><strong>Scarcity-Driven Model:</strong> With a fixed supply of 10 million CFT, staking reduces circulating supply, contributing to long-term value.</li>
+              <li><strong>Full Control:</strong> Stake and unstake anytime through the CFT platform, giving you flexibility while earning passive income.</li>
+            </ul>
 
-<p>Select your preferred reward option below and start earning with CFT staking today!</p>
+            <p>Select your preferred reward option below and start earning with CFT staking today!</p>
 
             <p>StableX is more than just a stablecoin—it’s a hybrid asset designed for security and growth. Whether you’re anchoring your portfolio or chasing DeFi rewards, StableX offers a compelling solution.</p>
             <div class="button-group">
-              <a href="cft.html" class="btn btn-success btn-lg">Stakeing CFT Rewards</a>
+              <div class="staking-option">
+                <a href="cft.html" class="btn btn-success btn-lg">Stakeing CFT Rewards</a>
+                <p class="apr-text">Estimated APR: <span id="estimated-apr">Loading...</span></p>
+              </div>
               <a href="newtrx.html" class="btn btn-success btn-lg">Staking TRX Rewards</a>
               <a href="newusdt.html" class="btn btn-success btn-lg">Staking USDT Rewards</a>
-              
             </div>
           </div>
           <div class="card-image-container">
@@ -312,6 +326,421 @@
         </div>
       </div>
     </div>
+
+    <!-- TronWeb and JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.min.js"></script>
+    <script>
+      // Full Staking Contract ABI
+      const stakingContractAbi = [
+        {
+          "inputs": [
+            {"internalType": "address", "name": "_stakingToken", "type": "address"},
+            {"internalType": "address", "name": "_rewardToken", "type": "address"},
+            {"internalType": "uint256", "name": "_dailyReward", "type": "uint256"}
+          ],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {"indexed": true, "internalType": "address", "name": "user", "type": "address"},
+            {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}
+          ],
+          "name": "RewardDeposited",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {"indexed": true, "internalType": "address", "name": "user", "type": "address"},
+            {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}
+          ],
+          "name": "Staked",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {"indexed": true, "internalType": "address", "name": "user", "type": "address"},
+            {"indexed": false, "internalType": "uint256", "name": "reward", "type": "uint256"}
+          ],
+          "name": "RewardClaimed",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {"indexed": true, "internalType": "address", "name": "user", "type": "address"},
+            {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}
+          ],
+          "name": "Withdrawn",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}
+          ],
+          "name": "OwnerWithdrawn",
+          "type": "event"
+        },
+        {
+          "inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}],
+          "name": "depositReward",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}],
+          "name": "ownerWithdraw",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}],
+          "name": "stake",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "claimReward",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}],
+          "name": "withdraw",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "viewTotalStaked",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [{"internalType": "address", "name": "account", "type": "address"}],
+          "name": "viewTotalClaimedRewards",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [{"internalType": "address", "name": "account", "type": "address"}],
+          "name": "viewStakedAmount",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [{"internalType": "address", "name": "account", "type": "address"}],
+          "name": "viewPendingReward",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [{"internalType": "address", "name": "account", "type": "address"}],
+          "name": "viewStakedPercentage",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "viewDailyReward",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [{"internalType": "address", "name": "account", "type": "address"}],
+          "name": "viewTotalClaimedRewards",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [{"internalType": "uint256", "name": "_dailyReward", "type": "uint256"}],
+          "name": "setDailyReward",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [{"internalType": "address", "name": "account", "type": "address"}],
+          "name": "viewProjectedRewardsForYear",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "viewTotalDepositedRewards",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "viewTotalAccumulatedRewards",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        }
+      ];
+
+      // Full Token Contract ABI
+      const tokenContractAbi = [
+        {
+          "inputs": [
+            {"internalType": "string", "name": "name", "type": "string"},
+            {"internalType": "string", "name": "symbol", "type": "string"},
+            {"internalType": "uint256", "name": "totalSupply", "type": "uint256"}
+          ],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {"indexed": true, "internalType": "address", "name": "owner", "type": "address"},
+            {"indexed": true, "internalType": "address", "name": "spender", "type": "address"},
+            {"indexed": false, "internalType": "uint256", "name": "value", "type": "uint256"}
+          ],
+          "name": "Approval",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {"indexed": true, "internalType": "address", "name": "previousOwner", "type": "address"},
+            {"indexed": true, "internalType": "address", "name": "newOwner", "type": "address"}
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {"indexed": true, "internalType": "address", "name": "from", "type": "address"},
+            {"indexed": true, "internalType": "address", "name": "to", "type": "address"},
+            {"indexed": false, "internalType": "uint256", "name": "value", "type": "uint256"}
+          ],
+          "name": "Transfer",
+          "type": "event"
+        },
+        {
+          "inputs": [],
+          "name": "MODE_NORMAL",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "MODE_TRANSFER_CONTROLLED",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "MODE_TRANSFER_RESTRICTED",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_mode",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {"internalType": "address", "name": "owner", "type": "address"},
+            {"internalType": "address", "name": "spender", "type": "address"}
+          ],
+          "name": "allowance",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {"internalType": "address", "name": "spender", "type": "address"},
+            {"internalType": "uint256", "name": "amount", "type": "uint256"}
+          ],
+          "name": "approve",
+          "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [{"internalType": "address", "name": "account", "type": "address"}],
+          "name": "balanceOf",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "decimals",
+          "outputs": [{"internalType": "uint8", "name": "", "type": "uint8"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {"internalType": "address", "name": "spender", "type": "address"},
+            {"internalType": "uint256", "name": "subtractedValue", "type": "uint256"}
+          ],
+          "name": "decreaseAllowance",
+          "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {"internalType": "address", "name": "spender", "type": "address"},
+            {"internalType": "uint256", "name": "addedValue", "type": "uint256"}
+          ],
+          "name": "increaseAllowance",
+          "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "name",
+          "outputs": [{"internalType": "string", "name": "", "type": "string"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "owner",
+          "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "renounceOwnership",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [{"internalType": "uint256", "name": "v", "type": "uint256"}],
+          "name": "setMode",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "symbol",
+          "outputs": [{"internalType": "string", "name": "", "type": "string"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "totalSupply",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {"internalType": "address", "name": "to", "type": "address"},
+            {"internalType": "uint256", "name": "amount", "type": "uint256"}
+          ],
+          "name": "transfer",
+          "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {"internalType": "address", "name": "from", "type": "address"},
+            {"internalType": "address", "name": "to", "type": "address"},
+            {"internalType": "uint256", "name": "amount", "type": "uint256"}
+          ],
+          "name": "transferFrom",
+          "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [{"internalType": "address", "name": "newOwner", "type": "address"}],
+          "name": "transferOwnership",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ];
+
+      // Contract addresses
+      const stakingContractAddress = 'TMsZX72oWscpd3QmmT6NRq6JWiY5QzFju2';
+      const tokenContractAddress = 'TAQzALyftaynnr3VG3rCvzkY2KouFH79sA';
+
+      // Initialize TronWeb with a public node
+      const tronWeb = new TronWeb({
+        fullHost: 'https://api.trongrid.io'
+        // Optional: headers: { 'TRON-PRO-API-KEY': 'your-api-key' }
+      });
+
+      async function updateEstimatedAPR() {
+        try {
+          // Create contract instances
+          const stakingContract = await tronWeb.contract(stakingContractAbi, stakingContractAddress);
+          const tokenContract = await tronWeb.contract(tokenContractAbi, tokenContractAddress);
+
+          // Fetch data
+          const dailyRewardRaw = await stakingContract.viewDailyReward().call();
+          const totalStakedRaw = await stakingContract.viewTotalStaked().call();
+          const decimals = await tokenContract.decimals().call();
+
+          // Convert to human-readable numbers
+          const dailyReward = parseFloat(dailyRewardRaw) / Math.pow(10, decimals);
+          const totalStaked = parseFloat(totalStakedRaw) / Math.pow(10, decimals);
+
+          // Calculate APR
+          let apr;
+          if (totalStaked > 0) {
+            apr = (dailyReward / totalStaked) * 365 * 100;
+            apr = apr.toFixed(2) + '%';
+          } else {
+            apr = 'N/A';
+          }
+
+          // Update UI
+          document.getElementById('estimated-apr').innerText = apr;
+        } catch (error) {
+          console.error('Error fetching APR:', error);
+          document.getElementById('estimated-apr').innerText = 'Error';
+        }
+      }
+
+      // Run on page load and update every minute
+      document.addEventListener('DOMContentLoaded', async () => {
+        await updateEstimatedAPR();
+        setInterval(updateEstimatedAPR, 60000); // Update every 60 seconds
+      });
+    </script>
 </body>
 </html>
 
