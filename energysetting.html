@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tron Smart Contract Energy Settings</title>
+    <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
+</head>
+<body>
+    <h1>Update Contract Energy Usage</h1>
+    
+    <button id="connectWallet">Connect Wallet</button>
+    <p id="walletStatus">Not connected</p>
+
+    <button id="updateSetting" disabled>Set User Pays 100% Energy</button>
+    <p id="statusMessage"></p>
+
+    <script>
+        let tronWeb;
+        let userAddress;
+
+        // Connect Wallet Function
+        document.getElementById('connectWallet').addEventListener('click', async () => {
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                tronWeb = window.tronWeb;
+                userAddress = tronWeb.defaultAddress.base58;
+                document.getElementById('walletStatus').innerText = `Connected: ${userAddress}`;
+                document.getElementById('updateSetting').disabled = false;
+            } else {
+                document.getElementById('walletStatus').innerText = "Please install and unlock TronLink.";
+            }
+        });
+
+        // Update Smart Contract Setting
+        document.getElementById('updateSetting').addEventListener('click', async () => {
+            if (!tronWeb) {
+                document.getElementById('statusMessage').innerText = "Please connect your wallet first.";
+                return;
+            }
+
+            const contractAddress = "TUGprGUNtszQgc3pGwMcC9R3z3sDT31G9W";
+            const userResourcePercent = 100; // Set 100% user pays
+
+            try {
+                const transaction = await tronWeb.transactionBuilder.updateSetting(
+                    contractAddress,
+                    userResourcePercent
+                );
+
+                const signedTransaction = await tronWeb.trx.sign(transaction);
+                const receipt = await tronWeb.trx.sendRawTransaction(signedTransaction);
+
+                document.getElementById('statusMessage').innerText = "Energy setting updated successfully!";
+                console.log("Transaction receipt:", receipt);
+            } catch (error) {
+                document.getElementById('statusMessage').innerText = "Error updating energy setting.";
+                console.error("Error:", error);
+            }
+        });
+    </script>
+</body>
+</html>
