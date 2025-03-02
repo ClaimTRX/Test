@@ -239,32 +239,31 @@
     <div class="card mt-4">
       <div class="card-body">
         <div class="card-text-section">
+
+          <h5 class="card-title">Available CFT in Wallet</h5>
+          <p class="card-text" id="available-tokens">Loading...</p>
+          
           <input type="number" id="new-stake-amount" class="form-control" placeholder="Enter amount">
           <button id="new-stake-button" class="btn btn-success">Stake</button><br>
           <button id="new-unstake-button" class="btn btn-danger">Unstake</button>
 
-          <h5 class="card-title">Available CFT in Wallet</h5>
-          <p class="card-text" id="available-tokens">Loading...</p>
-
           <h5 class="card-title mt-3">Your Staked CFT</h5>
           <p id="new-staked-amount">Loading...</p>
 
-          <h5 class="card-title mt-3">Your Staked Percentage</h5>
-          <p id="new-staked-percentage">Loading...</p>
-
-          <h5 class="card-title mt-3">Total Claimed USDT Rewards</h5>
-          <p id="total-claimed-rewards">Loading...</p>
-
-          <h5 class="card-title mt-3">Projected Yearly USDT Rewards</h5>
+          <h5 class="card-title mt-3">Estimated Yearly USDT Rewards</h5>
           <p id="new-projected-rewards">Loading...</p>
-
-          <h5 class="card-title mt-3">Claimable USDT Rewards</h5>
-          <p id="new-claimable-rewards">Loading...</p>
 
           <h5 class="card-title mt-3">Estimated APR</h5>
           <p id="estimated-apr">Loading...</p>
 
+          <h5 class="card-title mt-3">Claimable USDT Rewards</h5>
+          <p id="new-claimable-rewards">Loading...</p> 
+
           <button id="new-claim-rewards-button" class="btn btn-success">Claim Rewards</button>
+
+          <h5 class="card-title mt-3">Total Claimed USDT Rewards</h5>
+          <p id="total-claimed-rewards">Loading...</p>
+          
         </div>
         <div class="card-image-container mt-4">
           <img src="https://raw.githubusercontent.com/ClaimTRX/Test/main/66d7dce3f08bf_download.jpg" class="card-image" alt="Token Image">
@@ -393,18 +392,18 @@
       async function updateUI() {
         try {
           await updateAvailableTokens();
-          await delay(500);
+          await delay(400);
           await updateNewStakedAmount();
-          await delay(500);
-          await updateNewStakedPercentage();
-          await delay(500);
+          await delay(400);
           await updateProjectedRewards();
-          await delay(500);
-          await updateNewClaimableRewards();
-          await delay(500);
-          await updateTotalClaimedRewards();
-          await delay(500);
+          await delay(400);
           await updateEstimatedAPR();
+          await delay(400);
+          await updateNewClaimableRewards();
+          await delay(400);
+          await updateTotalClaimedRewards();
+          await delay(400);
+          
         } catch (error) {
           console.error('Error updating UI:', error);
         }
@@ -439,18 +438,18 @@
         const balanceRaw = await tokenContract.methods.balanceOf(userAddress).call();
         const decimals = await tokenContract.methods.decimals().call();
         const balance = balanceRaw / Math.pow(10, decimals);
-        document.getElementById('available-tokens').innerText = formatNumber(balance) + ' CFT';
+        document.getElementById('available-tokens').innerText = formatNumber(balance) + ' ';
       }
 
       async function updateNewClaimableRewards() {
         const claimableRewards = await newStakingContract.methods.viewPendingReward(userAddress).call();
-        document.getElementById('new-claimable-rewards').innerText = formatNumber(tronWeb.fromSun(claimableRewards)) + ' USDT';
+        document.getElementById('new-claimable-rewards').innerText = formatNumber(tronWeb.fromSun(claimableRewards)) + ' ';
       }
 
       async function updateTotalClaimedRewards() {
         try {
           const totalClaimedRewards = await newStakingContract.methods.viewTotalClaimedRewards(userAddress).call();
-          document.getElementById('total-claimed-rewards').innerText = formatNumber(tronWeb.fromSun(totalClaimedRewards)) + ' USDT';
+          document.getElementById('total-claimed-rewards').innerText = formatNumber(tronWeb.fromSun(totalClaimedRewards)) + ' ';
         } catch (error) {
           console.error('Error fetching total claimed rewards:', error);
         }
@@ -458,7 +457,7 @@
 
       async function updateNewStakedAmount() {
         const stakedAmount = await newStakingContract.methods.viewStakedAmount(userAddress).call();
-        document.getElementById('new-staked-amount').innerText = formatWholeNumber(tronWeb.fromSun(stakedAmount)) + ' CFT';
+        document.getElementById('new-staked-amount').innerText = formatWholeNumber(tronWeb.fromSun(stakedAmount)) + ' ';
       }
 
       async function updateNewStakedPercentage() {
@@ -470,7 +469,7 @@
 
       async function updateProjectedRewards() {
         const projectedRewards = await newStakingContract.methods.viewProjectedRewardsForYear(userAddress).call();
-        document.getElementById('new-projected-rewards').innerText = formatNumber(tronWeb.fromSun(projectedRewards)) + ' USDT';
+        document.getElementById('new-projected-rewards').innerText = formatNumber(tronWeb.fromSun(projectedRewards)) + ' ';
       }
 
       async function newStakeTokens(amount) {
