@@ -178,18 +178,26 @@
     }
 
     .button-group {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-top: 20px;
-    }
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
 
     .staking-option {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 20px;
-    }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%; /* Ensures consistent width */
+}
+    .staking-option .btn {
+    width: 220px; /* Set a fixed width */
+    padding: 12px;
+    font-size: 16px;
+    text-align: center;
+    border-radius: 5px;
+}
 
     .apr-text {
       margin-top: 10px;
