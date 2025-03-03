@@ -8,7 +8,8 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <style>
-    body {
+    /* General Body Styles */
+body {
     background-color: #1a1a2e;
     color: #fff;
     font-family: Arial, sans-serif;
@@ -27,7 +28,7 @@
     transition: transform 0.3s ease-in-out;
 }
 
-/* Sidebar links */
+/* Sidebar Links */
 .sidebar a {
     color: #fff;
     text-decoration: none;
@@ -41,7 +42,7 @@
     background-color: #1f4068;
 }
 
-/* Social links */
+/* Social Links in Sidebar */
 .sidebar .social-links {
     display: flex;
     margin-top: 20px;
@@ -58,7 +59,7 @@
     margin-right: 0;
 }
 
-/* Top bar */
+/* Top Bar */
 .topbar {
     background-color: #162447;
     padding: 10px;
@@ -68,19 +69,13 @@
     align-items: center;
 }
 
-.topbar a.social-icon {
-    color: white;
-    margin-left: 15px;
-    font-size: 20px;
-    text-decoration: none;
-}
-
 /* Main Content */
 .main-content {
     margin-left: 220px;
     padding: 20px;
 }
 
+/* Cards */
 .card {
     background-color: #2c3e50;
     color: white;
@@ -105,7 +100,7 @@
     width: 100%;
 }
 
-/* Card text */
+/* Card Text */
 .card-text-section {
     text-align: left;
     padding: 15px;
@@ -146,8 +141,8 @@
 }
 
 .staking-option .btn {
-    width: 250px; /* Set a fixed width for all buttons */
-    height: 50px; /* Ensure consistent height */
+    width: 250px; /* Fixed width */
+    height: 50px; /* Fixed height */
     padding: 10px;
     font-size: 16px;
     text-align: center;
@@ -157,9 +152,9 @@
     justify-content: center;
 }
 
-/* Mobile responsiveness */
+/* Mobile Responsiveness */
 @media (max-width: 767.98px) {
-    /* Hide sidebar by default on mobile */
+    /* Hide sidebar on mobile by default */
     .sidebar {
         transform: translateX(-100%);
         width: 100%;
@@ -179,7 +174,7 @@
         transform: translateX(0);
     }
 
-    /* Sidebar menu toggle button */
+    /* Sidebar Menu Toggle Button */
     .menu-toggle {
         background-color: #162447;
         color: white;
@@ -192,16 +187,19 @@
         cursor: pointer;
     }
 
+    /* Topbar Adjustments */
     .topbar {
         margin-left: 0;
         justify-content: center;
         text-align: center;
     }
 
+    /* Main Content */
     .main-content {
         margin-left: 0;
     }
 
+    /* Adjust Card Layout for Mobile */
     .card-body {
         flex-direction: column;
         align-items: center;
@@ -216,6 +214,7 @@
         font-size: 14px;
     }
 
+    /* Buttons */
     .btn {
         width: 250px;
         padding: 12px;
@@ -227,6 +226,7 @@
         align-items: center;
     }
 }
+
 
   </style>
 </head>
